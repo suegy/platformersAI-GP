@@ -28,75 +28,84 @@
 package competition.gic2010.turing.Gaudl;
 
 import ch.idsia.agents.Agent;
+import ch.idsia.agents.LearningAgent;
 import ch.idsia.agents.controllers.BasicMarioAIAgent;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.environments.Environment;
+import ch.idsia.benchmark.tasks.LearningTask;
+
+import org.jgap.InvalidConfigurationException;
+import org.jgap.gp.IGPProgram;
+import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
+import org.jgap.gp.impl.GPConfiguration;
+
+import competition.gic2010.turing.Gaudl.Genes.MarioData;
 
 /**
  * Created by IntelliJ IDEA.
- * User: Sergey Karakovskiy, sergey.karakovskiy@gmail.com
- * Date: 12/15/10
+ * User: Swen Gaudl, swen.gaudl@gmail.com
+ * Date: 11/27/12
  * Time: 1:47 AM
- * Package: competition.gic2010.temp
+ * Package: touring.Gaudl
  */
 
-public class Gaudl_GPAgent extends BasicMarioAIAgent implements Agent
+public class Mario_GPAgent implements Agent
 {
-int trueJumpCounter = 0;
-int trueSpeedCounter = 0;
+	MarioData m_data;
+	String agentName;
+	IGPProgram executionCode;
+	Object[] executionArguments;
+	
+	public Mario_GPAgent(IGPProgram prog, Object[] args,MarioData data) {
+		m_data = data;
+		executionArguments = args;
+		executionCode = prog;
+	}
+	
+	@Override
+	public boolean[] getAction() {
+		boolean [] output = new boolean[Environment.numberOfKeys];
+		executionCode.execute_void(0, executionArguments);
+		
+		if (m_data instanceof MarioData)
+			output = m_data.getActions();
+		
+		return output;
+	}
+	
+	
 
-public Gaudl_GPAgent()
-{
-    super("Gaudl_GPAgent");
-    reset();
-}
+	@Override
+	public void integrateObservation(Environment environment) {
+		MarioData.setEnvironment(environment);
+	}
 
-public void reset()
-{
-    action = new boolean[Environment.numberOfKeys];
-    action[Mario.KEY_RIGHT] = true;
-    action[Mario.KEY_SPEED] = true;
-    trueJumpCounter = 0;
-    trueSpeedCounter = 0;
-}
+	@Override
+	public void giveIntermediateReward(float intermediateReward) {
+		// TODO Auto-generated method stub
+		
+	}
 
-private boolean DangerOfAny()
-{
+	@Override
+	public void reset() {
+	}
 
-    if ((getReceptiveFieldCellValue(marioEgoRow + 2, marioEgoCol + 1) == 0 &&
-            getReceptiveFieldCellValue(marioEgoRow + 1, marioEgoCol + 1) == 0) ||
-            getReceptiveFieldCellValue(marioEgoRow, marioEgoCol + 1) != 0 ||
-            getReceptiveFieldCellValue(marioEgoRow, marioEgoCol + 2) != 0 ||
-            getEnemiesCellValue(marioEgoRow, marioEgoCol + 1) != 0 ||
-            getEnemiesCellValue(marioEgoRow, marioEgoCol + 2) != 0)
-        return true;
-    else
-        return false;
-}
+	@Override
+	public void setObservationDetails(int rfWidth, int rfHeight, int egoRow,
+			int egoCol) {
+		// TODO Auto-generated method stub
+		
+	}
 
-public boolean[] getAction()
-{
-    // this Agent requires observation integrated in advance.
+	@Override
+	public String getName() {
+		return this.agentName;
+	}
 
-    if (DangerOfAny() && getReceptiveFieldCellValue(marioEgoRow, marioEgoCol + 1) != 1)  // a coin
-    {
-        if (isMarioAbleToJump || (!isMarioOnGround && action[Mario.KEY_JUMP]))
-        {
-            action[Mario.KEY_JUMP] = true;
-        }
-        ++trueJumpCounter;
-    } else
-    {
-        action[Mario.KEY_JUMP] = false;
-        trueJumpCounter = 0;
-    }
-
-    if (trueJumpCounter > 16)
-    {
-        trueJumpCounter = 0;
-        action[Mario.KEY_JUMP] = false;
-    }
-
-    return action;
-}
+	@Override
+	public void setName(String name) {
+		this.agentName = name;
+		
+	}
+    
 }
