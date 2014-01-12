@@ -24,7 +24,7 @@ public class IsBreakableAt extends MarioCommand implements IMutateable{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "isBreakableAt ";
+		return "isBreakableAt &1 &2";
 	}
 	
 	public String getName() {

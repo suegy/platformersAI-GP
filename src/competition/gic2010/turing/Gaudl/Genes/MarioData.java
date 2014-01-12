@@ -10,6 +10,10 @@ public class MarioData {
 	private boolean[] actions;
 	private boolean[] last_actions;
 	private int longJump;
+	private boolean longJumpRight;
+	private boolean longJumpLeft;
+	private int move;
+	private int run;
 	//private int lastAction;
 	private static Environment environment;
 
@@ -37,9 +41,15 @@ public class MarioData {
 	public boolean[] getActions() {
 		this.last_actions=this.actions.clone();
 		this.actions = new boolean[last_actions.length];
+
 		
-		if (this.longJump > 0)
-			jump();
+		if (this.longJump > 0){
+			longJump();
+			if (longJumpLeft)
+				moveLeft();
+			if (longJumpRight)
+				moveRight();
+		}
 		
 		return last_actions;
 	}
@@ -56,8 +66,15 @@ public class MarioData {
 		this.actions[marioaction] = act;
 	}
 
+	@SuppressWarnings("unused")
 	public byte[][] getSensorField() {
-		return (environment != null) ? environment.getMergedObservationZZ(1, 0) : null;
+		byte[][] sensoryField;
+	    byte[][] levelScene = environment.getLevelSceneObservationZ(1);
+	    byte[][]enemies = environment.getEnemiesObservationZ(0);
+	    byte[][] mergedObservation = environment.getMergedObservationZZ(1, 0);
+		sensoryField= (environment != null) ? environment.getMergedObservationZZ(1, 0) : null;
+		
+		return sensoryField;
 	}
 
 	public int getElementAt(int x,int y) {
@@ -79,7 +96,16 @@ public class MarioData {
 	public void jump() {
 		setAction(true, Environment.MARIO_KEY_JUMP);
 	}
-	
+	public void jumpLeft() {
+		this.moveLeft();
+		this.jump();
+		
+	}
+	public void jumpRight() {
+		this.moveRight();
+		this.jump();
+		
+	}
 	public boolean longJump(){
 		if (this.longJump > 0){
 			jump();
@@ -88,6 +114,42 @@ public class MarioData {
 		}
 
 		this.longJump = 24;
+		this.longJumpLeft = false;
+		this.longJumpRight = false;
+		return true;
+	}
+	
+	public void longJumpLeft() {
+
+		if (this.longJump <= 0){
+			this.longJump();
+			this.moveLeft();
+			this.longJumpRight = false;
+			this.longJumpLeft = true;
+			
+			
+		}
+		
+	}
+	public void longJumpRight() {
+		
+		if (this.longJump <= 0){
+			this.longJump();
+			this.longJumpLeft = false;
+			this.longJumpRight = true;
+			this.moveRight();
+			
+		}
+	}
+	
+	public boolean run(){
+		if (this.run > 0){
+			shoot();
+			this.run--;
+			return false;
+		}
+
+		this.run = 24;
 		return true;
 		
 	}
@@ -196,6 +258,7 @@ public class MarioData {
 			return false;
 		}
 	}
+	
 	
 
 

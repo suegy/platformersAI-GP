@@ -13,6 +13,17 @@ public class ElementAtXY extends MarioCommand {
 	 * 
 	 */
 	private static final long serialVersionUID = -3673639561584674103L;
+	public static int CanBreak = -4;
+	public static int Coin = -3;
+	public static int Enemy = -2;
+	public static int Flower = -1;
+	public static int Mushroom = 0;
+	public static int Princess = 1;
+	public static int Air = 2;
+	public static int Walkable = 3;
+	public static int Nothing = 4;
+	
+	
 	
 	public ElementAtXY(GPConfiguration a_conf)
 			throws InvalidConfigurationException {
@@ -22,7 +33,7 @@ public class ElementAtXY extends MarioCommand {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "elementAtXY ";
+		return "elementAtXY &1 &2";
 	}
 	
 	public String getName() {

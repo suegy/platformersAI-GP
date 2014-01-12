@@ -1,8 +1,14 @@
 package competition.gic2010.turing.Gaudl;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
+import bsh.Console;
+import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
@@ -17,10 +23,21 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	private static final long serialVersionUID = -8750632855093986122L;
 	BasicTask m_task;
 	MarioAIOptions m_options;
+	private int gen;
+	private double bestFit;
+	private BufferedWriter writer;
 
 	public GameplayMetricFitness(BasicTask task,MarioAIOptions options){
 		m_task = task;
 		m_options = options;
+		gen = 0;
+		bestFit = 40d;
+		try {
+			writer = new BufferedWriter(new FileWriter("solutions.txt"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -29,6 +46,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	}
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
+		int num_lvls = 5;
 		MarioData data = new MarioData();
 		// Initialize local stores.
 		// ------------------------
@@ -38,13 +56,27 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		try {
 			// Execute the program.
 			// --------------------
-			int time =  prog.getGPConfiguration().getGenerationNr() / 10;
-			
+			int time =  prog.getGPConfiguration().getGenerationNr() / 5;
+			if (prog.getGPConfiguration().getGenerationNr() > 5)
+				time =  prog.getGPConfiguration().getGenerationNr() ;
+			if (prog.getGPConfiguration().getGenerationNr() > 10)
+				time *= 1.2  ;
+			if (prog.getGPConfiguration().getGenerationNr() == 30) {
+				prog.getGPConfiguration().setMutationProb(0.01f);
+				prog.getGPConfiguration().setNewChromsPercent(0.3f);
+				prog.getGPConfiguration().setCrossoverProb(0.9f);
+				prog.getGPConfiguration().setReproductionProb(0.1f);
+			}
+			if (time >= 200)
+				time = 200;
 			time = 10+ time;
-			runMarioTask(prog,data,time);
-			// Determine success of individual.
+			for (int lvl=0;lvl < num_lvls;lvl++){
+				runMarioTask(prog,data,time,lvl);
+				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo());
+			}
+			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
-			error = calculateFitness(MarioData.getEnvironment().getEvaluationInfo());
+			error = error/num_lvls;
 			// Check if the action the agent chose is close to the trace action.
 			// -------------------------------------------
 
@@ -64,39 +96,65 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 				// Add penalty 
 				// ------------------------------
 
-
+				
+					
 			}
 		} catch (IllegalStateException iex) {
 			error = GPFitnessFunction.MAX_FITNESS_VALUE;
+			System.out.println(iex);
 		}
-		System.out.println("gen: "+prog.getGPConfiguration().getGenerationNr()+" id: "+prog.getGPConfiguration().getId()+" fit: "+error+"; ");
+		if (prog.getGPConfiguration().getGenerationNr() > gen) {
+    		if (error > bestFit ){
+				System.out.println("reached a good solution");
+				FileWriter a;
+				try {
+						writer.append("gen: "+ gen  +" fit:"+error+" dist: "+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+" Prog: "+prog.toStringNorm(0)+"\n");
+			    		writer.flush();
+					
+					//a.write();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				bestFit = error;
+			}
+    		System.out.println("gen: "+ gen++);
+		}
 		return error;
 	}
 
-	private boolean  runMarioTask(IGPProgram prog,MarioData data,int time) {
+	private boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int lvl) {
 		Object[] noargs = new Object[0];
 		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
 		mario.setName("gp-"+prog.getGPConfiguration().getId());
 		m_options.setRecordFile("gp-"+prog.getGPConfiguration().getId());
 		m_options.setTimeLimit(time);
+		m_options.setLevelRandSeed(lvl);
+		
+		//m_options.setLevelRandSeed(151079);
 		m_options.setAgent(mario);
 		m_task.setOptionsAndReset(m_options);
-
+		
 		return m_task.runSingleEpisode(1);
 	}
 
 
 	private float calculateFitness(EvaluationInfo env){
-		float wfit = (env.computeDistancePassed());
-		wfit = wfit /env.timeSpent;
-		wfit += env.killsTotal + env.coinsGained + env.marioMode;
+		float wfit = (env.distancePassedCells);
+		//wfit = wfit /env.timeSpent;
+		float additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;
 		wfit -= env.collisionsWithCreatures;
-
-/*		if (wfit > 0.000000001f)
-			wfit = (wfit*10);
-		else
-			wfit = (float) GPFitnessFunction.MAX_FITNESS_VALUE;
-*/
+		if (additional <  wfit/2)
+			wfit = wfit + additional;
+		else {
+			additional = (float) (additional * (0.2 / wfit));
+			wfit += (wfit*0.2f)*additional;
+		}
+		if (env.distancePassedCells > 50 && env.marioStatus == Mario.STATUS_DEAD)
+			wfit = wfit*0.75f;
+		if (env.distancePassedCells == env.levelLength && env.marioStatus == Mario.STATUS_WIN){
+			System.out.print("Solved Level");
+		}
 		return wfit;
 	}
 

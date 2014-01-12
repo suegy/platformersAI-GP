@@ -16,7 +16,7 @@ public class Shoot extends MarioCommand {
 
 	public Shoot(GPConfiguration a_conf)
 			throws InvalidConfigurationException {
-		super(a_conf,0,CommandGene.BooleanClass);
+		super(a_conf,0,CommandGene.VoidClass);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -52,14 +52,16 @@ public class Shoot extends MarioCommand {
 
 		if (a_percentage < 0.20d)
 		    return new Down(getGPConfiguration());
-		if (a_percentage < 0.30d)
+		if (a_percentage < 0.25d)
 		    return new Left(getGPConfiguration());
-		if (a_percentage < 0.40d)
+		if (a_percentage < 0.30d)
 		    return new Jump(getGPConfiguration());
-		if (a_percentage < 0.50d)
+		if (a_percentage < 0.35d)
 		    return new LongJump(getGPConfiguration());
+		if (a_percentage < 0.40d)
+		    return new Right(getGPConfiguration());
 		
-		return new Right(getGPConfiguration());
+		return new Run(getGPConfiguration());
 	}
 
 }

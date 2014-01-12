@@ -24,7 +24,7 @@ public class IsEnemyAt extends MarioCommand implements IMutateable{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "isEnemyAt";
+		return "isEnemyAt &1 &2";
 	}
 	
 	public String getName() {

@@ -30,21 +30,28 @@ package competition.gic2010.turing.Gaudl;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.GPProblem;
+import org.jgap.gp.IGPProgram;
+import org.jgap.gp.function.ADF;
 import org.jgap.gp.function.And;
 import org.jgap.gp.function.Equals;
 import org.jgap.gp.function.GreaterThan;
 import org.jgap.gp.function.IfElse;
 import org.jgap.gp.function.Not;
 import org.jgap.gp.function.Or;
+import org.jgap.gp.function.SubProgram;
+import org.jgap.gp.impl.BranchTypingCross;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
+import org.jgap.gp.impl.TournamentSelector;
 import org.jgap.gp.terminal.Terminal;
 import org.jgap.gp.terminal.Variable;
+import org.jgap.impl.FittestPopulationMerger;
 
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.Genes.Down;
+import competition.gic2010.turing.Gaudl.Genes.GpADF;
 import competition.gic2010.turing.Gaudl.Genes.GpGreaterThan;
 import competition.gic2010.turing.Gaudl.Genes.GpTrue;
 import competition.gic2010.turing.Gaudl.Genes.IsAirAt;
@@ -57,12 +64,17 @@ import competition.gic2010.turing.Gaudl.Genes.IsPrincessAt;
 import competition.gic2010.turing.Gaudl.Genes.IsTall;
 import competition.gic2010.turing.Gaudl.Genes.IsWalkableAt;
 import competition.gic2010.turing.Gaudl.Genes.Jump;
+import competition.gic2010.turing.Gaudl.Genes.JumpLeft;
+import competition.gic2010.turing.Gaudl.Genes.JumpRight;
 import competition.gic2010.turing.Gaudl.Genes.LastActionWas;
 import competition.gic2010.turing.Gaudl.Genes.Left;
 import competition.gic2010.turing.Gaudl.Genes.LongJump;
+import competition.gic2010.turing.Gaudl.Genes.LongJumpLeft;
+import competition.gic2010.turing.Gaudl.Genes.LongJumpRight;
+import competition.gic2010.turing.Gaudl.Genes.ObjectAtXY;
 import competition.gic2010.turing.Gaudl.Genes.Right;
+import competition.gic2010.turing.Gaudl.Genes.Run;
 import competition.gic2010.turing.Gaudl.Genes.Shoot;
-import competition.gic2010.turing.Gaudl.Genes.SubProgram;
 
 /**
  * Created by IntelliJ IDEA. User: Sergey Karakovskiy, sergey at idsia dot ch Date: Mar 17, 2010 Time: 8:28:00 AM
@@ -80,19 +92,23 @@ public GPSystemStandAlone(GameplayMetricFitness metric) {
 	try {
         config = new GPConfiguration();
         //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
-        //config.setMaxInitDepth(30);
-        config.setPopulationSize(50);
-        //config.setMinInitDepth(3);
-        config.setCrossoverProb(0.6f);
-        config.setReproductionProb(0.3f);
-        config.setNewChromsPercent(0.2f);
-        config.setMutationProb(0.1f);
+        config.setProgramCreationMaxTries(-1);
+        //config.setStrictProgramCreation(true);
+        config.setMaxInitDepth(30);
+        config.setPopulationSize(500);
+        //Taken from anttrail. WORTH INVESTIGATING.
+        config.setCrossoverProb(0.8f);//orig: 0.9f
+        config.setReproductionProb(0.2f); //orig: 0.1f
+        config.setNewChromsPercent(0.0f); //orig: 0.3f
+        config.setMutationProb(0.33f);
+        //config.setUseProgramCache(true);
+        //config.setCrossoverMethod(new BranchTypingCross(config));
         config.setPreservFittestIndividual(true);
         config.setFitnessFunction(metric);
-        
         setGPConfiguration(config);
         Geno = create();
-
+        
+        Geno.setVerboseOutput(true);
         gpThread = new Thread(Geno);
     }
     catch (InvalidConfigurationException e){
@@ -107,48 +123,62 @@ public GPSystemStandAlone(GameplayMetricFitness metric) {
 public GPGenotype create() throws InvalidConfigurationException {
 	Class [] types = { CommandGene.VoidClass};
 	GPConfiguration conf  = getGPConfiguration();
-	Class [][] argTypes = {{},};
+	Class [][] argTypes = {{},
+			//{CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}
+			};
 	CommandGene [][] nodes = {
 			{
-			vx = Variable.create(conf,"X",CommandGene.FloatClass),
-			//new SubProgram(conf, new Class[] {CommandGene.VoidClass,
-			//		CommandGene.VoidClass, CommandGene.VoidClass}, true),
-			//new SubProgram(conf),
-			//new Add(conf, CommandGene.IntegerClass),
-			new IfElse(conf, CommandGene.BooleanClass),
-			new IfElse(conf, CommandGene.VoidClass),
-			new GpGreaterThan(conf, CommandGene.IntegerClass),
-			new Or(conf),
-			new And(conf),
-			new Not(conf),
-			new Equals(conf, CommandGene.IntegerClass),
-			new Equals(conf, CommandGene.BooleanClass),
-			new GpTrue(conf),
-			//new False(conf),
-			new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
-			//new CanJump(conf),
-			//new CanShoot(conf),
-			new Down(conf),
-			new Left(conf),
-			new Right(conf),
-			new Shoot(conf),
-			new Jump(conf),
-			new LongJump(conf),
-			new IsBreakableAt(conf),
-			//new IsCoinAt(conf),
-			new IsAirAt(conf),
-			new IsEnemyAt(conf),
-			//new IsFireFlowerAt(conf),
-			//new IsMushroomAt(conf),
-			//new IsPrincessAt(conf),
-			new IsTall(conf),
-			new IsWalkableAt(conf),
-			new LastActionWas(conf),
-			}
+				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
+				new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
+				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
+				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
+				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
+				//new SubProgram(conf),
+				//new Add(conf, CommandGene.IntegerClass),
+				//new GpGreaterThan(conf, CommandGene.IntegerClass),
+				//new Equals(conf, CommandGene.IntegerClass),
+				//new LastActionWas(conf),
+				new IfElse(conf, CommandGene.BooleanClass),
+				//new Equals(conf, CommandGene.BooleanClass),
+				new Equals(conf, CommandGene.IntegerClass),
+				//new Or(conf),
+				new And(conf),
+				new Not(conf),
+				//new CanJump(conf),
+				//new CanShoot(conf),
+				new GpTrue(conf),
+				new ObjectAtXY(conf),
+				//new False(conf),
+				//new IsBreakableAt(conf),
+				//new IsCoinAt(conf),
+				//new IsAirAt(conf),
+				//new IsEnemyAt(conf),
+				//new IsFireFlowerAt(conf),
+				//new IsMushroomAt(conf),
+				//new IsPrincessAt(conf),
+				new IsTall(conf),
+				//new IsWalkableAt(conf),
+				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
+				new Down(conf),
+				new Left(conf),
+				new Right(conf),
+				new Shoot(conf),
+				new Jump(conf),
+				new JumpLeft(conf),
+				new JumpRight(conf),
+				new LongJump(conf),
+				new LongJumpLeft(conf),
+				new LongJumpRight(conf),
+				new Run(conf),
+				//new GpADF(conf,1,3),
+			},
+			//{
+				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
+			//}
 	};
 	
 	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
-			150, true);
+			250, true);
 }
 
 public static void main(String[] args) throws InterruptedException
@@ -158,26 +188,7 @@ public static void main(String[] args) throws InterruptedException
     final BasicTask basicTask = new BasicTask(marioAIOptions);
     GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
     GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
-    
-//        final Environment environment = new MarioEnvironment();
-//        final Agent agent = new ForwardAgent();
-//        final Agent agent = marioAIOptions.getAgent();
-//        final Agent a = AgentsPool.loadAgent("ch.idsia.controllers.agents.controllers.ForwardJumpingAgent");
-//    final BasicTask basicTask = new BasicTask(marioAIOptions);
-//        for (int i = 0; i < 10; ++i)
-//        {
-//            int seed = 0;
-//            do
-//            {
-//                marioAIOptions.setLevelDifficulty(i);
-//                marioAIOptions.setLevelRandSeed(seed++);
-//    basicTask.setOptionsAndReset(marioAIOptions);
-//    basicTask.runSingleEpisode(1);
-//    basicTask.doEpisodes(1,true,1);
-//    System.out.println(basicTask.getEnvironment().getEvaluationInfoAsString());
-//            } while (basicTask.getEnvironment().getEvaluationInfo().marioStatus != Environment.MARIO_STATUS_WIN);
-//        }
-//
+   
     
     while (marioGP.gpThread.isAlive()) {
     	Thread.sleep(10);

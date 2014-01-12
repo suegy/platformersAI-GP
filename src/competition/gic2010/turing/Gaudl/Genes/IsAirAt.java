@@ -24,7 +24,7 @@ public class IsAirAt extends MarioCommand implements IMutateable{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "isAir ";
+		return "isAir &1 &2";
 	}
 	
 	public String getName() {

@@ -17,7 +17,7 @@ public class LongJump extends MarioCommand implements IMutateable{
 
 	public LongJump(GPConfiguration a_conf)
 			throws InvalidConfigurationException {
-		super(a_conf,0,CommandGene.BooleanClass);
+		super(a_conf,0,CommandGene.VoidClass);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -47,15 +47,15 @@ public class LongJump extends MarioCommand implements IMutateable{
 		      throws InvalidConfigurationException {
 
 		if (a_percentage < 0.20d)
-		    return new Shoot(getGPConfiguration());
-		if (a_percentage < 0.30d)
-		    return new Down(getGPConfiguration());
-		if (a_percentage < 0.40d)
-		    return new Left(getGPConfiguration());
-		if (a_percentage < 0.50d)
 		    return new Right(getGPConfiguration());
+		if (a_percentage < 0.30d)
+		    return new Left(getGPConfiguration());
+		if (a_percentage < 0.40d)
+		    return new Jump(getGPConfiguration());
+		if (a_percentage < 0.50d)
+		    return new LongJumpLeft(getGPConfiguration());
 		
-		return new Jump(getGPConfiguration());
+		return new LongJumpRight(getGPConfiguration());
 	}
 
 }

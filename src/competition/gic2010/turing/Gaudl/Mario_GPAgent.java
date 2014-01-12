@@ -66,7 +66,7 @@ public class Mario_GPAgent implements Agent
 	public boolean[] getAction() {
 		boolean [] output = new boolean[Environment.numberOfKeys];
 		executionCode.execute_void(0, executionArguments);
-		
+		//executionCode.execute_boolean(0, executionArguments);
 		if (m_data instanceof MarioData)
 			output = m_data.getActions();
 		
@@ -77,6 +77,10 @@ public class Mario_GPAgent implements Agent
 
 	@Override
 	public void integrateObservation(Environment environment) {
+		byte[][] levelScene = environment.getLevelSceneObservationZ(1);
+	    byte[][]enemies = environment.getEnemiesObservationZ(0);
+	    byte[][] mergedObservation = environment.getMergedObservationZZ(1, 0);
+		
 		MarioData.setEnvironment(environment);
 	}
 
