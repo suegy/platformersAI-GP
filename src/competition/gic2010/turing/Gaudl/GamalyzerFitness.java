@@ -2,8 +2,12 @@ package competition.gic2010.turing.Gaudl;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.stream.FileImageInputStream;
 
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
@@ -17,7 +21,10 @@ import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.Genes.MarioData;
 import gamalyzer.data.input.Traces;
 
-public class GamealyzerFitness extends GPFitnessFunction {
+/*
+ * This metric is utilizing the Gamalyzer done by Joseph Osborn
+ */
+public class GamalyzerFitness extends GPFitnessFunction {
 
 	/**
 	 * 
@@ -29,13 +36,14 @@ public class GamealyzerFitness extends GPFitnessFunction {
 	private double bestFit;
 	private BufferedWriter writer;
 
-	public GamealyzerFitness(BasicTask task,MarioAIOptions options){
+	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
 		m_task = task;
 		m_options = options;
 		gen = 0;
 		bestFit = 40d;
 		gamalyzer.read.Mario m = new gamalyzer.read.Mario();
-		Traces traces = m.readLogs(new File[] {new File("human-ld1-lvl1.zip"),});
+
+		Traces traces = m.readLogs(new File[] {new File(".\\human-ld1-lvl1.zip"),});
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {

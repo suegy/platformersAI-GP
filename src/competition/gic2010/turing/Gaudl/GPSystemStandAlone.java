@@ -29,6 +29,7 @@ package competition.gic2010.turing.Gaudl;
 
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
+import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.GPProblem;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.function.ADF;
@@ -86,7 +87,7 @@ protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
 
-public GPSystemStandAlone(GameplayMetricFitness metric) {
+public GPSystemStandAlone(GPFitnessFunction metric) {
 	GPConfiguration config;
 	//Thread gpThread = null;
 	try {
@@ -187,7 +188,8 @@ public static void main(String[] args) throws InterruptedException
     final MarioAIOptions marioAIOptions = new MarioAIOptions(args);
     final BasicTask basicTask = new BasicTask(marioAIOptions);
     GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
-    GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
+    GamalyzerFitness metric2 = new GamalyzerFitness(basicTask,marioAIOptions);
+    GPSystemStandAlone marioGP = new GPSystemStandAlone(metric2);
    
     
     while (marioGP.gpThread.isAlive()) {
