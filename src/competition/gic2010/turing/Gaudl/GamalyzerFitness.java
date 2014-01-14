@@ -1,26 +1,25 @@
 package competition.gic2010.turing.Gaudl;
 
+import gamalyzer.data.input.Traces;
+
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.stream.FileImageInputStream;
+import java.nio.file.Path;
 
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
-import bsh.Console;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
-import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.Genes.MarioData;
-import gamalyzer.data.input.Traces;
-import gamalyzer.read.Mario;
+
 
 /*
  * This metric is utilizing the Gamalyzer done by Joseph Osborn
@@ -42,7 +41,21 @@ public class GamalyzerFitness extends GPFitnessFunction {
 		m_options = options;
 		gen = 0;
 		bestFit = 40d;
-		Traces traces = Mario.readLogs(new File[] {new File("replay_Ben_0.csv")});
+		File f = new File("human-ld1-lvl1.act");
+		String bla;
+		boolean c = f.exists() && f.isFile() && f.canRead();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(f));
+			bla = reader.readLine();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Traces traces = gamalyzer.read.Mario.readLogs(new File[] {f,});
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {
