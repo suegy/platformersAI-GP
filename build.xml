@@ -142,30 +142,58 @@
 
     <path id="trunk.module.production.classpath">
         <path refid="${module.jdk.classpath.trunk}"/>
+        <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
+        <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
+        <pathelement location="${basedir}/lib/jgap.jar"/>
+        <pathelement location="${basedir}/lib/log4j.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
+        <pathelement location="${basedir}/lib/asm-all-3.3.jar"/>
+        <pathelement location="${basedir}/lib/testng-6.8.jar"/>
         <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
     </path>
 
     <path id="trunk.runtime.production.module.classpath">
         <pathelement location="${trunk.output.dir}"/>
+        <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
+        <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
+        <pathelement location="${basedir}/lib/jgap.jar"/>
+        <pathelement location="${basedir}/lib/log4j.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
+        <pathelement location="${basedir}/lib/asm-all-3.3.jar"/>
+        <pathelement location="${basedir}/lib/testng-6.8.jar"/>
         <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
     </path>
 
     <path id="trunk.module.classpath">
         <path refid="${module.jdk.classpath.trunk}"/>
         <pathelement location="${trunk.output.dir}"/>
+        <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
+        <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
+        <pathelement location="${basedir}/lib/jgap.jar"/>
+        <pathelement location="${basedir}/lib/log4j.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
+        <pathelement location="${basedir}/lib/asm-all-3.3.jar"/>
+        <pathelement location="${basedir}/lib/testng-6.8.jar"/>
         <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
     </path>
 
     <path id="trunk.runtime.module.classpath">
         <pathelement location="${trunk.output.dir}"/>
+        <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
+        <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
+        <pathelement location="${basedir}/lib/jgap.jar"/>
+        <pathelement location="${basedir}/lib/log4j.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
+        <pathelement location="${basedir}/lib/asm-all-3.3.jar"/>
+        <pathelement location="${basedir}/lib/testng-6.8.jar"/>
         <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
     </path>
 

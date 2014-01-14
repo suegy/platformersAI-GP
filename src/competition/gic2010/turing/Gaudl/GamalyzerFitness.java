@@ -20,6 +20,7 @@ import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.Genes.MarioData;
 import gamalyzer.data.input.Traces;
+import gamalyzer.read.Mario;
 
 /*
  * This metric is utilizing the Gamalyzer done by Joseph Osborn
@@ -41,9 +42,7 @@ public class GamalyzerFitness extends GPFitnessFunction {
 		m_options = options;
 		gen = 0;
 		bestFit = 40d;
-		gamalyzer.read.Mario m = new gamalyzer.read.Mario();
-
-		Traces traces = m.readLogs(new File[] {new File(".\\human-ld1-lvl1.zip"),});
+		Traces traces = Mario.readLogs(new File[] {new File("replay_Ben_0.csv")});
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {
