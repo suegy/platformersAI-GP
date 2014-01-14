@@ -1,5 +1,6 @@
 package competition.gic2010.turing.Gaudl;
 
+import gamalyzer.data.input.Trace;
 import gamalyzer.data.input.Traces;
 
 import java.io.BufferedReader;
@@ -10,10 +11,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Set;
 
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
+import clojure.lang.IPersistentMap;
+import clojure.lang.IPersistentVector;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
@@ -42,20 +46,11 @@ public class GamalyzerFitness extends GPFitnessFunction {
 		gen = 0;
 		bestFit = 40d;
 		File f = new File("human-ld1-lvl1.act");
-		String bla;
-		boolean c = f.exists() && f.isFile() && f.canRead();
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(f));
-			bla = reader.readLine();
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+				
 		Traces traces = gamalyzer.read.Mario.readLogs(new File[] {f,});
+		IPersistentVector t = (IPersistentVector)traces.traces;
+		Trace a = (Trace) t.entryAt(0).getValue();
+		double test = gamalyzer.cmp.tt.diss(a,a,traces.domains);
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {
