@@ -2,6 +2,7 @@ package competition.gic2010.turing.Gaudl;
 
 import gamalyzer.data.input.Trace;
 import gamalyzer.data.input.Traces;
+import gamalyzer.data.input.Domains;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -50,7 +51,9 @@ public class GamalyzerFitness extends GPFitnessFunction {
 		Traces traces = gamalyzer.read.Mario.readLogs(new File[] {f,});
 		IPersistentVector t = (IPersistentVector)traces.traces;
 		Trace a = (Trace) t.entryAt(0).getValue();
-		double test = gamalyzer.cmp.tt.diss(a,a,traces.domains);
+		Domains doms = (Domains)traces.domains;
+		double test = gamalyzer.cmp.tt.diss(a,a,doms);
+		System.out.println("Test:"+test);
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {
