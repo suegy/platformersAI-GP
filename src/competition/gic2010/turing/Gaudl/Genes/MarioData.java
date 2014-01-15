@@ -113,7 +113,7 @@ public class MarioData {
 			return false;
 		}
 
-		this.longJump = 24;
+		this.longJump = 10;
 		this.longJumpLeft = false;
 		this.longJumpRight = false;
 		return true;
@@ -149,7 +149,7 @@ public class MarioData {
 			return false;
 		}
 
-		this.run = 24;
+		this.run = 5;
 		return true;
 		
 	}

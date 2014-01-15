@@ -7,12 +7,11 @@ import java.io.IOException;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
-import bsh.Console;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
-import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
+
 import competition.gic2010.turing.Gaudl.Genes.MarioData;
 
 public class GameplayMetricFitness extends GPFitnessFunction {
@@ -31,7 +30,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		m_task = task;
 		m_options = options;
 		gen = 0;
-		bestFit = 40d;
+		bestFit = 30d;
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {
@@ -53,21 +52,26 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		prog.getGPConfiguration().clearStack();
 		prog.getGPConfiguration().clearMemory();
 		prog.setApplicationData(data);
+		int time = 0;
 		try {
 			// Execute the program.
 			// --------------------
-			int time =  prog.getGPConfiguration().getGenerationNr() / 5;
+			time =  prog.getGPConfiguration().getGenerationNr() / 5;
 			if (prog.getGPConfiguration().getGenerationNr() > 5)
 				time =  prog.getGPConfiguration().getGenerationNr() ;
 			if (prog.getGPConfiguration().getGenerationNr() > 10)
-				time *= 1.2  ;
+				time = 30;
 			if (prog.getGPConfiguration().getGenerationNr() == 30) {
 				prog.getGPConfiguration().setMutationProb(0.01f);
 				prog.getGPConfiguration().setNewChromsPercent(0.3f);
 				prog.getGPConfiguration().setCrossoverProb(0.9f);
 				prog.getGPConfiguration().setReproductionProb(0.1f);
 			}
-			if (time >= 200)
+			if (prog.getGPConfiguration().getGenerationNr() > 40)
+				time = 50;
+			if (prog.getGPConfiguration().getGenerationNr() > 100)
+				time = 100;
+			if (prog.getGPConfiguration().getGenerationNr() > 200)
 				time = 200;
 			time = 10+ time;
 			for (int lvl=0;lvl < num_lvls;lvl++){
@@ -104,22 +108,24 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			System.out.println(iex);
 		}
 		if (prog.getGPConfiguration().getGenerationNr() > gen) {
-    		if (error > bestFit ){
-				System.out.println("reached a good solution");
-				FileWriter a;
-				try {
-						writer.append("gen: "+ gen  +" fit:"+error+" dist: "+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+" Prog: "+prog.toStringNorm(0)+"\n");
-			    		writer.flush();
-					
-					//a.write();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				bestFit = error;
-			}
-    		System.out.println("gen: "+ gen++);
+			System.out.println("gen: "+ gen++ + "time: "+time);
 		}
+		
+		if (error > bestFit ){
+			System.out.println("reached a good solution");
+
+			try {
+				writer.append("gen: "+ gen  +" fit:"+error+" dist: "+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+" Prog: "+prog.toStringNorm(0)+"\n");
+				writer.flush();
+
+				//a.write();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			bestFit = error;
+		}
+
 		return error;
 	}
 

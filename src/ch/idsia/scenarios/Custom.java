@@ -51,27 +51,28 @@ public static void main(String[] args)
     final MarioAIOptions marioAIOptions = new MarioAIOptions(args);
     final Agent agent = new ForwardAgent();
     final BasicTask basicTask = new BasicTask(marioAIOptions);
-    for (int i = 0; i < 10; ++i)
-    {
-        int seed = 0;
+    //for (int i = 0; i < 5; ++i)
+    //{
+        int seed = 4;
         do
         {
-            marioAIOptions.setLevelDifficulty(i);
+            marioAIOptions.setLevelDifficulty(0);
             marioAIOptions.setLevelRandSeed(seed++);
             basicTask.setOptionsAndReset(marioAIOptions);
             basicTask.runSingleEpisode(1);
             System.out.println(basicTask.getEnvironment().getEvaluationInfoAsString());
+      //      System.out.println("Seed: "+seed+" Try: "+i);
         } while (basicTask.getEnvironment().getEvaluationInfo().marioStatus != Environment.MARIO_STATUS_WIN);
-    }
+    //}
     Runtime rt = Runtime.getRuntime();
-    try
+   /* try
     {
 //            Process proc = rt.exec("/usr/local/bin/mate " + marioTraceFileName);
-        Process proc = rt.exec("python hello.py");
+     //   Process proc = rt.exec("python hello.py");
     } catch (IOException e)
     {
         e.printStackTrace();
-    }
+    }*/
     System.exit(0);
 
 }
