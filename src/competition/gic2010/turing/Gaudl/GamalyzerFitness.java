@@ -51,11 +51,15 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		IPersistentVector t = (IPersistentVector)referenceTraces.traces;
 		Trace refTrace = (Trace) t.entryAt(ref_num).getValue();
 		
-		double dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,(Domains)referenceTraces.domains);
-		System.out.println(" Test:"+dissimilarity);
+		double[] dissimilarity = gamalyzer.cmp.tt.dissimilarities(current,refTrace,(Domains)referenceTraces.domains);
+		//System.out.println(" Test:"+dissimilarity);
 
+		for (double d : dissimilarity) {
+			if (d> 0.0 && d < 1.0 )
+				System.out.println("disssss "+ d);
+		}
 		
-		return (float)dissimilarity;
+		return (float)dissimilarity[0];
 	}
 
 	
