@@ -1,190 +1,70 @@
 package competition.gic2010.turing.Gaudl;
 
+import gamalyzer.data.input.Domains;
 import gamalyzer.data.input.Trace;
 import gamalyzer.data.input.Traces;
-import gamalyzer.data.input.Domains;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Set;
 
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
-import clojure.lang.IPersistentMap;
-import clojure.lang.IPersistentVector;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
+import clojure.lang.IPersistentVector;
+
 import competition.gic2010.turing.Gaudl.Genes.MarioData;
 
 
 /*
  * This metric is utilizing the Gamalyzer done by Joseph Osborn
  */
-public class GamalyzerFitness extends GPFitnessFunction {
+public class GamalyzerFitness extends GameplayMetricFitness {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8750632855093986122L;
-	BasicTask m_task;
-	MarioAIOptions m_options;
-	private int gen;
-	private double bestFit;
-	private BufferedWriter writer;
+	
+	private Traces referenceTraces;
+	
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
-		m_task = task;
-		m_options = options;
-		gen = 0;
-		bestFit = 40d;
+		super(task, options);
+		num_lvls = 1;
 		File f = new File("human-ld1-lvl1.act");
 				
-		Traces traces = gamalyzer.read.Mario.readLogs(new File[] {f,});
-		IPersistentVector t = (IPersistentVector)traces.traces;
-		Trace a = (Trace) t.entryAt(0).getValue();
-		Domains doms = (Domains)traces.domains;
-		double test = gamalyzer.cmp.tt.diss(a,a,doms);
-		System.out.println("Test:"+test);
-		try {
-			writer = new BufferedWriter(new FileWriter("solutions.txt"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		referenceTraces = gamalyzer.read.Mario.readLogs(new File[] {f,});
+
 	}
-
-	@Override
-	protected double evaluate(IGPProgram arg0) {
-		return runFitness(arg0);
-	}
-	protected double runFitness(IGPProgram prog) {
-		double error = 0.0f;
-		MarioData data = new MarioData();
-		// Initialize local stores.
-		// ------------------------
-		prog.getGPConfiguration().clearStack();
-		prog.getGPConfiguration().clearMemory();
-		prog.setApplicationData(data);
-		try {
-			// Execute the program.
-			// --------------------
-			int time =  prog.getGPConfiguration().getGenerationNr() / 5;
-			if (prog.getGPConfiguration().getGenerationNr() > 5)
-				time =  prog.getGPConfiguration().getGenerationNr() ;
-			if (prog.getGPConfiguration().getGenerationNr() > 10)
-				time *= 1.2  ;
-			if (prog.getGPConfiguration().getGenerationNr() == 30) {
-				prog.getGPConfiguration().setMutationProb(0.01f);
-				prog.getGPConfiguration().setNewChromsPercent(0.3f);
-				prog.getGPConfiguration().setCrossoverProb(0.9f);
-				prog.getGPConfiguration().setReproductionProb(0.1f);
-			}
-			if (time >= 200)
-				time = 200;
-			time = 10+ time;
-			runMarioTask(prog,data,time);
-			// Determine success of individual.
-			// --------------------------------
-			error = calculateFitness(MarioData.getEnvironment().getEvaluationInfo());
-			// Check if the action the agent chose is close to the trace action.
-			// -------------------------------------------
-
-			//boolean[] actions = data.getActions(); // agent actions;
-
-			//use dissimilarity here to calculate the deviation from right path
-
-			//error = "Joes Metric".length();
-
-			if (prog.getGPConfiguration().stackSize() > 0) {
-				error = GPFitnessFunction.MAX_FITNESS_VALUE;
-			}
-			if (error < 0.000001) {
-				error = 0.0d;
-			}
-			else if (error < GPFitnessFunction.MAX_FITNESS_VALUE) {
-				// Add penalty 
-				// ------------------------------
-
-				
-					
-			}
-		} catch (IllegalStateException iex) {
-			error = GPFitnessFunction.MAX_FITNESS_VALUE;
-			System.out.println(iex);
-		}
-		if (prog.getGPConfiguration().getGenerationNr() > gen) {
-    		if (error > bestFit ){
-				System.out.println("reached a good solution");
-				FileWriter a;
-				try {
-					if (prog.getGPConfiguration().getGenerationNr() > gen) {
-			    		writer.append("gen: "+ gen  +" fit:"+error+" dist: "+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+" Prog: "+prog.toStringNorm(0)+"\n");
-			    		writer.flush();
-					}
-			    	
-					//a.write();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				bestFit = error;
-			}
-    		System.out.println("gen: "+ gen++);
-		}
-		return error;
-	}
-
-	private boolean  runMarioTask(IGPProgram prog,MarioData data,int time) {
-		Object[] noargs = new Object[0];
-		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
-		mario.setName("gp-"+prog.getGPConfiguration().getId());
-		m_options.setRecordFile("gp-"+prog.getGPConfiguration().getId());
-		m_options.setTimeLimit(time);
-		if (time > 50){
-			int randSeed = time % 5;
-			m_options.setLevelRandSeed(randSeed);
-		}
-		//m_options.setLevelRandSeed(151079);
-		m_options.setAgent(mario);
-		m_task.setOptionsAndReset(m_options);
+	
+	/*
+	 * compared current trace of an agent to the one specified by the ref_num which 
+	 * is read during instantiation 
+	 */
+	private float CompareTrace(Trace current,int ref_num){
+		IPersistentVector t = (IPersistentVector)referenceTraces.traces;
+		Trace refTrace = (Trace) t.entryAt(ref_num).getValue();
 		
-		return m_task.runSingleEpisode(1);
+		double dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,(Domains)referenceTraces.domains);
+		System.out.println(" Test:"+dissimilarity);
+
+		
+		return (float)dissimilarity;
 	}
 
-
-	private float calculateFitness(EvaluationInfo env){
-		float wfit = (env.distancePassedCells);
-		//wfit = wfit /env.timeSpent;
-		float additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;
-		wfit -= env.collisionsWithCreatures;
-		if (additional <  wfit/2)
-			wfit = wfit + additional;
-		else {
-			additional = (float) (additional * (0.2 / wfit));
-			wfit += (wfit*0.2f)*additional;
-		}
-		if (env.distancePassedCells > 50 && env.marioStatus == Mario.STATUS_DEAD)
-			wfit = wfit*0.75f;
-		if (env.distancePassedCells == env.levelLength && env.marioStatus == Mario.STATUS_WIN){
-			System.out.print("Solved Level");
-		}
-		//wfit = 1f/wfit;
-
-/*		if (wfit > 0.000000001f)
-			wfit = (wfit*10);
-		else
-			wfit = (float) GPFitnessFunction.MAX_FITNESS_VALUE;
-*/
-		return wfit;
+	
+	protected float calculateFitness(EvaluationInfo env){
+		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace());
+		IPersistentVector t = (IPersistentVector)currentRaw.traces;
+		Trace current = (Trace) t.entryAt(0).getValue();
+		
+		return CompareTrace(current, 0);
 	}
 
 }

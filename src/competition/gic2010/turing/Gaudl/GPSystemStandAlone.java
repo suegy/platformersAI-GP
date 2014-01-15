@@ -31,43 +31,26 @@ import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.GPProblem;
-import org.jgap.gp.IGPProgram;
-import org.jgap.gp.function.ADF;
 import org.jgap.gp.function.And;
 import org.jgap.gp.function.Equals;
-import org.jgap.gp.function.GreaterThan;
 import org.jgap.gp.function.IfElse;
 import org.jgap.gp.function.Not;
-import org.jgap.gp.function.Or;
 import org.jgap.gp.function.SubProgram;
-import org.jgap.gp.impl.BranchTypingCross;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
-import org.jgap.gp.impl.TournamentSelector;
 import org.jgap.gp.terminal.Terminal;
 import org.jgap.gp.terminal.Variable;
-import org.jgap.impl.FittestPopulationMerger;
 
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.MarioAIOptions;
+
 import competition.gic2010.turing.Gaudl.Genes.Down;
-import competition.gic2010.turing.Gaudl.Genes.GpADF;
-import competition.gic2010.turing.Gaudl.Genes.GpGreaterThan;
 import competition.gic2010.turing.Gaudl.Genes.GpTrue;
-import competition.gic2010.turing.Gaudl.Genes.IsAirAt;
-import competition.gic2010.turing.Gaudl.Genes.IsBreakableAt;
-import competition.gic2010.turing.Gaudl.Genes.IsCoinAt;
-import competition.gic2010.turing.Gaudl.Genes.IsEnemyAt;
-import competition.gic2010.turing.Gaudl.Genes.IsFireFlowerAt;
-import competition.gic2010.turing.Gaudl.Genes.IsMushroomAt;
-import competition.gic2010.turing.Gaudl.Genes.IsPrincessAt;
 import competition.gic2010.turing.Gaudl.Genes.IsTall;
-import competition.gic2010.turing.Gaudl.Genes.IsWalkableAt;
 import competition.gic2010.turing.Gaudl.Genes.Jump;
 import competition.gic2010.turing.Gaudl.Genes.JumpLeft;
 import competition.gic2010.turing.Gaudl.Genes.JumpRight;
-import competition.gic2010.turing.Gaudl.Genes.LastActionWas;
 import competition.gic2010.turing.Gaudl.Genes.Left;
 import competition.gic2010.turing.Gaudl.Genes.LongJump;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpLeft;
@@ -92,11 +75,11 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
 	//Thread gpThread = null;
 	try {
         config = new GPConfiguration();
-        //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
+        config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
         config.setProgramCreationMaxTries(-1);
         //config.setStrictProgramCreation(true);
         config.setMaxInitDepth(30);
-        config.setPopulationSize(500);
+        config.setPopulationSize(20);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f

@@ -25,12 +25,17 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	private int gen;
 	private double bestFit;
 	private BufferedWriter writer;
+	protected int num_lvls;
+	protected int[] distance;
+	
 
 	public GameplayMetricFitness(BasicTask task,MarioAIOptions options){
 		m_task = task;
 		m_options = options;
 		gen = 0;
-		bestFit = 30d;
+		bestFit = 40d;
+		num_lvls = 5;
+		
 		try {
 			writer = new BufferedWriter(new FileWriter("solutions.txt"));
 		} catch (IOException e) {
@@ -45,7 +50,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	}
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
-		int num_lvls = 5;
+		distance = new int[num_lvls];
 		MarioData data = new MarioData();
 		// Initialize local stores.
 		// ------------------------
@@ -76,6 +81,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			time = 10+ time;
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,time,lvl);
+				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
 				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo());
 			}
 			// Determine success of individual in #lvls by averaging over all played levels
@@ -108,20 +114,23 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			System.out.println(iex);
 		}
 		if (prog.getGPConfiguration().getGenerationNr() > gen) {
-			System.out.println("gen: "+ gen++ + "time: "+time);
-		}
-		
-		if (error > bestFit ){
-			System.out.println("reached a good solution");
-
-			try {
-				writer.append("gen: "+ gen  +" fit:"+error+" dist: "+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+" Prog: "+prog.toStringNorm(0)+"\n");
-				writer.flush();
-
-				//a.write();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+    		if (error > bestFit ){
+				System.out.println("reached a good solution");
+				FileWriter a;
+				try {
+						String distArray = "";
+						for (int len : distance) {
+							distArray += len+" ";
+						}
+						writer.append("gen: "+ gen  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
+			    		writer.flush();
+					
+					//a.write();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				bestFit = error;
 			}
 			bestFit = error;
 		}
@@ -129,7 +138,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		return error;
 	}
 
-	private boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int lvl) {
+	protected boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int lvl) {
 		Object[] noargs = new Object[0];
 		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
 		mario.setName("gp-"+prog.getGPConfiguration().getId());
@@ -145,7 +154,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	}
 
 
-	private float calculateFitness(EvaluationInfo env){
+	protected float calculateFitness(EvaluationInfo env){
 		float wfit = (env.distancePassedCells);
 		//wfit = wfit /env.timeSpent;
 		float additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;

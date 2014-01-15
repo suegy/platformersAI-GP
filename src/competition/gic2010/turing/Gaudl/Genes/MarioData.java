@@ -1,5 +1,8 @@
 package competition.gic2010.turing.Gaudl.Genes;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.engine.sprites.Sprite;
 import ch.idsia.benchmark.mario.environments.Environment;
@@ -16,18 +19,17 @@ public class MarioData {
 	private int run;
 	//private int lastAction;
 	private static Environment environment;
+	private static ArrayList<Byte> actionRecord;
 
 	public MarioData(Environment env) {
-		//TODO: If the number of actions chance this has to change as well
-		actions = new boolean[Environment.numberOfKeys];
-		last_actions = new boolean[Environment.numberOfKeys];
-		
+		this();
 		environment = env;
 	}
 	public MarioData() {
 		//TODO: If the number of actions chance this has to change as well
 		actions = new boolean[Environment.numberOfKeys];
 		last_actions = new boolean[Environment.numberOfKeys];
+		actionRecord = new ArrayList<>();
 		
 	}
 
@@ -50,12 +52,31 @@ public class MarioData {
 			if (longJumpRight)
 				moveRight();
 		}
-		
+		storeAction(last_actions);
 		return last_actions;
 	}
 
 	public void setActions(boolean [] act) {
 		this.actions = act;
+	}
+	
+	public static byte[] getActionTrace(){
+		byte[] out = new byte[actionRecord.size()];
+		
+		for (int i = 0; i < out.length;i++) {
+			out[i]=actionRecord.get(i);
+		}
+		return out;
+	}
+	
+	protected void storeAction(boolean[] act){
+		//copied from recorder code which writes the actions.act file
+		byte action = 0;
+
+		for (int i = 0; i < act.length; i++)
+			if (act[i])
+				action |= (1 << i);
+		actionRecord.add(action);
 	}
 	
 	public boolean[] getLastActions(){
