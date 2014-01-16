@@ -4,15 +4,8 @@ import gamalyzer.data.input.Domains;
 import gamalyzer.data.input.Trace;
 import gamalyzer.data.input.Traces;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
-import org.jgap.gp.GPFitnessFunction;
-import org.jgap.gp.IGPProgram;
-
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
@@ -56,13 +49,13 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		// System.out.println("---");
 		double dissimilarity = 1.0f;
 		try {
-		dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,domains,30);
+		dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,domains,20);
 		} 
 		catch (clojure.lang.ArityException e) {
 			System.out.println(e);
 			dissimilarity = 1.0f;
 		}
-		//System.out.println(" Test:"+dissimilarity);
+		//System.out.print(dissimilarity+";");
 		
 		return (float)dissimilarity;
 	}
@@ -74,7 +67,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		Trace current = (Trace) t.entryAt(0).getValue();
 		float weight = CompareTrace(current, 0, (Domains)currentRaw.domains);
 		
-		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1-weight);
+		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.001f-weight);
 	}
 
 }

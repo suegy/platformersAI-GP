@@ -80,8 +80,8 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
         config.setProgramCreationMaxTries(-1);
         config.setStrictProgramCreation(true);
-        config.setMaxInitDepth(10);
-        config.setPopulationSize(500);
+        config.setMaxInitDepth(15);
+        config.setPopulationSize(200);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f
@@ -166,7 +166,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 	};
 	
 	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
-			400, true);
+			150, true);
 }
 
 public static void main(String[] args) throws InterruptedException
