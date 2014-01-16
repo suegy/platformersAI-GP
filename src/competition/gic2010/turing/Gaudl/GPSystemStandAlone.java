@@ -36,6 +36,7 @@ import org.jgap.gp.function.Equals;
 import org.jgap.gp.function.IfElse;
 import org.jgap.gp.function.Not;
 import org.jgap.gp.function.SubProgram;
+import org.jgap.gp.impl.BranchTypingCross;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
@@ -44,7 +45,6 @@ import org.jgap.gp.terminal.Variable;
 
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.MarioAIOptions;
-
 import competition.gic2010.turing.Gaudl.Genes.Down;
 import competition.gic2010.turing.Gaudl.Genes.GpTrue;
 import competition.gic2010.turing.Gaudl.Genes.IsTall;
@@ -76,18 +76,19 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
 	try {
         config = new GPConfiguration();
         config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
-        config.setProgramCreationMaxTries(-1);
+        config.setProgramCreationMaxTries(20);
         //config.setStrictProgramCreation(true);
-        config.setMaxInitDepth(30);
-        config.setPopulationSize(20);
+        config.setMaxInitDepth(5);
+        config.setPopulationSize(50);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f
         config.setNewChromsPercent(0.0f); //orig: 0.3f
         config.setMutationProb(0.33f);
         //config.setUseProgramCache(true);
-        //config.setCrossoverMethod(new BranchTypingCross(config));
-        config.setPreservFittestIndividual(true);
+        config.setCrossoverMethod(new BranchTypingCross(config));
+        //config.setSelectionMethod(new org.jgap.gp.impl.TournamentSelector());
+        //config.setPreservFittestIndividual(true);
         config.setFitnessFunction(metric);
         setGPConfiguration(config);
         Geno = create();

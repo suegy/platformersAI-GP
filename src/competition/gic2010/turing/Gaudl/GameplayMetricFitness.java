@@ -133,6 +133,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 				bestFit = error;
 			}
 			bestFit = error;
+			System.out.println("gen: "+ gen++);
 		}
 
 		return error;
