@@ -41,6 +41,7 @@ import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.terminal.Terminal;
+import org.jgap.gp.terminal.True;
 import org.jgap.gp.terminal.Variable;
 
 import ch.idsia.benchmark.tasks.BasicTask;
@@ -59,6 +60,7 @@ import competition.gic2010.turing.Gaudl.Genes.ObjectAtXY;
 import competition.gic2010.turing.Gaudl.Genes.Right;
 import competition.gic2010.turing.Gaudl.Genes.Run;
 import competition.gic2010.turing.Gaudl.Genes.Shoot;
+import competition.gic2010.turing.Gaudl.Genes.Wait;
 
 /**
  * Created by IntelliJ IDEA. User: Sergey Karakovskiy, sergey at idsia dot ch Date: Mar 17, 2010 Time: 8:28:00 AM
@@ -75,11 +77,11 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
 	//Thread gpThread = null;
 	try {
         config = new GPConfiguration();
-        config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
-        config.setProgramCreationMaxTries(20);
-        //config.setStrictProgramCreation(true);
-        config.setMaxInitDepth(5);
-        config.setPopulationSize(50);
+        //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
+        config.setProgramCreationMaxTries(-1);
+        config.setStrictProgramCreation(true);
+        config.setMaxInitDepth(10);
+        config.setPopulationSize(500);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f
@@ -87,8 +89,8 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config.setMutationProb(0.33f);
         //config.setUseProgramCache(true);
         config.setCrossoverMethod(new BranchTypingCross(config));
-        //config.setSelectionMethod(new org.jgap.gp.impl.TournamentSelector());
-        //config.setPreservFittestIndividual(true);
+        config.setSelectionMethod(new org.jgap.gp.impl.TournamentSelector());
+        config.setPreservFittestIndividual(true);
         config.setFitnessFunction(metric);
         setGPConfiguration(config);
         Geno = create();
@@ -131,7 +133,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new Not(conf),
 				//new CanJump(conf),
 				//new CanShoot(conf),
-				new GpTrue(conf),
+				new True(conf),
 				new ObjectAtXY(conf),
 				//new False(conf),
 				//new IsBreakableAt(conf),
@@ -145,6 +147,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 				//new IsWalkableAt(conf),
 				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
 				new Down(conf),
+				new Wait(conf),
 				new Left(conf),
 				new Right(conf),
 				new Shoot(conf),
@@ -163,7 +166,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 	};
 	
 	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
-			250, true);
+			400, true);
 }
 
 public static void main(String[] args) throws InterruptedException

@@ -23,7 +23,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	BasicTask m_task;
 	MarioAIOptions m_options;
 	private int gen;
-	private double bestFit;
+	protected double bestFit;
 	private BufferedWriter writer;
 	protected int num_lvls;
 	protected int[] distance;
@@ -61,7 +61,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		try {
 			// Execute the program.
 			// --------------------
-			time =  prog.getGPConfiguration().getGenerationNr() / 5;
+			time = 200;
+/*			time =  prog.getGPConfiguration().getGenerationNr() / 5;
 			if (prog.getGPConfiguration().getGenerationNr() > 5)
 				time =  prog.getGPConfiguration().getGenerationNr() ;
 			if (prog.getGPConfiguration().getGenerationNr() > 10)
@@ -77,8 +78,14 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			if (prog.getGPConfiguration().getGenerationNr() > 100)
 				time = 100;
 			if (prog.getGPConfiguration().getGenerationNr() > 200)
+				time = 125;
+			if (prog.getGPConfiguration().getGenerationNr() > 250)
+				time = 150;
+			if (prog.getGPConfiguration().getGenerationNr() > 300)
+				time = 175;
+			if (prog.getGPConfiguration().getGenerationNr() > 350)
 				time = 200;
-			time = 10+ time;
+			time = 10+ time;*/
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,time,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
@@ -114,27 +121,28 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			System.out.println(iex);
 		}
 		if (prog.getGPConfiguration().getGenerationNr() > gen) {
-    		if (error > bestFit ){
-				System.out.println("reached a good solution");
-				FileWriter a;
-				try {
-						String distArray = "";
-						for (int len : distance) {
-							distArray += len+" ";
-						}
-						writer.append("gen: "+ gen  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
-			    		writer.flush();
-					
-					//a.write();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				bestFit = error;
-			}
-			bestFit = error;
 			System.out.println("gen: "+ gen++);
 		}
+		// if we are using delta distance we need to use "<" because we care for smaller errors
+		if (error > bestFit ){
+			System.out.println("reached a good solution");
+			FileWriter a;
+			try {
+				String distArray = "";
+				for (int len : distance) {
+					distArray += len+" ";
+				}
+				writer.append("gen: "+ gen  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
+				writer.flush();
+
+				//a.write();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			bestFit = error;
+		}
+			
 
 		return error;
 	}

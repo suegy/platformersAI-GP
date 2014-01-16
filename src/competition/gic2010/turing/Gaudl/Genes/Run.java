@@ -47,15 +47,15 @@ public class Run extends MarioCommand implements IMutateable{
 		      throws InvalidConfigurationException {
 
 		if (a_percentage < 0.20d)
-		    return new Shoot(getGPConfiguration());
-		if (a_percentage < 0.30d)
 		    return new Down(getGPConfiguration());
+		if (a_percentage < 0.30d)
+		    return new Right(getGPConfiguration());
 		if (a_percentage < 0.40d)
 		    return new Left(getGPConfiguration());
 		if (a_percentage < 0.50d)
-		    return new Right(getGPConfiguration());
+		    return new Jump(getGPConfiguration());
 		
-		return new Jump(getGPConfiguration());
+		return new Wait(getGPConfiguration());
 	}
 
 }

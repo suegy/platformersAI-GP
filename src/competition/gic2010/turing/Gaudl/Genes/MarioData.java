@@ -279,6 +279,10 @@ public class MarioData {
 			return false;
 		}
 	}
+	public void pause() {
+		setActions(new boolean[actions.length]);
+		
+	}
 	
 	
 

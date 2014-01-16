@@ -32,12 +32,13 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	private static final long serialVersionUID = -8750632855093986122L;
 	
 	private Traces referenceTraces;
-	private Trace refTrace;
+	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
 		super(task, options);
 		num_lvls = 1;
 		File f = new File("human-ld1-lvl1.act");
+		bestFit = 1.0;
 				
 		referenceTraces = gamalyzer.read.Mario.readLogs(new File[] {f,});
 	}
@@ -53,8 +54,15 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		// System.out.println("vs");
 		// System.out.println(gamalyzer.cmp.tt.stringify(refTrace));
 		// System.out.println("---");
-		double dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,domains,20);
-		System.out.println(" Test:"+dissimilarity);
+		double dissimilarity = 1.0f;
+		try {
+		dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,domains,30);
+		} 
+		catch (clojure.lang.ArityException e) {
+			System.out.println(e);
+			dissimilarity = 1.0f;
+		}
+		//System.out.println(" Test:"+dissimilarity);
 		
 		return (float)dissimilarity;
 	}
@@ -64,8 +72,9 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace());
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
+		float weight = CompareTrace(current, 0, (Domains)currentRaw.domains);
 		
-		return CompareTrace(current, 0, (Domains)currentRaw.domains);
+		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1-weight);
 	}
 
 }
