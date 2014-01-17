@@ -55,19 +55,19 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 			System.out.println(e);
 			dissimilarity = 1.0f;
 		}
-		//System.out.print(dissimilarity+";");
+		System.out.print(dissimilarity+"-");
 		
 		return (float)dissimilarity;
 	}
 
 	
-	protected float calculateFitness(EvaluationInfo env){
+	protected double calculateFitness(EvaluationInfo env){
 		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace());
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
-		float weight = CompareTrace(current, 0, (Domains)currentRaw.domains);
-		
-		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.001f-weight);
+		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains);
+		System.out.print(MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
+		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
 	}
 
 }

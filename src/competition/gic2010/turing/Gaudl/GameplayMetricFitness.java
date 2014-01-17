@@ -69,7 +69,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 				time = 30;
 				*/
 			if (prog.getGPConfiguration().getGenerationNr() == 30) {
-				prog.getGPConfiguration().setMutationProb(0.01f);
+				prog.getGPConfiguration().setMutationProb(0.1f);
 				prog.getGPConfiguration().setNewChromsPercent(0.3f);
 				prog.getGPConfiguration().setCrossoverProb(0.9f);
 				prog.getGPConfiguration().setReproductionProb(0.1f);
@@ -96,7 +96,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
 			error = error/num_lvls;
-			System.out.println(error+" ");
+			//System.out.println(error+" ");
 			// Check if the action the agent chose is close to the trace action.
 			// -------------------------------------------
 
@@ -166,15 +166,15 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	}
 
 
-	protected float calculateFitness(EvaluationInfo env){
-		float wfit = (env.distancePassedCells);
+	protected double calculateFitness(EvaluationInfo env){
+		double wfit = (env.distancePassedCells);
 		//wfit = wfit /env.timeSpent;
-		float additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;
+		double additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;
 		wfit -= env.collisionsWithCreatures;
 		if (additional <  wfit/2)
 			wfit = wfit + additional;
 		else {
-			additional = (float) (additional * (0.2 / wfit));
+			additional = (additional * (0.2 / wfit));
 			wfit += (wfit*0.2f)*additional;
 		}
 		if (env.distancePassedCells > 50 && env.marioStatus == Mario.STATUS_DEAD)

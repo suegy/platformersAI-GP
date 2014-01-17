@@ -40,6 +40,7 @@ import org.jgap.gp.impl.BranchTypingCross;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
+import org.jgap.gp.impl.TournamentSelector;
 import org.jgap.gp.terminal.Terminal;
 import org.jgap.gp.terminal.True;
 import org.jgap.gp.terminal.Variable;
@@ -71,6 +72,7 @@ public final class GPSystemStandAlone extends GPProblem
 protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
+public static int popSize = 200;
 
 public GPSystemStandAlone(GPFitnessFunction metric) {
 	GPConfiguration config;
@@ -79,9 +81,9 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config = new GPConfiguration();
         //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
         config.setProgramCreationMaxTries(-1);
-        config.setStrictProgramCreation(true);
-        config.setMaxInitDepth(15);
-        config.setPopulationSize(200);
+        //config.setStrictProgramCreation(true);
+        config.setMaxInitDepth(4);
+        config.setPopulationSize(500);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f
@@ -89,7 +91,7 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config.setMutationProb(0.33f);
         //config.setUseProgramCache(true);
         config.setCrossoverMethod(new BranchTypingCross(config));
-        config.setSelectionMethod(new org.jgap.gp.impl.TournamentSelector());
+        config.setSelectionMethod(new TournamentSelector(5));
         config.setPreservFittestIndividual(true);
         config.setFitnessFunction(metric);
         setGPConfiguration(config);
@@ -130,10 +132,10 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new Equals(conf, CommandGene.IntegerClass),
 				//new Or(conf),
 				new And(conf),
-				new Not(conf),
+				//new Not(conf),
 				//new CanJump(conf),
 				//new CanShoot(conf),
-				new True(conf),
+				//new True(conf),
 				new ObjectAtXY(conf),
 				//new False(conf),
 				//new IsBreakableAt(conf),
@@ -166,7 +168,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 	};
 	
 	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
-			150, true);
+			200, true);
 }
 
 public static void main(String[] args) throws InterruptedException
