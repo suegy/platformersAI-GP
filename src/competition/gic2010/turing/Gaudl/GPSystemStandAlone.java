@@ -58,6 +58,7 @@ import competition.gic2010.turing.Gaudl.Genes.LongJump;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpLeft;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpRight;
 import competition.gic2010.turing.Gaudl.Genes.ObjectAtXY;
+import competition.gic2010.turing.Gaudl.Genes.ObjectAtXYIs;
 import competition.gic2010.turing.Gaudl.Genes.Right;
 import competition.gic2010.turing.Gaudl.Genes.Run;
 import competition.gic2010.turing.Gaudl.Genes.Shoot;
@@ -128,15 +129,15 @@ public GPGenotype create() throws InvalidConfigurationException {
 				//new Equals(conf, CommandGene.IntegerClass),
 				//new LastActionWas(conf),
 				new IfElse(conf, CommandGene.BooleanClass),
-				//new Equals(conf, CommandGene.BooleanClass),
-				new Equals(conf, CommandGene.IntegerClass),
+				new Equals(conf, CommandGene.BooleanClass),
+				//new Equals(conf, CommandGene.IntegerClass),
 				//new Or(conf),
 				new And(conf),
 				//new Not(conf),
 				//new CanJump(conf),
 				//new CanShoot(conf),
 				//new True(conf),
-				new ObjectAtXY(conf),
+				new ObjectAtXYIs(conf),
 				//new False(conf),
 				//new IsBreakableAt(conf),
 				//new IsCoinAt(conf),
