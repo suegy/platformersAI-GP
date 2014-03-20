@@ -3,6 +3,7 @@ package competition.gic2010.turing.Gaudl;
 import gamalyzer.data.input.Domains;
 import gamalyzer.data.input.Trace;
 import gamalyzer.data.input.Traces;
+import gamalyzer.data.util;
 
 import java.io.File;
 
@@ -43,6 +44,9 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	private float CompareTrace(Trace current,int ref_num,Domains domains){
 		IPersistentVector t = (IPersistentVector)referenceTraces.traces;
 		Trace refTrace = (Trace)t.entryAt(ref_num).getValue();
+        if(((IPersistentVector)refTrace.inputs).length() > ((IPersistentVector)current.inputs).length()) {
+            refTrace = util.trim(refTrace, ((IPersistentVector)current.inputs).length());
+        }
 		// System.out.println(gamalyzer.cmp.tt.stringify(current));
 		// System.out.println("vs");
 		// System.out.println(gamalyzer.cmp.tt.stringify(refTrace));
