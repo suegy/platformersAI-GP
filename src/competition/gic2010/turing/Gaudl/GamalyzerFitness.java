@@ -49,7 +49,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		// System.out.println("---");
 		double dissimilarity = 1.0f;
 		try {
-		dissimilarity = gamalyzer.cmp.tt.diss(current,refTrace,domains,20);
+		dissimilarity = gamalyzer.cmp.tt.distance(current,refTrace,domains,20);
 		} 
 		catch (clojure.lang.ArityException e) {
 			System.out.println(e);

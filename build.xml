@@ -144,7 +144,7 @@
         <path refid="${module.jdk.classpath.trunk}"/>
         <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
         <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
-        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-metric-0.2.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/jgap.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
@@ -158,7 +158,7 @@
         <pathelement location="${trunk.output.dir}"/>
         <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
         <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
-        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-metric-0.2.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/jgap.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
@@ -173,7 +173,7 @@
         <pathelement location="${trunk.output.dir}"/>
         <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
         <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
-        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-metric-0.2.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/jgap.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
@@ -187,7 +187,7 @@
         <pathelement location="${trunk.output.dir}"/>
         <pathelement location="${basedir}/lib/commons-lang-2.1.jar"/>
         <pathelement location="${basedir}/lib/epochx-2.0b1-core.jar"/>
-        <pathelement location="${basedir}/lib/gamalyzer-0.1.0-SNAPSHOT-standalone.jar"/>
+        <pathelement location="${basedir}/lib/gamalyzer-metric-0.2.0-SNAPSHOT-standalone.jar"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/jgap.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
