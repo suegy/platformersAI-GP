@@ -39,21 +39,13 @@ public class IsTall extends MarioCommand implements IMutateable{
 
 
 	@Override
-	public CommandGene applyMutation(int a_index, double a_percentage) throws InvalidConfigurationException{
-		if (a_percentage < 0.10d)
-		    return new IsPrincessAt(getGPConfiguration());
-		if (a_percentage < 0.15d)
-		    return new IsCoinAt(getGPConfiguration());
-		if (a_percentage < 0.20d)
-		    return new IsBreakableAt(getGPConfiguration());
-		if (a_percentage < 0.30d)
-		    return new IsAirAt(getGPConfiguration());
-		if (a_percentage < 0.40d)
-		    return new IsFireFlowerAt(getGPConfiguration());
+	public CommandGene applyMutation(int index, double a_percentage)
+		      throws InvalidConfigurationException {
+
 		if (a_percentage < 0.50d)
-		    return new IsMushroomAt(getGPConfiguration());
+		    return new CanJump(getGPConfiguration());
 		
-		return new IsEnemyAt(getGPConfiguration());
+		return new CanShoot(getGPConfiguration());
 	}
 
 }

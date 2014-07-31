@@ -1,17 +1,24 @@
 package competition.gic2010.turing.Gaudl;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 
+import org.jgap.IChromosome;
+import org.jgap.InvalidConfigurationException;
+import org.jgap.UnsupportedRepresentationException;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
+import org.jgap.gp.impl.GPProgram;
+import org.jgap.gp.impl.ProgramChromosome;
 
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
-
 import competition.gic2010.turing.Gaudl.Genes.MarioData;
 
 public class GameplayMetricFitness extends GPFitnessFunction {
@@ -34,10 +41,15 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		m_options = options;
 		gen = 0;
 		bestFit = 40d;
-		num_lvls = 5;
+		num_lvls = 2; //should be the number of different levels we have data on
 		
 		try {
-			writer = new BufferedWriter(new FileWriter("solutions.txt"));
+			int counter = 0;
+			File output = new File(String.format("solution"+File.pathSeparatorChar+"solutions-%s.txt", counter));
+			while(output.exists()) {
+				output = new File(String.format("solution"+File.pathSeparatorChar+"solutions-%s.txt", counter++));
+			}
+			writer = new BufferedWriter(new FileWriter(output));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,40 +66,26 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		MarioData data = new MarioData();
 		// Initialize local stores.
 		// ------------------------
-		prog.getGPConfiguration().clearStack();
-		prog.getGPConfiguration().clearMemory();
+		//prog.getGPConfiguration().clearStack();
+		//prog.getGPConfiguration().clearMemory();
 		prog.setApplicationData(data);
 		int time = 0;
+		int num_lvls = this.num_lvls;
 		try {
 			// Execute the program.
 			// --------------------
-			time = 200;
-/*			time =  prog.getGPConfiguration().getGenerationNr() / 5;
-			if (prog.getGPConfiguration().getGenerationNr() > 5)
-				time =  prog.getGPConfiguration().getGenerationNr() ;
-			if (prog.getGPConfiguration().getGenerationNr() > 10)
-				time = 30;
-				*/
-			if (prog.getGPConfiguration().getGenerationNr() == 30) {
-				prog.getGPConfiguration().setMutationProb(0.1f);
-				prog.getGPConfiguration().setNewChromsPercent(0.3f);
-				prog.getGPConfiguration().setCrossoverProb(0.9f);
-				prog.getGPConfiguration().setReproductionProb(0.1f);
-			}
-/*
-			if (prog.getGPConfiguration().getGenerationNr() > 40)
-				time = 50;
-			if (prog.getGPConfiguration().getGenerationNr() > 100)
-				time = 100;
-			if (prog.getGPConfiguration().getGenerationNr() > 200)
-				time = 125;
-			if (prog.getGPConfiguration().getGenerationNr() > 250)
-				time = 150;
-			if (prog.getGPConfiguration().getGenerationNr() > 300)
-				time = 175;
-			if (prog.getGPConfiguration().getGenerationNr() > 350)
-				time = 200;
-			time = 10+ time;*/
+			if (prog.getGPConfiguration().getGenerationNr() < 20){
+				num_lvls = 20;
+				distance = new int[num_lvls];
+				time = 2;
+			} else 
+				if (bestFit < 50d){
+					time = 50;	
+				} else if (bestFit < 100){
+					time = 100;
+				} else {
+					time = 200;
+				}
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,time,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
@@ -96,7 +94,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
 			error = error/num_lvls;
-			//System.out.println(error+" ");
+			//System.out.print(error+": "+distance[0]+"; ");
 			// Check if the action the agent chose is close to the trace action.
 			// -------------------------------------------
 
@@ -105,7 +103,17 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			//use dissimilarity here to calculate the deviation from right path
 
 			//error = "Joes Metric".length();
-
+			try {
+				ProgramChromosome chrom= new ProgramChromosome(prog.getGPConfiguration());
+				chrom.setValueFromPersistentRepresentation(prog.getPersistentRepresentation());
+				prog.getGPConfiguration().getChromosomePool().releaseChromosome((IChromosome)chrom);
+			} catch (InvalidConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedRepresentationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if (prog.getGPConfiguration().stackSize() > 0) {
 				error = GPFitnessFunction.MAX_FITNESS_VALUE;
 			}
@@ -123,19 +131,19 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			error = GPFitnessFunction.MAX_FITNESS_VALUE;
 			System.out.println(iex);
 		}
-		if (prog.getGPConfiguration().getGenerationNr() > gen) {
-			System.out.println("\n gen: "+ gen++);
-		}
+
 		// if we are using delta distance we need to use "<" because we care for smaller errors
 		if (error > bestFit ){
 			System.out.println("reached a good solution");
-			FileWriter a;
+
 			try {
 				String distArray = "";
 				for (int len : distance) {
 					distArray += len+" ";
 				}
-				writer.append("gen: "+ gen  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
+				writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
+				writer.append("pers:"+prog.getPersistentRepresentation());
+				
 				writer.flush();
 
 				//a.write();
@@ -171,7 +179,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		//wfit = wfit /env.timeSpent;
 		double additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;
 		wfit -= env.collisionsWithCreatures;
-		if (additional <  wfit/2)
+		if (additional <  wfit/2 || wfit <= 0)
 			wfit = wfit + additional;
 		else {
 			additional = (additional * (0.2 / wfit));
@@ -181,6 +189,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			wfit = wfit*0.75f;
 		if (env.distancePassedCells == env.levelLength && env.marioStatus == Mario.STATUS_WIN){
 			System.out.print("Solved Level");
+			wfit = wfit*1.1f;
 		}
 		return wfit;
 	}

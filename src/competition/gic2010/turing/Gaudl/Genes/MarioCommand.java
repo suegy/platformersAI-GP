@@ -31,7 +31,7 @@ public class MarioCommand extends CommandGene {
 	
 	public MarioCommand(final GPConfiguration a_conf)
 		      throws InvalidConfigurationException {
-		    super(a_conf, 0, CommandGene.VoidClass);
+		    this(a_conf, 0, CommandGene.VoidClass);
 		    m_type = CommandGene.VoidClass;
 		  }
 	

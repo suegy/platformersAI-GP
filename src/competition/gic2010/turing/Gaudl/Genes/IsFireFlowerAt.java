@@ -48,20 +48,20 @@ public class IsFireFlowerAt extends MarioCommand implements IMutateable{
 	public CommandGene applyMutation(int index, double a_percentage)
 		      throws InvalidConfigurationException {
 
-		if (a_percentage < 0.10d)
-		    return new IsPrincessAt(getGPConfiguration());
-		if (a_percentage < 0.15d)
-		    return new IsWalkableAt(getGPConfiguration());
-		if (a_percentage < 0.20d)
-		    return new IsBreakableAt(getGPConfiguration());
-		if (a_percentage < 0.30d)
+		if (a_percentage < 0.142d)
 		    return new IsAirAt(getGPConfiguration());
-		if (a_percentage < 0.40d)
+		if (a_percentage < 0.284d)
+		    return new IsWalkableAt(getGPConfiguration());
+		if (a_percentage < 0.426d)
+		    return new IsBreakableAt(getGPConfiguration());
+		if (a_percentage < 0.568d)
 		    return new IsCoinAt(getGPConfiguration());
-		if (a_percentage < 0.50d)
-		    return new IsEnemyAt(getGPConfiguration());
+		if (a_percentage < 0.71d)
+		    return new IsMushroomAt(getGPConfiguration());
+		if (a_percentage < 0.852d)
+		    return new IsPrincessAt(getGPConfiguration());
 		
-		return new IsMushroomAt(getGPConfiguration());
+		return new IsEnemyAt(getGPConfiguration());
 	}
 
 }

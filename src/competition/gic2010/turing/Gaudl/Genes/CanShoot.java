@@ -2,11 +2,12 @@ package competition.gic2010.turing.Gaudl.Genes;
 
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
+import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.ProgramChromosome;
 
 
-public class CanShoot extends MarioCommand {
+public class CanShoot extends MarioCommand implements IMutateable{
 
 	/**
 	 * 
@@ -34,6 +35,15 @@ public class CanShoot extends MarioCommand {
 		MarioData data = getMarioData(c);
 		
 		return data.canShoot();
+	}
+	
+	public CommandGene applyMutation(int index, double a_percentage)
+		      throws InvalidConfigurationException {
+		if (a_percentage < 0.50d)
+			return new IsTall(getGPConfiguration());
+
+		return new CanJump(getGPConfiguration());
+		
 	}
 
 }

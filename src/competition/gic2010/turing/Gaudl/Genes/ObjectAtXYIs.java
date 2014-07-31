@@ -3,6 +3,7 @@ package competition.gic2010.turing.Gaudl.Genes;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.IGPProgram;
+import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.ProgramChromosome;
 
@@ -80,8 +81,19 @@ public class ObjectAtXYIs extends MarioCommand {
 	
 	public boolean execute_boolean(ProgramChromosome c, int a_n, Object[] a_args){
 		MarioData data = getMarioData(c);
-		int elem = data.getEgoElementAt(c.execute_int(a_n, 0, a_args), c.execute_int(a_n, 1, a_args));
-		
+		int elem = Sprite.KIND_NONE;
+		try{
+			elem = data.getEgoElementAt(c.execute_int(a_n, 0, a_args), c.execute_int(a_n, 1, a_args));
+		}catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println(String.format("arity: %d, representation: %s", c.getArity(), c.getIndividual().toStringNorm(0)));
+			System.out.println(e);
+			return false;
+		}
+		catch( UnsupportedOperationException v){
+			System.out.println(String.format("arity: %d, representation: %s", c.getArity(), c.getIndividual().toStringNorm(0)));
+			System.out.println(v);
+			return false;
+		}
 		switch (elem) {
 		case Sprite.KIND_NONE:
 			return (Air == c.execute_int(a_n, 2, a_args));
@@ -121,5 +133,6 @@ public class ObjectAtXYIs extends MarioCommand {
 		    return CommandGene.IntegerClass;
 			
 	  }
+	
 
 }

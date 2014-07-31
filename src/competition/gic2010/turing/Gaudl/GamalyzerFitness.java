@@ -30,10 +30,13 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
 		super(task, options);
 		num_lvls = 1;
-		File f = new File("human-ld1-lvl1.act");
+		//File f = new File("human-ld1-lvl1.act");
+		File [] hTraces = new File[2];
+		hTraces[0] = new File("dataset"+File.pathSeparator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
+		hTraces[1] = new File("dataset"+File.pathSeparator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 1.0;
 				
-		referenceTraces = gamalyzer.read.Mario.readLogs(new File[] {f,});
+		referenceTraces = gamalyzer.read.Mario.readLogs(hTraces);
 	}
 	
 	/*

@@ -45,18 +45,26 @@ public class Wait extends MarioCommand implements IMutateable{
 	public CommandGene applyMutation(int index, double a_percentage)
 		      throws InvalidConfigurationException {
 
+		if (a_percentage < 0.05d)
+		    return new LongJumpRight(getGPConfiguration());
+		if (a_percentage < 0.10d)
+		    return new JumpRight(getGPConfiguration());
+		if (a_percentage < 0.15d)
+		    return new LongJumpLeft(getGPConfiguration());
 		if (a_percentage < 0.20d)
+		    return new JumpLeft(getGPConfiguration());
+		if (a_percentage < 0.33d)
+		    return new Shoot(getGPConfiguration());
+		if (a_percentage < 0.46d)
 		    return new Run(getGPConfiguration());
-		if (a_percentage < 0.25d)
-		    return new Left(getGPConfiguration());
-		if (a_percentage < 0.30d)
-		    return new Right(getGPConfiguration());
-		if (a_percentage < 0.35d)
-		    return new LongJump(getGPConfiguration());
-		if (a_percentage < 0.40d)
+		if (a_percentage < 0.59d)
+		    return new Down(getGPConfiguration());
+		if (a_percentage < 0.72d)
 		    return new Jump(getGPConfiguration());
+		if (a_percentage < 0.85d)
+		    return new Left(getGPConfiguration());
 		
-		return new Down(getGPConfiguration());
+		return new Right(getGPConfiguration());
 	}
 
 }

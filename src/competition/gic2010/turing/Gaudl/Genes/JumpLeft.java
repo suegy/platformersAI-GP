@@ -51,16 +51,27 @@ public class JumpLeft extends MarioCommand implements IMutateable{
 	public CommandGene applyMutation(int index, double a_percentage)
 		      throws InvalidConfigurationException {
 
-		if (a_percentage < 0.20d)
-		    return new Right(getGPConfiguration());
-		if (a_percentage < 0.30d)
-		    return new Left(getGPConfiguration());
-		if (a_percentage < 0.40d)
-		    return new LongJump(getGPConfiguration());
+		if (a_percentage < 0.125d)
+		    return new LongJumpRight(getGPConfiguration());
+		if (a_percentage < 0.25d)
+		    return new JumpRight(getGPConfiguration());
+		if (a_percentage < 0.375d)
+		    return new LongJumpLeft(getGPConfiguration());
 		if (a_percentage < 0.50d)
 		    return new Jump(getGPConfiguration());
 		
-		return new JumpRight(getGPConfiguration());
+		if (a_percentage < 0.58d)
+		    return new Shoot(getGPConfiguration());
+		if (a_percentage < 0.66d)
+		    return new Right(getGPConfiguration());
+		if (a_percentage < 0.74d)
+		    return new Wait(getGPConfiguration());
+		if (a_percentage < 0.82d)
+		    return new Run(getGPConfiguration());
+		if (a_percentage < 0.90d)
+		    return new Down(getGPConfiguration());
+		
+		return new Left(getGPConfiguration());
 	}
 
 }

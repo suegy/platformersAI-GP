@@ -46,12 +46,15 @@ public class MarioData {
 
 		
 		if (this.longJump > 0){
-			longJump();
 			if (longJumpLeft)
+				longJump();
 				moveLeft();
 			if (longJumpRight)
+				longJump();
 				moveRight();
 		}
+		if (this.run > 0)
+			run();
 		storeAction(last_actions);
 		return last_actions;
 	}
@@ -145,10 +148,8 @@ public class MarioData {
 		if (this.longJump <= 0){
 			this.longJump();
 			this.moveLeft();
-			this.longJumpRight = false;
 			this.longJumpLeft = true;
-			
-			
+			this.longJumpRight = false;
 		}
 		
 	}
@@ -159,7 +160,6 @@ public class MarioData {
 			this.longJumpLeft = false;
 			this.longJumpRight = true;
 			this.moveRight();
-			
 		}
 	}
 	
@@ -280,7 +280,8 @@ public class MarioData {
 		}
 	}
 	public void pause() {
-		setActions(new boolean[actions.length]);
+		if (this.longJump <= 0 && this.run <= 0)
+			setActions(new boolean[actions.length]);
 		
 	}
 	

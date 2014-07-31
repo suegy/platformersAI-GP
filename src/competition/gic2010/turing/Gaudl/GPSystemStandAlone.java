@@ -27,37 +27,59 @@
 
 package competition.gic2010.turing.Gaudl;
 
+import java.io.IOException;
+import java.util.Enumeration;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.SimpleLayout;
+import org.jgap.Chromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.GPProblem;
+import org.jgap.gp.IGPProgram;
 import org.jgap.gp.function.And;
 import org.jgap.gp.function.Equals;
 import org.jgap.gp.function.IfElse;
 import org.jgap.gp.function.Not;
+import org.jgap.gp.function.Or;
 import org.jgap.gp.function.SubProgram;
 import org.jgap.gp.impl.BranchTypingCross;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
+import org.jgap.gp.impl.GPProgram;
 import org.jgap.gp.impl.TournamentSelector;
+import org.jgap.gp.terminal.False;
 import org.jgap.gp.terminal.Terminal;
 import org.jgap.gp.terminal.True;
 import org.jgap.gp.terminal.Variable;
 
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.MarioAIOptions;
+import competition.gic2010.turing.Gaudl.Genes.CanJump;
+import competition.gic2010.turing.Gaudl.Genes.CanShoot;
 import competition.gic2010.turing.Gaudl.Genes.Down;
-import competition.gic2010.turing.Gaudl.Genes.GpTrue;
+import competition.gic2010.turing.Gaudl.Genes.IsAirAt;
+import competition.gic2010.turing.Gaudl.Genes.IsBreakableAt;
+import competition.gic2010.turing.Gaudl.Genes.IsCoinAt;
+import competition.gic2010.turing.Gaudl.Genes.IsEnemyAt;
+import competition.gic2010.turing.Gaudl.Genes.IsFireFlowerAt;
+import competition.gic2010.turing.Gaudl.Genes.IsMushroomAt;
+import competition.gic2010.turing.Gaudl.Genes.IsPrincessAt;
 import competition.gic2010.turing.Gaudl.Genes.IsTall;
+import competition.gic2010.turing.Gaudl.Genes.IsWalkableAt;
 import competition.gic2010.turing.Gaudl.Genes.Jump;
 import competition.gic2010.turing.Gaudl.Genes.JumpLeft;
 import competition.gic2010.turing.Gaudl.Genes.JumpRight;
+import competition.gic2010.turing.Gaudl.Genes.LastActionWas;
 import competition.gic2010.turing.Gaudl.Genes.Left;
 import competition.gic2010.turing.Gaudl.Genes.LongJump;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpLeft;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpRight;
-import competition.gic2010.turing.Gaudl.Genes.ObjectAtXY;
 import competition.gic2010.turing.Gaudl.Genes.ObjectAtXYIs;
 import competition.gic2010.turing.Gaudl.Genes.Right;
 import competition.gic2010.turing.Gaudl.Genes.Run;
@@ -73,31 +95,37 @@ public final class GPSystemStandAlone extends GPProblem
 protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
-public static int popSize = 200;
+public static final int popSize = 100;
+private transient Logger LOGGER;
 
 public GPSystemStandAlone(GPFitnessFunction metric) {
 	GPConfiguration config;
+	
+	// configuring the Logger for JGAP
+	LOGGER = Logger.getLogger(this.getClass());
 	//Thread gpThread = null;
 	try {
         config = new GPConfiguration();
         //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
         config.setProgramCreationMaxTries(-1);
         //config.setStrictProgramCreation(true);
-        config.setMaxInitDepth(4);
-        config.setPopulationSize(500);
+        config.setMinimumPopSizePercent(popSize/2);
+        config.setMinInitDepth(1);
+        config.setMaxInitDepth(5);
+        config.setPopulationSize(popSize);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f
-        config.setNewChromsPercent(0.0f); //orig: 0.3f
-        config.setMutationProb(0.33f);
+        config.setNewChromsPercent(0.1f); //orig: 0.3f
+        config.setMutationProb(0.1f);
         //config.setUseProgramCache(true);
-        config.setCrossoverMethod(new BranchTypingCross(config));
-        config.setSelectionMethod(new TournamentSelector(5));
+        config.setCrossoverMethod(new BranchTypingCross(config,true));
+        //config.setSelectionMethod(new TournamentSelector(2));
+        config.setSelectionMethod(new WeightedGPRouletteSelector(config));
         config.setPreservFittestIndividual(true);
         config.setFitnessFunction(metric);
         setGPConfiguration(config);
         Geno = create();
-        
         Geno.setVerboseOutput(true);
         gpThread = new Thread(Geno);
     }
@@ -120,34 +148,33 @@ public GPGenotype create() throws InvalidConfigurationException {
 			{
 				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
 				new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
-				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
+				new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
 				//new SubProgram(conf),
 				//new Add(conf, CommandGene.IntegerClass),
 				//new GpGreaterThan(conf, CommandGene.IntegerClass),
 				//new Equals(conf, CommandGene.IntegerClass),
-				//new LastActionWas(conf),
 				new IfElse(conf, CommandGene.BooleanClass),
-				new Equals(conf, CommandGene.BooleanClass),
+				//new Equals(conf, CommandGene.BooleanClass),
 				//new Equals(conf, CommandGene.IntegerClass),
 				//new Or(conf),
 				new And(conf),
-				//new Not(conf),
-				//new CanJump(conf),
-				//new CanShoot(conf),
-				//new True(conf),
-				new ObjectAtXYIs(conf),
-				//new False(conf),
-				//new IsBreakableAt(conf),
-				//new IsCoinAt(conf),
-				//new IsAirAt(conf),
-				//new IsEnemyAt(conf),
-				//new IsFireFlowerAt(conf),
-				//new IsMushroomAt(conf),
-				//new IsPrincessAt(conf),
+				new Not(conf),
+				new CanJump(conf),
+				new CanShoot(conf),
+				new LastActionWas(conf),
 				new IsTall(conf),
-				//new IsWalkableAt(conf),
+				//new ObjectAtXYIs(conf),
+				//new True(conf),
+				new IsBreakableAt(conf),
+				new IsCoinAt(conf),
+				new IsAirAt(conf),
+				new IsEnemyAt(conf),
+				new IsFireFlowerAt(conf),
+				new IsMushroomAt(conf),
+				new IsPrincessAt(conf),
+				new IsWalkableAt(conf),
 				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
 				new Down(conf),
 				new Wait(conf),
@@ -161,26 +188,29 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new LongJumpLeft(conf),
 				new LongJumpRight(conf),
 				new Run(conf),
-				//new GpADF(conf,1,3),
 			},
 			//{
 				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
 			//}
 	};
-	
 	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
-			200, true);
+			250, true);
 }
 
 public static void main(String[] args) throws InterruptedException
 {
 //        final String argsString = "-vis on";
-    final MarioAIOptions marioAIOptions = new MarioAIOptions(args);
+	try {
+		Logger.getRootLogger().addAppender(new RollingFileAppender(new SimpleLayout(), "genotype.log"));
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	final MarioAIOptions marioAIOptions = new MarioAIOptions(args);
     final BasicTask basicTask = new BasicTask(marioAIOptions);
-    GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
-    GamalyzerFitness metric2 = new GamalyzerFitness(basicTask,marioAIOptions);
-    GPSystemStandAlone marioGP = new GPSystemStandAlone(metric2);
-   
+    //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
+    GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
+    GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
     
     while (marioGP.gpThread.isAlive()) {
     	Thread.sleep(10);

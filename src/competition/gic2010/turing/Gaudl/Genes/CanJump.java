@@ -38,9 +38,10 @@ public class CanJump extends MarioCommand implements IMutateable{
 	
 	public CommandGene applyMutation(int index, double a_percentage)
 		      throws InvalidConfigurationException {
-		if (a_percentage > 18.00d)
-		    return new IsTall(getGPConfiguration());
-		
+		if (a_percentage < 0.50d)
+			return new IsTall(getGPConfiguration());
+
+
 		return new CanShoot(getGPConfiguration());
 	}
 
