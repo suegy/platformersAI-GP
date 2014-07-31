@@ -31,7 +31,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	MarioAIOptions m_options;
 	private int gen;
 	protected double bestFit;
-	private BufferedWriter writer;
+	protected BufferedWriter writer;
 	protected int num_lvls;
 	protected int[] distance;
 	
@@ -45,9 +45,9 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		
 		try {
 			int counter = 0;
-			File output = new File(String.format("solution"+File.pathSeparatorChar+"solutions-%s.txt", counter));
+			File output = new File(String.format("solution"+File.separator+"solutions-%s.txt", counter));
 			while(output.exists()) {
-				output = new File(String.format("solution"+File.pathSeparatorChar+"solutions-%s.txt", counter++));
+				output = new File(String.format("solution"+File.separator+"solutions-%s.txt", counter++));
 			}
 			writer = new BufferedWriter(new FileWriter(output));
 		} catch (IOException e) {
@@ -60,6 +60,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected double evaluate(IGPProgram arg0) {
 		return runFitness(arg0);
 	}
+	
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
 		distance = new int[num_lvls];
@@ -103,17 +104,18 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			//use dissimilarity here to calculate the deviation from right path
 
 			//error = "Joes Metric".length();
-			try {
+			/*try {
 				ProgramChromosome chrom= new ProgramChromosome(prog.getGPConfiguration());
-				chrom.setValueFromPersistentRepresentation(prog.getPersistentRepresentation());
-				prog.getGPConfiguration().getChromosomePool().releaseChromosome((IChromosome)chrom);
+				String chromRepresentation = prog.getChromosome(0).getPersistentRepresentation();
+				chrom.setValueFromPersistentRepresentation(chromRepresentation);
+				//prog.getGPConfiguration().getChromosomePool().releaseChromosome((IChromosome)chrom);
 			} catch (InvalidConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (UnsupportedRepresentationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			if (prog.getGPConfiguration().stackSize() > 0) {
 				error = GPFitnessFunction.MAX_FITNESS_VALUE;
 			}
@@ -142,7 +144,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 					distArray += len+" ";
 				}
 				writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
-				writer.append("pers:"+prog.getPersistentRepresentation());
+				//writer.append("pers:"+prog.getPersistentRepresentation());
 				
 				writer.flush();
 
