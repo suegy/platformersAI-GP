@@ -36,9 +36,9 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		super(task, options);
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
-		File [] hTraces = new File[2];
+		File [] hTraces = new File[1];
 		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
-		hTraces[1] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
+		//hTraces[1] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 1.0;
 				
 		referenceTraces = gamalyzer.read.Mario.readLogs(hTraces);
@@ -68,14 +68,16 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		// System.out.println(gamalyzer.cmp.tt.stringify(refTrace));
 		// System.out.println("---");
 		int length = getTraceLength(refTrace);
+		String test = gamalyzer.data.util.stringify(refTrace);
 		int currLength = getTraceLength(current);
 		refTrace = gamalyzer.data.util.trim(refTrace,simulationTime);
+		int length2 = getTraceLength(refTrace);
 		if (length < currLength)
-			current = gamalyzer.data.util.trim(current,refTrace.values().size());
+			current = gamalyzer.data.util.trim(current,getTraceLength(refTrace));
 		
 		double dissimilarity = 1.0f;
 		try {
-		dissimilarity = gamalyzer.cmp.tt.distance(current,refTrace,domains,20);
+		dissimilarity = gamalyzer.cmp.tt.distance(current,refTrace,domains,85);
 		} 
 		catch (clojure.lang.ArityException e) {
 			System.out.println(e);
@@ -103,7 +105,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 			if (prog.getGPConfiguration().getGenerationNr() < 20){
 				
 				distance = new int[num_lvls];
-				simulationTime = 2;
+				simulationTime = 5;
 			} else 
 				if (bestFit < 50d){
 					simulationTime = 50;	
@@ -147,10 +149,10 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 			if (error < 0.000001) {
 				error = 0.0d;
 			}
-			else if (error < GPFitnessFunction.MAX_FITNESS_VALUE) {
+			else if (error > GPFitnessFunction.MAX_FITNESS_VALUE) {
 				// Add penalty 
 				// ------------------------------
-
+				error = GPFitnessFunction.MAX_FITNESS_VALUE;
 				
 					
 			}
@@ -169,7 +171,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 					distArray += len+" ";
 				}
 				writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
-				writer.append("pers:"+prog.getPersistentRepresentation());
+				//writer.append("pers:"+prog.getPersistentRepresentation());
 				
 				writer.flush();
 
