@@ -45,7 +45,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		bestFit = 0.01;
 				
 		// reading the tracing at 15chunks per second
-		referenceTraces = gamalyzer.read.Mario.readLogs(hTraces,gamalyzerFramesPerChunk);
+		referenceTraces = gamalyzer.read.Mario.readLogs(hTraces,gamalyzerFramesPerChunk,1);
 	}
 	
 	private int getTraceLength(Trace trace){
@@ -195,7 +195,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	
 	@Override
 	protected double calculateFitness(EvaluationInfo env){
-		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace(),gamalyzerFramesPerChunk);
+		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace(),gamalyzerFramesPerChunk,1);
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
