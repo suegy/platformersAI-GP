@@ -32,6 +32,7 @@ import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.SimpleLayout;
@@ -41,6 +42,7 @@ import org.jgap.gp.CommandGene;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.GPProblem;
 import org.jgap.gp.IGPProgram;
+import org.jgap.gp.function.ADF;
 import org.jgap.gp.function.And;
 import org.jgap.gp.function.Equals;
 import org.jgap.gp.function.IfElse;
@@ -109,7 +111,7 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
         config.setProgramCreationMaxTries(-1);
         //config.setStrictProgramCreation(true);
-        config.setMinimumPopSizePercent(popSize/2);
+        config.setMinimumPopSizePercent(popSize);
         config.setMinInitDepth(1);
         config.setMaxInitDepth(5);
         config.setPopulationSize(popSize);
@@ -117,9 +119,9 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config.setCrossoverProb(0.8f);//orig: 0.9f
         config.setReproductionProb(0.2f); //orig: 0.1f
         config.setNewChromsPercent(0.1f); //orig: 0.3f
-        config.setMutationProb(0.1f);
+        config.setMutationProb(0.15f);
         //config.setUseProgramCache(true);
-        config.setCrossoverMethod(new BranchTypingCross(config,true));
+        config.setCrossoverMethod(new BranchTypingCross(config,false));
         //config.setSelectionMethod(new TournamentSelector(2));
         config.setSelectionMethod(new WeightedGPRouletteSelector(config));
         config.setPreservFittestIndividual(true);
@@ -139,16 +141,18 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
 @SuppressWarnings("rawtypes")
 @Override
 public GPGenotype create() throws InvalidConfigurationException {
-	Class [] types = { CommandGene.VoidClass};
+	Class [] types = { CommandGene.VoidClass, 
+		//	CommandGene.BooleanClass
+			};
 	GPConfiguration conf  = getGPConfiguration();
 	Class [][] argTypes = {{},
-			//{CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}
+		//	{CommandGene.BooleanClass,CommandGene.BooleanClass}
 			};
 	CommandGene [][] nodes = {
 			{
 				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
-				new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
-				new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
+				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
+				//new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
 				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
 				//new SubProgram(conf),
@@ -188,10 +192,11 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new LongJumpLeft(conf),
 				new LongJumpRight(conf),
 				new Run(conf),
+		//		new ADF(conf, 1, 2)
 			},
-			//{
-				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
-			//}
+			/*{
+				new And(conf),
+			}*/
 	};
 	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
 			250, true);
@@ -201,7 +206,9 @@ public static void main(String[] args) throws InterruptedException
 {
 //        final String argsString = "-vis on";
 	try {
+		Logger.getRoot().setLevel(Level.INFO);
 		Logger.getRootLogger().addAppender(new RollingFileAppender(new SimpleLayout(), "genotype.log"));
+		
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

@@ -30,6 +30,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	
 	private Traces referenceTraces;
 	private int simulationTime;
+	private int gamalyzerFramesPerChunk = 1;
+	private int slidingWindow = 15;
 	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
@@ -37,11 +39,13 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
 		File [] hTraces = new File[1];
+		
 		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
 		//hTraces[1] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
-		bestFit = 1.0;
+		bestFit = 0.01;
 				
-		referenceTraces = gamalyzer.read.Mario.readLogs(hTraces);
+		// reading the tracing at 15chunks per second
+		referenceTraces = gamalyzer.read.Mario.readLogs(hTraces,gamalyzerFramesPerChunk);
 	}
 	
 	private int getTraceLength(Trace trace){
@@ -77,17 +81,17 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		
 		double dissimilarity = 1.0f;
 		try {
-		dissimilarity = gamalyzer.cmp.tt.distance(current,refTrace,domains,85);
+		dissimilarity = gamalyzer.cmp.tt.distance(current,refTrace,domains,slidingWindow);
 		} 
 		catch (clojure.lang.ArityException e) {
 			System.out.println(e);
 			dissimilarity = 1.0f;
 		}
-		System.out.print(dissimilarity+"-");
 		
 		return (float)dissimilarity;
 	}
 
+	@Override
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
 		distance = new int[num_lvls];
@@ -97,23 +101,24 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		//prog.getGPConfiguration().clearStack();
 		//prog.getGPConfiguration().clearMemory();
 		prog.setApplicationData(data);
-		simulationTime = 0;
+		simulationTime = 200;
 		int num_lvls = this.num_lvls;
 		try {
 			// Execute the program.
 			// --------------------
-			if (prog.getGPConfiguration().getGenerationNr() < 20){
+			/*	if (prog.getGPConfiguration().getGenerationNr() < 30){
 				
 				distance = new int[num_lvls];
-				simulationTime = 5;
-			} else 
-				if (bestFit < 50d){
+				simulationTime = 100;
+			}
+		
+			else if (bestFit < .50d){
 					simulationTime = 50;	
-				} else if (bestFit < 100){
+				} else if (bestFit < .100){
 					simulationTime = 100;
 				} else {
 					simulationTime = 200;
-				}
+				}*/
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,simulationTime,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
@@ -188,14 +193,15 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	}
 
 	
-	
+	@Override
 	protected double calculateFitness(EvaluationInfo env){
-		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace());
+		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace(),gamalyzerFramesPerChunk);
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
-		System.out.print(MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		System.out.print((1.01d-weight)+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
+		//return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		return (1.01d-weight);
 	}
 
 }
