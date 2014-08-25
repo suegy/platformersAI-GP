@@ -15,7 +15,7 @@ import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import clojure.lang.IPersistentVector;
 import clojure.lang.LazySeq;
-import competition.gic2010.turing.Gaudl.Genes.MarioData;
+import competition.gic2010.turing.Gaudl.gp.MarioData;
 
 
 /*
@@ -40,8 +40,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		//File f = new File("human-ld1-lvl1.act");
 		File [] hTraces = new File[1];
 		
-		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
-		//hTraces[1] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
+		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
+		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 0.01;
 				
 		// reading the tracing at 15chunks per second
@@ -200,8 +200,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
 		System.out.print((1.01d-weight)+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		//return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
-		return (1.01d-weight);
+		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		//return (1.01d-weight);
 	}
 
 }

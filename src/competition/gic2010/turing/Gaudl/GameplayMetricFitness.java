@@ -19,7 +19,7 @@ import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
-import competition.gic2010.turing.Gaudl.Genes.MarioData;
+import competition.gic2010.turing.Gaudl.gp.MarioData;
 
 public class GameplayMetricFitness extends GPFitnessFunction {
 

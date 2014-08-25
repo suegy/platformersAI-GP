@@ -12,6 +12,8 @@ package competition.gic2010.turing.Gaudl.Genes;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.impl.GPConfiguration;
 
+import competition.gic2010.turing.Gaudl.gp.MarioCommand;
+
 
 
 /**

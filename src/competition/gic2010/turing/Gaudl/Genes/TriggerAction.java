@@ -6,6 +6,8 @@ import org.jgap.gp.IGPProgram;
 import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
 
+import competition.gic2010.turing.Gaudl.gp.MarioCommand;
+
 public class TriggerAction extends MarioCommand implements IMutateable{
 
 	public TriggerAction(GPConfiguration a_conf)

@@ -6,6 +6,9 @@ import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.ProgramChromosome;
 
+import competition.gic2010.turing.Gaudl.gp.MarioCommand;
+import competition.gic2010.turing.Gaudl.gp.MarioData;
+
 public class Wait extends MarioCommand implements IMutateable{
 
 	/**

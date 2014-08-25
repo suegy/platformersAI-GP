@@ -1,4 +1,4 @@
-package competition.gic2010.turing.Gaudl.Genes;
+package competition.gic2010.turing.Gaudl.gp;
 
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;

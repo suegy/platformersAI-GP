@@ -7,17 +7,18 @@
  * or have a look at the top of class org.jgap.Chromosome which representatively
  * includes the JGAP license policy applicable for any file delivered with JGAP.
  */
-package competition.gic2010.turing.Gaudl;
+package competition.gic2010.turing.Gaudl.gp;
 
 import java.io.*;
 import java.math.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jgap.*;
 import org.jgap.gp.IGPFitnessEvaluator;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.INaturalGPSelector;
-import org.jgap.gp.IProgramCreator;
 import org.jgap.gp.impl.GPConfiguration;
 import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.GPPopulation;
@@ -85,6 +86,8 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 	private WeightedGPRouletteSelConfig m_config;
 	private GPConfiguration gpConfig;
 
+    private double initial_newChromPercentage;
+
 	public WeightedGPRouletteSelector(GPConfiguration config)
 			throws InvalidConfigurationException {
 		m_wheel = Collections.synchronizedMap(new HashMap<IGPProgram,SlotCounter>());
@@ -94,6 +97,7 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 		m_generationCounter = 0;
 		m_config.m_doublettesAllowed = false;
 		initial_mutationRate = gpConfig.getMutationProb();
+        initial_newChromPercentage = gpConfig.getNewChromsPercent();
 	}
 
 	/**
@@ -331,9 +335,19 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 			if (counter.getFitnessValue() > largestFitnessValue) {
 				largestFitnessValue = counter.getFitnessValue();
 			}
-			BigDecimal counterFitness = new BigDecimal(counter.getFitnessValue());
-			totalFitness = totalFitness.add(counterFitness.multiply(
-					new BigDecimal(counter.getCounterValue())));
+            try {
+                BigDecimal counterFitness = new BigDecimal(counter.getFitnessValue());
+                totalFitness = totalFitness.add(counterFitness.multiply(
+                        new BigDecimal(counter.getCounterValue())));
+            }
+			catch (NumberFormatException n){
+                System.err.println(n);
+                System.out.println("---err-wrong-fitness--");
+                System.out.println("--- "+ counter.getFitnessValue() +" --");
+                System.out.println("---err-wrong-fitness--");
+                Logger.getLogger("genotype.log").log(Level.ALL, "-err-wrong-fitness-" + counter.getCounterValue());
+                totalFitness = totalFitness.add(new BigDecimal(0.00001f).multiply(new BigDecimal(counter.getCounterValue())));
+            }
 		}
 		/* storing the previous best fitness and its generation */
 		if (largestFitnessValue > prev_largest){
@@ -343,8 +357,8 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 		
 		int unChangedFitness = m_generationCounter - prev_largest_gen;
 		if (m_generationCounter >= 50 && unChangedFitness <= 100) {
-			this.gpConfig.setMutationProb(0.05f);
-			this.gpConfig.setNewChromsPercent(0.05f);
+			this.gpConfig.setMutationProb((float) initial_mutationRate);
+			this.gpConfig.setNewChromsPercent(initial_newChromPercentage);
 			//prog.getGPConfiguration().setCrossoverProb(0.9f);
 			//prog.getGPConfiguration().setReproductionProb(0.1f);
 		}

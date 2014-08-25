@@ -43,12 +43,6 @@ import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.GPProblem;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.function.ADF;
-import org.jgap.gp.function.And;
-import org.jgap.gp.function.Equals;
-import org.jgap.gp.function.IfElse;
-import org.jgap.gp.function.Not;
-import org.jgap.gp.function.Or;
-import org.jgap.gp.function.SubProgram;
 import org.jgap.gp.impl.BranchTypingCross;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
@@ -62,9 +56,11 @@ import org.jgap.gp.terminal.Variable;
 
 import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.tools.MarioAIOptions;
+import competition.gic2010.turing.Gaudl.Genes.And;
 import competition.gic2010.turing.Gaudl.Genes.CanJump;
 import competition.gic2010.turing.Gaudl.Genes.CanShoot;
 import competition.gic2010.turing.Gaudl.Genes.Down;
+import competition.gic2010.turing.Gaudl.Genes.IfElse;
 import competition.gic2010.turing.Gaudl.Genes.IsAirAt;
 import competition.gic2010.turing.Gaudl.Genes.IsBreakableAt;
 import competition.gic2010.turing.Gaudl.Genes.IsCoinAt;
@@ -82,11 +78,14 @@ import competition.gic2010.turing.Gaudl.Genes.Left;
 import competition.gic2010.turing.Gaudl.Genes.LongJump;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpLeft;
 import competition.gic2010.turing.Gaudl.Genes.LongJumpRight;
+import competition.gic2010.turing.Gaudl.Genes.Not;
 import competition.gic2010.turing.Gaudl.Genes.ObjectAtXYIs;
 import competition.gic2010.turing.Gaudl.Genes.Right;
 import competition.gic2010.turing.Gaudl.Genes.Run;
 import competition.gic2010.turing.Gaudl.Genes.Shoot;
+import competition.gic2010.turing.Gaudl.Genes.SubProgram;
 import competition.gic2010.turing.Gaudl.Genes.Wait;
+import competition.gic2010.turing.Gaudl.gp.WeightedGPRouletteSelector;
 
 /**
  * Created by IntelliJ IDEA. User: Sergey Karakovskiy, sergey at idsia dot ch Date: Mar 17, 2010 Time: 8:28:00 AM
@@ -111,15 +110,16 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         //config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
         config.setProgramCreationMaxTries(-1);
         //config.setStrictProgramCreation(true);
-        config.setMinimumPopSizePercent(popSize);
+        //config.setMinimumPopSizePercent(popSize);
         config.setMinInitDepth(1);
         config.setMaxInitDepth(5);
         config.setPopulationSize(popSize);
         //Taken from anttrail. WORTH INVESTIGATING.
-        config.setCrossoverProb(0.8f);//orig: 0.9f
-        config.setReproductionProb(0.2f); //orig: 0.1f
-        config.setNewChromsPercent(0.1f); //orig: 0.3f
-        config.setMutationProb(0.15f);
+        config.setCrossoverProb(0.6f);//orig: 0.9f
+        config.setReproductionProb(0.4f); //orig: 0.1f
+        config.setNewChromsPercent(0.2f); //orig: 0.3f
+        config.setMutationProb(0.01f);
+        config.setFunctionProb(0.6f);
         //config.setUseProgramCache(true);
         config.setCrossoverMethod(new BranchTypingCross(config,false));
         //config.setSelectionMethod(new TournamentSelector(2));
@@ -152,7 +152,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 			{
 				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
 				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
-				//new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
+				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
 				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
 				//new SubProgram(conf),
@@ -206,7 +206,7 @@ public static void main(String[] args) throws InterruptedException
 {
 //        final String argsString = "-vis on";
 	try {
-		Logger.getRoot().setLevel(Level.INFO);
+		Logger.getRoot().setLevel(Level.DEBUG);
 		Logger.getRootLogger().addAppender(new RollingFileAppender(new SimpleLayout(), "genotype.log"));
 		
 	} catch (IOException e) {

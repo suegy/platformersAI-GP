@@ -38,7 +38,7 @@ import java.io.IOException;
 import org.jgap.gp.IGPProgram;
 
 import competition.gic2010.turing.Gaudl.Mario_GPAgent;
-import competition.gic2010.turing.Gaudl.Genes.MarioData;
+import competition.gic2010.turing.Gaudl.gp.MarioData;
 
 /**
  * Created by IntelliJ IDEA.

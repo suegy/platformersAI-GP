@@ -1,4 +1,4 @@
-package competition.gic2010.turing.Gaudl.Genes;
+package competition.gic2010.turing.Gaudl.gp;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class MarioData {
 		//TODO: If the number of actions chance this has to change as well
 		actions = new boolean[Environment.numberOfKeys];
 		last_actions = new boolean[Environment.numberOfKeys];
-		actionRecord = new ArrayList<>();
+		actionRecord = new ArrayList<Byte>();
 		
 	}
 

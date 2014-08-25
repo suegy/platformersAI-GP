@@ -39,7 +39,7 @@ import org.jgap.gp.IGPProgram;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 
-import competition.gic2010.turing.Gaudl.Genes.MarioData;
+import competition.gic2010.turing.Gaudl.gp.MarioData;
 
 /**
  * Created by IntelliJ IDEA.
