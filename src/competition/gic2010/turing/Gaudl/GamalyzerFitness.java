@@ -30,8 +30,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	
 	private Traces referenceTraces;
 	private int simulationTime;
-	private int gamalyzerFramesPerChunk = 1;
-	private int slidingWindow = 15;
+	private int gamalyzerFramesPerChunk = 25;
+	private int slidingWindow = 3;
 	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
@@ -166,27 +166,13 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 			System.out.println(iex);
 		}
 
-		// if we are using delta distance we need to use "<" because we care for smaller errors
-		if (error > bestFit ){
-			System.out.println("reached a good solution");
+        // if we are using delta distance we need to use "<" because we care for smaller errors
+        if (error > bestFit ){
+            System.out.println("reached a good solution");
+            logBest(error, prog);
 
-			try {
-				String distArray = "";
-				for (int len : distance) {
-					distArray += len+" ";
-				}
-				writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
-				//writer.append("pers:"+prog.getPersistentRepresentation());
-				
-				writer.flush();
-
-				//a.write();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			bestFit = error;
-		}
+            bestFit = error;
+        }
 			
 
 		return error;

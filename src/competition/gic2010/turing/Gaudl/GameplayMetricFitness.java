@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.StandardCopyOption;
 
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
@@ -32,6 +34,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	private int gen;
 	protected double bestFit;
 	protected BufferedWriter writer;
+
+    protected String mariologFile;
 	protected int num_lvls;
 	protected int[] distance;
 	
@@ -42,7 +46,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		gen = 0;
 		bestFit = 40d;
 		num_lvls = 2; //should be the number of different levels we have data on
-		
+		mariologFile = "";
 		try {
 			int counter = 0;
 			File output = new File(String.format("solution"+File.separator+"solutions-%s.txt", counter));
@@ -60,7 +64,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected double evaluate(IGPProgram arg0) {
 		return runFitness(arg0);
 	}
-	
+
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
 		distance = new int[num_lvls];
@@ -137,22 +141,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		// if we are using delta distance we need to use "<" because we care for smaller errors
 		if (error > bestFit ){
 			System.out.println("reached a good solution");
+            logBest(error, prog);
 
-			try {
-				String distArray = "";
-				for (int len : distance) {
-					distArray += len+" ";
-				}
-				writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
-				//writer.append("pers:"+prog.getPersistentRepresentation());
-				
-				writer.flush();
-
-				//a.write();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			bestFit = error;
 		}
 			
@@ -160,11 +150,34 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		return error;
 	}
 
+    protected void logBest(double error, IGPProgram prog){
+        if (prog.getGPConfiguration().getGenerationNr() < 1)
+            return;
+        try {
+            String distArray = "";
+            for (int len : distance) distArray += len + " ";
+
+
+            writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
+            //writer.append("pers:"+prog.getPersistentRepresentation());
+            File mariolog = new File(mariologFile+".zip");
+            if (mariolog.exists())
+                Files.copy(mariolog.toPath(),new File("solution"+File.separator+mariologFile+"-"+prog.getGPConfiguration().getGenerationNr()+"-fit"+error+".zip").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            writer.flush();
+
+            //a.write();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 	protected boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int lvl) {
 		Object[] noargs = new Object[0];
 		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
-		mario.setName("gp-"+prog.getGPConfiguration().getId());
-		m_options.setRecordFile("gp-"+prog.getGPConfiguration().getId());
+        mariologFile = String.format("gp-lvl%d",lvl);
+		mario.setName(mariologFile);
+		m_options.setRecordFile(mariologFile);
 		m_options.setTimeLimit(time);
 		m_options.setLevelRandSeed(lvl);
 		
