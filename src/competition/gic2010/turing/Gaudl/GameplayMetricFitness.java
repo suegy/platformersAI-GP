@@ -94,7 +94,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,time,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo());
+				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(), prog);
 			}
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
@@ -189,7 +189,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	}
 
 
-	protected double calculateFitness(EvaluationInfo env){
+	protected double calculateFitness(EvaluationInfo env, IGPProgram prog){
 		double wfit = (env.distancePassedCells);
 		//wfit = wfit /env.timeSpent;
 		double additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;

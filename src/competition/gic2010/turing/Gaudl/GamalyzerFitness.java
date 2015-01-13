@@ -122,7 +122,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,simulationTime,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo());
+				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
 			}
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
@@ -180,14 +180,15 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 
 	
 	@Override
-	protected double calculateFitness(EvaluationInfo env){
+	protected double calculateFitness(EvaluationInfo env,IGPProgram prog){
 		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace(),gamalyzerFramesPerChunk,1);
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
 		System.out.print((1.01d-weight)+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		return MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
-		//return (1.01d-weight);
+		weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		
+		return weight;
 	}
 
 }
