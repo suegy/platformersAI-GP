@@ -183,8 +183,8 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 		for (IGPProgram igpProgram : a_progs) {
 			SlotCounter counter = m_wheel.get(igpProgram);
 			int length = calculateProgramLength(igpProgram);
-			
-			counter.reset(igpProgram.getFitnessValue()-cov_l_f/avg_fitness*length);
+			double newfitness = igpProgram.getFitnessValue()-cov_l_f/avg_fitness*length;
+			counter.reset((newfitness < 0.000001) ? 0.000001 : newfitness);
 		}
 	}
 	
