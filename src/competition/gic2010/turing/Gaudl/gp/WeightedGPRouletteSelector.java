@@ -88,7 +88,7 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 
     private double initial_newChromPercentage;
 
-    private double m_avg_prog_length;
+    
     
 	public WeightedGPRouletteSelector(GPConfiguration config)
 			throws InvalidConfigurationException {
@@ -140,51 +140,14 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 		}
 	}
 	
-	public int calculateProgramLength(IGPProgram prog){
-		return prog.getChromosome(0).numFunctions() + prog.getChromosome(0).numTerminals();
-	}
 	
 	
+
 	protected synchronized void addAll(final IGPProgram[] a_progs) {
-		double sum_prog_length = 0;
-		HashMap<Integer, Double> propability_of_prog_size = new HashMap<>();
-		HashMap<Integer, Double> total_fitness_of_prog_size = new HashMap<>();
-		double total_fitness = 0;
-		double avg_fitness = 0;
-		double cov_l_f = 0;
-		HashMap<Integer, Double> avg_fitness_of_prog_size = new HashMap<>();
-		HashMap<Integer, Integer> nr_prog_size = new HashMap<>();
+		
 		
 		for (IGPProgram igpProgram : a_progs) {
 			add(igpProgram);
-			int length = calculateProgramLength(igpProgram);
-			sum_prog_length += length;
-			
-			if (nr_prog_size.containsKey(length))
-				nr_prog_size.put(length, nr_prog_size.get(length) + 1);
-			else
-				nr_prog_size.put(length,1);
-			total_fitness += igpProgram.getFitnessValue();
-			if (total_fitness_of_prog_size.containsKey(length))
-				total_fitness_of_prog_size.put(length, total_fitness_of_prog_size.get(length) + igpProgram.getFitnessValue());
-			else
-				total_fitness_of_prog_size.put(length,igpProgram.getFitnessValue());
-			
-		}
-		//parsimony scaling of fitness based on Poli2008b
-		m_avg_prog_length = sum_prog_length / a_progs.length;
-		avg_fitness = total_fitness / a_progs.length;
-		for (int l : total_fitness_of_prog_size.keySet()) {
-			avg_fitness_of_prog_size.put(l,total_fitness_of_prog_size.get(l)/nr_prog_size.get(l));
-			cov_l_f += (l-m_avg_prog_length)*(avg_fitness_of_prog_size.get(l)-avg_fitness)*((double)(nr_prog_size.get(l))/a_progs.length);
-		}
-		
-		
-		for (IGPProgram igpProgram : a_progs) {
-			SlotCounter counter = m_wheel.get(igpProgram);
-			int length = calculateProgramLength(igpProgram);
-			double newfitness = igpProgram.getFitnessValue()-cov_l_f/avg_fitness*length;
-			counter.reset((newfitness < 0.000001) ? 0.000001 : newfitness);
 		}
 	}
 	
@@ -251,6 +214,8 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 	}
 
 
+	
+	
 
 	/**
 	 * This method "spins" the wheel and returns the Chromosome that is
