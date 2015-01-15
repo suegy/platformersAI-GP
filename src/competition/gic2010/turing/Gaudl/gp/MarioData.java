@@ -280,8 +280,7 @@ public class MarioData {
 		}
 	}
 	public void pause() {
-		if (this.longJump <= 0 && this.run <= 0)
-			setActions(new boolean[actions.length]);
+		setActions(new boolean[actions.length]);
 		
 	}
 	
