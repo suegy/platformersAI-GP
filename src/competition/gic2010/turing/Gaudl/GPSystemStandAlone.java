@@ -96,7 +96,7 @@ public final class GPSystemStandAlone extends GPProblem
 protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
-public static final int popSize = 200;
+public static final int popSize = 100;
 private transient Logger LOGGER;
 
 public GPSystemStandAlone(GPFitnessFunction metric) {
@@ -111,7 +111,7 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config.setProgramCreationMaxTries(-1);
         //config.setStrictProgramCreation(true);
         //config.setMinimumPopSizePercent(popSize);
-        config.setMinInitDepth(1);
+        config.setMinInitDepth(3);
         config.setMaxInitDepth(7);
         config.setPopulationSize(popSize);
         //Taken from anttrail. WORTH INVESTIGATING.
