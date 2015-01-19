@@ -30,8 +30,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	
 	private Traces referenceTraces;
 	private int simulationTime;
-	private int gamalyzerFramesPerChunk = 25;
-	private int slidingWindow = 3;
+	private int gamalyzerFramesPerChunk = 1;
+	private int slidingWindow = 100;
 	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
@@ -39,7 +39,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
 		File [] hTraces = new File[1];
-		
+		mariologFile = String.format("fpc-%s-sw-%s-", gamalyzerFramesPerChunk,slidingWindow);
 		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
 		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 0.01;
@@ -186,7 +186,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
 		System.out.print((1.01d-weight)+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		//weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
 		
 		return weight;
 	}

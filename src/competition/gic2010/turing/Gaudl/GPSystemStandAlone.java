@@ -96,7 +96,7 @@ public final class GPSystemStandAlone extends GPProblem
 protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
-public static final int popSize = 100;
+public static final int popSize = 200;
 private transient Logger LOGGER;
 
 public GPSystemStandAlone(GPFitnessFunction metric) {
@@ -112,7 +112,7 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         //config.setStrictProgramCreation(true);
         //config.setMinimumPopSizePercent(popSize);
         config.setMinInitDepth(1);
-        config.setMaxInitDepth(5);
+        config.setMaxInitDepth(7);
         config.setPopulationSize(popSize);
         //Taken from anttrail. WORTH INVESTIGATING.
         config.setCrossoverProb(0.6f);//orig: 0.9f
@@ -206,7 +206,7 @@ public static void main(String[] args) throws InterruptedException
 {
 //        final String argsString = "-vis on";
 	try {
-		Logger.getRoot().setLevel(Level.DEBUG);
+		Logger.getRoot().setLevel(Level.INFO);
 		Logger.getRootLogger().addAppender(new RollingFileAppender(new SimpleLayout(), "genotype.log"));
 		
 	} catch (IOException e) {
