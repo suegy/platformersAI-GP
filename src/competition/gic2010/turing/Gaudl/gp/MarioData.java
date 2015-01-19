@@ -112,10 +112,12 @@ public class MarioData {
 		if (environment == null)
 			return 0;
 		byte[][] sensorField = getSensorField();
+		x = environment.getMarioEgoPos()[0]+x;
+		y = environment.getMarioEgoPos()[1]+y;
 		if (x < 0 || x >= environment.getReceptiveFieldWidth() || y < 0 || y >= environment.getReceptiveFieldHeight())
 	        return 0;
 		
-		return sensorField[environment.getMarioEgoPos()[0]+x][environment.getMarioEgoPos()[1]+y];
+		return sensorField[x][y];
 	}
 	public void jump() {
 		setAction(true, Environment.MARIO_KEY_JUMP);
