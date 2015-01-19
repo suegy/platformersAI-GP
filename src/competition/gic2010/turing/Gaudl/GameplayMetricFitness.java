@@ -191,16 +191,16 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 
 	protected double calculateFitness(EvaluationInfo env, IGPProgram prog){
 		double wfit = (env.distancePassedCells);
+		double importance = 0.25d;
 		//wfit = wfit /env.timeSpent;
-		double additional= (env.killsTotal + env.coinsGained + env.marioMode)*.2f;
-		wfit -= env.collisionsWithCreatures;
-		if (additional <  wfit/2 || wfit <= 0)
+		double additional= (env.killsTotal + env.coinsGained + env.marioMode-env.collisionsWithCreatures)*importance;
+		
+		if (additional <  wfit*importance || wfit <= 0)
 			wfit = wfit + additional;
 		else {
-			additional = (additional * (0.2 / wfit));
-			wfit += (wfit*0.2f)*additional;
+			wfit = wfit+additional*importance;
 		}
-		if (env.distancePassedCells > 50 && env.marioStatus == Mario.STATUS_DEAD)
+		if (env.distancePassedCells > env.levelLength*importance && env.marioStatus == Mario.STATUS_DEAD)
 			wfit = wfit*0.75f;
 		if (env.distancePassedCells == env.levelLength && env.marioStatus == Mario.STATUS_WIN){
 			System.out.print("Solved Level");
