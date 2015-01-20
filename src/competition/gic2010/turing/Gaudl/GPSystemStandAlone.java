@@ -151,8 +151,8 @@ public GPGenotype create() throws InvalidConfigurationException {
 	CommandGene [][] nodes = {
 			{
 				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
-				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
-				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
+				new Terminal(conf, CommandGene.IntegerClass,-3,3,true),
+				//new Terminal(conf, CommandGene.IntegerClass,-3,3,true),
 				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
 				//new SubProgram(conf),
@@ -168,16 +168,16 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new CanJump(conf),
 				new CanShoot(conf),
 				new LastActionWas(conf),
-				new IsTall(conf),
+				//new IsTall(conf),
 				//new ObjectAtXYIs(conf),
 				//new True(conf),
 				new IsBreakableAt(conf),
 				new IsCoinAt(conf),
 				new IsAirAt(conf),
 				new IsEnemyAt(conf),
-				new IsFireFlowerAt(conf),
+				//new IsFireFlowerAt(conf),
 				new IsMushroomAt(conf),
-				new IsPrincessAt(conf),
+				//new IsPrincessAt(conf),
 				new IsWalkableAt(conf),
 				//new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass,CommandGene.VoidClass}),
 				new Down(conf),
@@ -186,11 +186,11 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new Right(conf),
 				new Shoot(conf),
 				new Jump(conf),
-				new JumpLeft(conf),
-				new JumpRight(conf),
+				//new JumpLeft(conf),
+				//new JumpRight(conf),
 				new LongJump(conf),
-				new LongJumpLeft(conf),
-				new LongJumpRight(conf),
+				//new LongJumpLeft(conf),
+				//new LongJumpRight(conf),
 				new Run(conf),
 		//		new ADF(conf, 1, 2)
 			},
@@ -198,8 +198,10 @@ public GPGenotype create() throws InvalidConfigurationException {
 				new And(conf),
 			}*/
 	};
-	return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
+	GPGenotype geno = GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
 			250, true);
+	geno.switchParsimonyPressure(false);
+	return geno;
 }
 
 public static void main(String[] args) throws InterruptedException
