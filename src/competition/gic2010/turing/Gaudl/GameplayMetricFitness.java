@@ -79,23 +79,28 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		try {
 			// Execute the program.
 			// --------------------
-			if (prog.getGPConfiguration().getGenerationNr() < 20){
-				num_lvls = 20;
+			if (prog.getGPConfiguration().getGenerationNr() < 50 || prog.getGPConfiguration().getGenerationNr() > 2000){
+				num_lvls = 10;
 				distance = new int[num_lvls];
-				time = 2;
-			} else 
-				if (bestFit < 50d){
-					time = 50;	
-				} else if (bestFit < 100){
-					time = 100;
-				} else {
-					time = 200;
-				}
+			} 
+			 
+			if (bestFit*num_lvls < 50d){
+				time = 50;	
+			} else if (bestFit*num_lvls < 100){
+				time = 100;
+			} else {
+				time = 200;
+			}
+			String fitnessOutput = "";
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,time,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(), prog);
+				double fit = calculateFitness(MarioData.getEnvironment().getEvaluationInfo(), prog);
+				fitnessOutput += fit+":"+distance[lvl]+" ";
+				error +=fit;
 			}
+			prog.setAdditionalFitnessInfo(String.format(fitnessOutput.trim()));
+			
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
 			error = error/num_lvls;
@@ -206,7 +211,6 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			System.out.print("Solved Level");
 			wfit = wfit*1.1f;
 		}
-		prog.setAdditionalFitnessInfo(String.format("%s:%s",wfit,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
 		System.out.print(wfit+";");
 		return wfit;
 	}
