@@ -30,8 +30,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	
 	private Traces referenceTraces;
 	private int simulationTime;
-	private int gamalyzerFramesPerChunk = 1;
-	private int slidingWindow = 100;
+	private int gamalyzerFramesPerChunk = 12;
+	private int slidingWindow = 4;
 	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
@@ -186,7 +186,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
 		System.out.print((1.01d-weight)+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		//weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		prog.setAdditionalFitnessInfo(String.format("%s:%s",weight,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
+		weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
 		
 		return weight;
 	}

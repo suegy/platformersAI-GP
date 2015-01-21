@@ -48,23 +48,26 @@ public class Down extends MarioCommand implements IMutateable{
 	public CommandGene applyMutation(int index, double a_percentage)
 		      throws InvalidConfigurationException {
 
-		if (a_percentage < 0.05d)
-		    return new LongJumpRight(getGPConfiguration());
-		if (a_percentage < 0.10d)
-		    return new JumpRight(getGPConfiguration());
-		if (a_percentage < 0.15d)
-		    return new LongJumpLeft(getGPConfiguration());
-		if (a_percentage < 0.20d)
-		    return new JumpLeft(getGPConfiguration());
-		if (a_percentage < 0.33d)
+//		if (a_percentage < 0.05d)
+//		    return new LongJumpRight(getGPConfiguration());
+//		if (a_percentage < 0.10d)
+//		    return new JumpRight(getGPConfiguration());
+//		if (a_percentage < 0.15d)
+//		    return new LongJumpLeft(getGPConfiguration());
+//		if (a_percentage < 0.20d)
+//		    return new JumpLeft(getGPConfiguration());
+		
+		if (a_percentage < 0.14d)
+		    return new LongJump(getGPConfiguration());
+		if (a_percentage < 0.28d)
 		    return new Shoot(getGPConfiguration());
-		if (a_percentage < 0.46d)
+		if (a_percentage < 0.42d)
 		    return new Run(getGPConfiguration());
-		if (a_percentage < 0.59d)
+		if (a_percentage < 0.56d)
 		    return new Wait(getGPConfiguration());
-		if (a_percentage < 0.72d)
+		if (a_percentage < 0.7d)
 		    return new Jump(getGPConfiguration());
-		if (a_percentage < 0.85d)
+		if (a_percentage < 0.84d)
 		    return new Left(getGPConfiguration());
 		
 		return new Right(getGPConfiguration());

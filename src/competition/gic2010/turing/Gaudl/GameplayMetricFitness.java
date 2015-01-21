@@ -206,6 +206,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			System.out.print("Solved Level");
 			wfit = wfit*1.1f;
 		}
+		prog.setAdditionalFitnessInfo(String.format("%s:%s",wfit,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
 		System.out.print(wfit+";");
 		return wfit;
 	}
