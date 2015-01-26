@@ -37,6 +37,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 
     protected String mariologFile;
 	protected int num_lvls;
+	protected int levelDifficulty;
 	protected int[] distance;
 	
 
@@ -45,7 +46,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		m_options = options;
 		gen = 0;
 		bestFit = 40d;
-		num_lvls = 2; //should be the number of different levels we have data on
+		num_lvls = 10; //should be the number of different levels we have data on
+		levelDifficulty = 0;
 		mariologFile = "";
 		try {
 			int counter = 0;
@@ -79,10 +81,10 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		try {
 			// Execute the program.
 			// --------------------
-			if (prog.getGPConfiguration().getGenerationNr() < 50 || prog.getGPConfiguration().getGenerationNr() > 2000){
-				num_lvls = 10;
-				distance = new int[num_lvls];
-			} 
+//			if (prog.getGPConfiguration().getGenerationNr() < 50 || prog.getGPConfiguration().getGenerationNr() > 2000){
+//				num_lvls = 10;
+//				distance = new int[num_lvls];
+//			} 
 			 
 			if (bestFit*num_lvls < 50d){
 				time = 50;	
@@ -187,6 +189,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		m_options.setLevelRandSeed(lvl);
 		
 		//m_options.setLevelRandSeed(151079);
+		m_options.setLevelDifficulty(levelDifficulty);
 		m_options.setAgent(mario);
 		m_task.setOptionsAndReset(m_options);
 		
