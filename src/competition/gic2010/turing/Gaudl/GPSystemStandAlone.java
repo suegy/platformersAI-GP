@@ -209,7 +209,10 @@ public static void main(String[] args) throws InterruptedException
 //        final String argsString = "-vis on";
 	try {
 		Logger.getRoot().setLevel(Level.INFO);
-		Logger.getRootLogger().addAppender(new RollingFileAppender(new SimpleLayout(), "genotype.log"));
+		RollingFileAppender logger = new RollingFileAppender(new SimpleLayout(), "genotype.log");
+		logger.setMaxBackupIndex(10);
+		logger.setMaxFileSize("100MB");
+		Logger.getRootLogger().addAppender(logger);
 		
 	} catch (IOException e) {
 		// TODO Auto-generated catch block

@@ -40,8 +40,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		//File f = new File("human-ld1-lvl1.act");
 		File [] hTraces = new File[1];
 		mariologFile = String.format("fpc-%s-sw-%s-", gamalyzerFramesPerChunk,slidingWindow);
-		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
-		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
+		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
+		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 0.01;
 				
 		// reading the tracing at 15chunks per second
