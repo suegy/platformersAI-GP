@@ -35,7 +35,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected double bestFit;
 	protected BufferedWriter writer;
 
-    protected String mariologFile;
+    protected String[] mariologFiles;
 	protected int num_lvls;
 	protected int levelDifficulty;
 	protected int[] distance;
@@ -48,7 +48,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		bestFit = 40d;
 		num_lvls = 10; //should be the number of different levels we have data on
 		levelDifficulty = 0;
-		mariologFile = "";
+		mariologFiles = new String[0];
 		try {
 			int counter = 0;
 			File output = new File(String.format("solution"+File.separator+"solutions-%s.txt", counter));
@@ -78,6 +78,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		prog.setApplicationData(data);
 		int time = 0;
 		int num_lvls = this.num_lvls;
+		mariologFiles = new String[num_lvls];
 		try {
 			// Execute the program.
 			// --------------------
@@ -167,11 +168,13 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 
             writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
             //writer.append("pers:"+prog.getPersistentRepresentation());
-            File mariolog = new File(mariologFile+".zip");
-            if (mariolog.exists())
-                Files.copy(mariolog.toPath(),new File("solution"+File.separator+mariologFile+"-"+prog.getGPConfiguration().getGenerationNr()+"-fit"+error+".zip").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            for (int i = 0;i< mariologFiles.length;i++){
+            	File mariolog = new File(mariologFiles[i]+".zip");
+            	if (mariolog.exists())
+            		Files.copy(mariolog.toPath(),new File("solution"+File.separator+mariologFiles[i]+"-"+prog.getGPConfiguration().getGenerationNr()+"-fit"+error+".zip").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
             writer.flush();
-
+            
             //a.write();
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -182,9 +185,9 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int lvl) {
 		Object[] noargs = new Object[0];
 		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
-        mariologFile = String.format("gp-lvl%d",lvl);
-		mario.setName(mariologFile);
-		m_options.setRecordFile(mariologFile);
+        mariologFiles[lvl] = String.format("gp-lvl%d-diff%d",lvl,levelDifficulty);
+		mario.setName(mariologFiles[lvl]);
+		m_options.setRecordFile(mariologFiles[lvl]);
 		m_options.setTimeLimit(time);
 		m_options.setLevelRandSeed(lvl);
 		
