@@ -23,5 +23,10 @@ gamalyzer.cpf12.sw10.gen7410$Agents.avgfit <- rowMeans(gamalyzer.cpf12.sw10.gen7
 maxFit <- max.col(gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "[0-9]\\.fit",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)])
 maxDist <- max.col(gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "[0-9]\\.dist",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)])
 
+simDistData <- data.frame(fit = gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.fit",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)][1,maxFit[1]],dist = gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.dist",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)][1,maxDist[1]])
+for (i in seq(2:length(maxDist))){
+  simDistData <- rbind(simDistData, c(fit = gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.fit",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)][i,maxFit[i]],dist = gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.dist",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)][i,maxDist[i]]))
+}
+
 time <- data.frame(gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.fit",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)],gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.dist",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)])
 smoothScatter(gamalyzer.cpf12.sw10.gen7410$Agents.avgdist,gamalyzer.cpf12.sw10.gen7410$Agents.avgfit)
