@@ -28,5 +28,14 @@ for (i in seq(2:length(maxDist))){
   simDistData <- rbind(simDistData, c(fit = gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.fit",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)][i,maxFit[i]],dist = gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.dist",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)][i,maxDist[i]]))
 }
 
+sum(is.infinite(gendist))
+gendist[is.infinite(gendist)] <- 0.0
+
+gendist <- matrix(data=0.0, nrow=7408, ncol=256, byrow=FALSE, dimnames = list(c(seq(1:7408)),c(seq(1:256))))
+for (i in seq(1:length(simDistData$dist))){
+  gendist[i,simDistData$dist[i]] <- simDistData$fit[i]
+}
+
+
 time <- data.frame(gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.fit",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)],gamalyzer.cpf12.sw10.gen7410[grepl(pattern = "\\.dist",colnames(gamalyzer.cpf12.sw10.gen7410),perl = TRUE)])
 smoothScatter(gamalyzer.cpf12.sw10.gen7410$Agents.avgdist,gamalyzer.cpf12.sw10.gen7410$Agents.avgfit)
