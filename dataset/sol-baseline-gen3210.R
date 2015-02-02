@@ -58,7 +58,7 @@ for (gen in seq(1,nrow(sol.baseline.gen3210),1)){
       fit <- sol.baseline.gen3210[[paste0("Agent_",a,"_lvl",lvl,"_fitness")]][gen]
       dist <- sol.baseline.gen3210[[paste0("Agent_",a,"_lvl",lvl,"_distance")]][gen]
              
-      rbindlist(list(ctable,as.list(c(fit,dist,gen,lvl))))
+      ctable <- rbindlist(list(ctable,as.list(c(fit,dist,gen,lvl))))
       }
   }
 }
