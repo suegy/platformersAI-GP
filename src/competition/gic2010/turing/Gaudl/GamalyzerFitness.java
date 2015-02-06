@@ -31,16 +31,16 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	private Traces referenceTraces;
 	private int simulationTime;
 	private int gamalyzerFramesPerChunk = 12;
-	private int slidingWindow = 4;
+	private int slidingWindow = 2;
 	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
 		super(task, options);
-		num_lvls = 1;
+		num_lvls = 2;
 		//File f = new File("human-ld1-lvl1.act");
 		File [] hTraces = new File[1];
-		hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
-		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-1-time-200-difficulty-0-trial-1.act");
+		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
+		hTraces[0] = new File("dataset"+File.separator+"players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 0.01;
 				
 		// reading the tracing at 15chunks per second
@@ -94,6 +94,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
 		distance = new int[num_lvls];
+		mariologFiles = new String[num_lvls];
 		MarioData data = new MarioData();
 		// Initialize local stores.
 		// ------------------------
@@ -118,14 +119,15 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 				} else {
 					simulationTime = 200;
 				}*/
-			for (int lvl=0;lvl < num_lvls;lvl++){
+			//for (int lvl=0;lvl < num_lvls;lvl++){
+			int lvl = 1;
 				runMarioTask(prog,data,simulationTime,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
 				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
-			}
+			//}
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
-			error = error/num_lvls;
+			//error = error/num_lvls;
 			//System.out.print(error+": "+distance[0]+"; ");
 			// Check if the action the agent chose is close to the trace action.
 			// -------------------------------------------
