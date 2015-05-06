@@ -145,6 +145,7 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 
 	protected synchronized void addAll(final IGPProgram[] a_progs) {
 		
+		m_wheel.clear();
 		
 		for (IGPProgram igpProgram : a_progs) {
 			add(igpProgram);

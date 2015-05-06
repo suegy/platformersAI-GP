@@ -31,16 +31,16 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	private Traces referenceTraces;
 	private int simulationTime;
 	private int gamalyzerFramesPerChunk = 12;
-	private int slidingWindow = 2;
+	private int slidingWindow = 10;
 	//private Trace refTrace;
 
 	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
 		super(task, options);
-		num_lvls = 2;
+		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
 		File [] hTraces = new File[1];
-		//hTraces[0] = new File("dataset"+File.separator+"players-test2-lvl-0-time-200-difficulty-0-trial-1.act");
-		hTraces[0] = new File("dataset"+File.separator+"players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1.act");
+		hTraces[0] = new File("dataset"+File.separator+"players-19022014s1-p-test2-lvl-0-time-200-difficulty-0.act");
+		//hTraces[0] = new File("dataset"+File.separator+"players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1.act");
 		bestFit = 0.01;
 				
 		// reading the tracing at 15chunks per second
@@ -120,7 +120,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 					simulationTime = 200;
 				}*/
 			//for (int lvl=0;lvl < num_lvls;lvl++){
-			int lvl = 1;
+			int lvl = 0;
 				runMarioTask(prog,data,simulationTime,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
 				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
@@ -150,20 +150,20 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 				e.printStackTrace();
 			}*/
 			if (prog.getGPConfiguration().stackSize() > 0) {
-				error = GPFitnessFunction.MAX_FITNESS_VALUE;
+				error = 0.0d;
 			}
 			if (error < 0.000001) {
 				error = 0.0d;
 			}
-			else if (error > GPFitnessFunction.MAX_FITNESS_VALUE) {
+			else if (error > 256) {
 				// Add penalty 
 				// ------------------------------
-				error = GPFitnessFunction.MAX_FITNESS_VALUE;
+				error = 256;
 				
 					
 			}
 		} catch (IllegalStateException iex) {
-			error = GPFitnessFunction.MAX_FITNESS_VALUE;
+			error = 0.0d;
 			System.out.println(iex);
 		}
 
@@ -186,10 +186,10 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
-		System.out.print((1.01d-weight)+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
+		System.out.print(weight+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
 		prog.setAdditionalFitnessInfo(String.format("%s:%s",weight,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
 		weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
-		
+		//weight =(1.01d-weight);
 		return weight;
 	}
 

@@ -111,7 +111,7 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config.setProgramCreationMaxTries(-1);
         //config.setStrictProgramCreation(true);
         //config.setMinimumPopSizePercent(popSize);
-        config.setMinInitDepth(3);
+        config.setMinInitDepth(1);
         config.setMaxInitDepth(7);
         config.setPopulationSize(popSize);
         //Taken from anttrail. WORTH INVESTIGATING.
