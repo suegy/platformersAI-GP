@@ -221,7 +221,8 @@ public static void main(String[] args) throws InterruptedException
 	final MarioAIOptions marioAIOptions = new MarioAIOptions(args);
     final BasicTask basicTask = new BasicTask(marioAIOptions);
     //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
-    GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
+    //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
+    TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
     GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
     
     while (marioGP.gpThread.isAlive()) {
