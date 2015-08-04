@@ -9,10 +9,17 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.jgap.gp.IGPProgram;
 
+import ch.idsia.agents.Agent;
+import ch.idsia.benchmark.mario.engine.GlobalOptions;
 import ch.idsia.benchmark.tasks.BasicTask;
+import ch.idsia.benchmark.tasks.GPMirrorTask;
+import ch.idsia.benchmark.tasks.ReplayTask;
+import ch.idsia.benchmark.tasks.Task;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import clojure.lang.IPersistentVector;
@@ -31,24 +38,25 @@ public class TraceFitness extends GameplayMetricFitness {
 	private static final long serialVersionUID = -8750632855093986122L;
 	
 	private byte [][] referenceTraces;
+	String [] referenceTraceFiles;
 	private int simulationTime;
 	private int gamalyzerFramesPerChunk = 12;
 	private int slidingWindow = 10;
 	//private Trace refTrace;
 
-	public TraceFitness(BasicTask task,MarioAIOptions options){
+	public TraceFitness(Task task,MarioAIOptions options){
 		super(task, options);
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
-		File [] hTraces = new File[2];
-		hTraces[0] = new File("dataset"+File.separator+"players-19022014s1-p-test2-lvl-0-time-200-difficulty-0.act");
-		hTraces[1] = new File("dataset"+File.separator+"players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1.act");
+		referenceTraceFiles = new String [2];
+		referenceTraceFiles[0] = "players-19022014s1-p-test2-lvl-0-time-200-difficulty-0-trial-1";
+		referenceTraceFiles[1] = "players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1";
 		bestFit = 0.01;
 		referenceTraces = new byte[2][];		
 		// reading the tracing at 15chunks per second
 		try {
-			referenceTraces[0] =  Files.readAllBytes(hTraces[0].toPath());
-			referenceTraces[1] =  Files.readAllBytes(hTraces[1].toPath());
+			referenceTraces[0] =  Files.readAllBytes(new File(referenceTraceFiles[0]+".act").toPath());
+			referenceTraces[1] =  Files.readAllBytes(new File(referenceTraceFiles[1]+".act").toPath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,12 +81,9 @@ public class TraceFitness extends GameplayMetricFitness {
 		if (length2 < currLength)
 			current = trimTrace(current,length2);
 		
-		double dissimilarity = 1.0f;
-		
-		dissimilarity = 1.0 - similarity(current,refTrace,slidingWindow);
 		
 		
-		return (float)dissimilarity;
+		return (float) similarity(current,refTrace,slidingWindow);
 	}
 
 	private double similarity(byte[] current, byte[] refTrace,
@@ -150,9 +155,15 @@ public class TraceFitness extends GameplayMetricFitness {
 				}*/
 			//for (int lvl=0;lvl < num_lvls;lvl++){
 			int lvl = 0;
+				runReplayTask(prog,data,simulationTime,lvl);
+				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
 				runMarioTask(prog,data,simulationTime,lvl);
 				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
+				System.out.print(error+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
+				prog.setAdditionalFitnessInfo(String.format("%s:%s",error,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
+				error += distance[lvl]/MarioData.getEnvironment().getEvaluationInfo().levelLength;
+				
+				
 			//}
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
@@ -207,6 +218,19 @@ public class TraceFitness extends GameplayMetricFitness {
 
 		return error;
 	}
+	
+	protected boolean  runReplayTask(IGPProgram prog,MarioData data,int time,int lvl) {
+		Object[] noargs = new Object[0];
+		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
+		List<Agent> agentSet = new LinkedList<Agent>();
+		
+		agentSet.add(mario);
+		GPMirrorTask replayTask = new GPMirrorTask(agentSet);
+	    replayTask.reset(referenceTraceFiles[lvl]);
+	    //GlobalOptions.FPS = m_options.getFPS();
+	    
+	    return ((GPMirrorTask)replayTask).startReplay(75,false);
+	}
 
 	
 	@Override
@@ -214,10 +238,8 @@ public class TraceFitness extends GameplayMetricFitness {
 		byte[] currentRaw = MarioData.getActionTrace();
 		
 		double weight = CompareTrace(currentRaw, 0, simulationTime);
-		System.out.print(weight+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		prog.setAdditionalFitnessInfo(String.format("%s:%s",weight,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
-		weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
-		//weight =(1.01d-weight);
+		//weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		
 		return weight;
 	}
 

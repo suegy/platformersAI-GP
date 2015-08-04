@@ -19,6 +19,7 @@ import org.jgap.gp.impl.ProgramChromosome;
 
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.tasks.BasicTask;
+import ch.idsia.benchmark.tasks.Task;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.gp.MarioData;
@@ -29,7 +30,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	 * 
 	 */
 	private static final long serialVersionUID = -8750632855093986122L;
-	BasicTask m_task;
+	Task m_task;
 	MarioAIOptions m_options;
 	private int gen;
 	protected double bestFit;
@@ -41,7 +42,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected int[] distance;
 	
 
-	public GameplayMetricFitness(BasicTask task,MarioAIOptions options){
+	public GameplayMetricFitness(Task task,MarioAIOptions options){
 		m_task = task;
 		m_options = options;
 		gen = 0;
@@ -196,7 +197,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		m_options.setAgent(mario);
 		m_task.setOptionsAndReset(m_options);
 		
-		return m_task.runSingleEpisode(1);
+		return ((BasicTask)m_task).runSingleEpisode(1);
 	}
 
 

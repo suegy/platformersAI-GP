@@ -210,7 +210,7 @@ public void reset(MarioAIOptions setUpOptions)
 public void tick()
 {
     levelScene.tick();
-    if (GlobalOptions.isVisualization)
+    if (GlobalOptions.isVisualization && marioVisualComponent != null)
         marioVisualComponent.tick();
 }
 

@@ -78,7 +78,7 @@ public class Mario_GPAgent implements Agent
 	@Override
 	public void integrateObservation(Environment environment) {
 		byte[][] levelScene = environment.getLevelSceneObservationZ(1);
-	    byte[][]enemies = environment.getEnemiesObservationZ(0);
+	    byte[][] enemies = environment.getEnemiesObservationZ(0);
 	    byte[][] mergedObservation = environment.getMergedObservationZZ(1, 0);
 		
 		MarioData.setEnvironment(environment);

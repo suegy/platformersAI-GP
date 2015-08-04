@@ -106,12 +106,14 @@ public int evaluate(Agent controller)
     return 0;
 }
 
+@Override
 public void setOptionsAndReset(MarioAIOptions options)
 {
     this.options = options;
     reset();
 }
 
+@Override
 public void setOptionsAndReset(final String options)
 {
     this.options.setArgs(options);
