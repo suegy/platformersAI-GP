@@ -323,7 +323,7 @@ public void testRecordingFitness()
 
     final ReplayTask replayTask = new ReplayTask();
     replayTask.reset("recorderTest.zip");
-    replayTask.startReplay();
+    replayTask.startReplay(25);
     System.out.println(replayTask.getEnvironment().getEvaluationInfoAsString());
     float replayFitness = replayTask.getEnvironment().getEvaluationInfo().computeWeightedFitness();
     assertEquals(originalFitness, replayFitness);
@@ -341,7 +341,7 @@ public void testRecordingEvaluationString()
 
     final ReplayTask replayTask = new ReplayTask();
     replayTask.reset("recorderTest.zip");
-    replayTask.startReplay();
+    replayTask.startReplay(25);
     String replayEvaluationString = replayTask.getEnvironment().getEvaluationInfoAsString();
     System.out.println(replayEvaluationString);
 
@@ -387,7 +387,7 @@ public void testLazyRecordingFitness()
 
         final ReplayTask replayTask = new ReplayTask();
         replayTask.reset("lazyRecorderTest.zip");
-        replayTask.startReplay();
+        replayTask.startReplay(25);
         System.out.println(replayTask.getEnvironment().getEvaluationInfoAsString());
         float replayFitness = replayTask.getEnvironment().getEvaluationInfo().computeWeightedFitness();
         assertEquals(originalFitness, replayFitness);
@@ -416,7 +416,7 @@ public void testMultipleLazyRecordings()
 
         final ReplayTask replayTask = new ReplayTask();
         replayTask.reset("lazyRecorderTest.zip");
-        replayTask.startReplay();
+        replayTask.startReplay(25);
         System.out.println(replayTask.getEnvironment().getEvaluationInfoAsString());
         float replayFitness = replayTask.getEnvironment().getEvaluationInfo().computeWeightedFitness();
         assertEquals(originalFitness, replayFitness);
@@ -440,7 +440,7 @@ public void testRecordingTrace()
 
     final ReplayTask replayTask = new ReplayTask();
     replayTask.reset("recorderTest.zip");
-    replayTask.startReplay();
+    replayTask.startReplay(25);
 
     int[][] secondTrace = replayTask.getEnvironment().getEvaluationInfo().marioTrace;
     System.out.println(replayTask.getEnvironment().getEvaluationInfoAsString());

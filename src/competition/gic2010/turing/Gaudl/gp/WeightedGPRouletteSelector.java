@@ -80,7 +80,7 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 	 * multiple times per generation is seemed a good idea to init the wheel only for a whole generation.
 	 * @author Swen Gaudl
 	 */
-	private int m_generationCounter;
+	private long m_generationCounter;
 	private int m_activeGenotypeID;
 
 	private WeightedGPRouletteSelConfig m_config;
@@ -332,7 +332,7 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 	}
 
 	private double prev_largest = 0;
-	private int prev_largest_gen = 0;
+	private long prev_largest_gen = 0;
 	private double initial_mutationRate = 0;
 	
 	private void scaleFitnessValues() {
@@ -366,7 +366,7 @@ public class WeightedGPRouletteSelector implements INaturalGPSelector, Serializa
 			prev_largest_gen = m_generationCounter;
 		} 
 		
-		int unChangedFitness = m_generationCounter - prev_largest_gen;
+		long unChangedFitness = m_generationCounter - prev_largest_gen;
 		if (m_generationCounter >= 50 && unChangedFitness <= 100) {
 			this.gpConfig.setMutationProb((float) initial_mutationRate);
 			this.gpConfig.setNewChromsPercent(initial_newChromPercentage);

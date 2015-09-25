@@ -51,7 +51,7 @@ Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 0
 //    final MarioAIOptions cmdLineOptions = new MarioAIOptions(args);
     final ReplayTask replayTask = new ReplayTask();
     replayTask.reset(args[0]);
-    replayTask.startReplay();
+    replayTask.startReplay(25);
     // TODO: output evaluationInfo as in BasicTask
     System.out.println(replayTask.getEnvironment().getEvaluationInfoAsString());
     System.exit(0);

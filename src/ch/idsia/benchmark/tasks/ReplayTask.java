@@ -100,7 +100,7 @@ public void setOptionsAndReset(final String options)
 public void doEpisodes(final int amount, final boolean verbose, final int repetitionsOfSingleEpisode)
 {}
 
-public void startReplay()
+public void startReplay(int fps)
 {
     try
     {
@@ -116,6 +116,7 @@ public void startReplay()
             options.setRecordFile("off");
             agent.setName(options.getAgent().getName());
             options.setAgent(agent);
+            options.setFPS(fps);
             agent.reset();
             agent.setReplayer(replayer);
 
