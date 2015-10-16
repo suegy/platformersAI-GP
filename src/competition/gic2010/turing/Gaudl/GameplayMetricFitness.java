@@ -98,8 +98,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 			String fitnessOutput = "";
 			for (int lvl=0;lvl < num_lvls;lvl++){
 				runMarioTask(prog,data,time,lvl);
-				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				double fit = calculateFitness(MarioData.getEnvironment().getEvaluationInfo(), prog);
+				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				double fit = calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(), prog);
 				fitnessOutput += fit+":"+distance[lvl]+" ";
 				error +=fit;
 			}

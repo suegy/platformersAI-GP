@@ -122,8 +122,8 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
         config.setFunctionProb(0.6f);
         //config.setUseProgramCache(true);
         config.setCrossoverMethod(new BranchTypingCross(config,false));
-        //config.setSelectionMethod(new TournamentSelector(2));
-        config.setSelectionMethod(new WeightedGPRouletteSelector(config));
+        config.setSelectionMethod(new TournamentSelector(3));
+        //config.setSelectionMethod(new WeightedGPRouletteSelector(config));
         config.setPreservFittestIndividual(true);
         config.setFitnessFunction(metric);
         setGPConfiguration(config);

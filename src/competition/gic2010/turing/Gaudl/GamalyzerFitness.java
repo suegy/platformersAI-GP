@@ -5,9 +5,7 @@ import gamalyzer.data.input.Trace;
 import gamalyzer.data.input.Traces;
 
 import java.io.File;
-import java.io.IOException;
 
-import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
 import ch.idsia.benchmark.tasks.BasicTask;
@@ -15,6 +13,7 @@ import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import clojure.lang.IPersistentVector;
 import clojure.lang.LazySeq;
+
 import competition.gic2010.turing.Gaudl.gp.MarioData;
 
 
@@ -122,8 +121,8 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 			//for (int lvl=0;lvl < num_lvls;lvl++){
 			int lvl = 0;
 				runMarioTask(prog,data,simulationTime,lvl);
-				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
+				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				error += calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
 			//}
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
@@ -182,13 +181,13 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	
 	@Override
 	protected double calculateFitness(EvaluationInfo env,IGPProgram prog){
-		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, MarioData.getActionTrace(),gamalyzerFramesPerChunk,1);
+		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, ((MarioData)prog.getApplicationData()).getActionTrace(),gamalyzerFramesPerChunk,1);
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();
 		double weight = CompareTrace(current, 0, (Domains)currentRaw.domains,simulationTime);
-		System.out.print(weight+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-		prog.setAdditionalFitnessInfo(String.format("%s:%s",weight,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
-		weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
+		System.out.print(weight+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
+		prog.setAdditionalFitnessInfo(String.format("%s:%s",weight,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
+		weight =  ((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
 		//weight =(1.01d-weight);
 		return weight;
 	}

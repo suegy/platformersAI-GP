@@ -81,7 +81,7 @@ public class Mario_GPAgent implements Agent
 	    byte[][] enemies = environment.getEnemiesObservationZ(0);
 	    byte[][] mergedObservation = environment.getMergedObservationZZ(1, 0);
 		
-		MarioData.setEnvironment(environment);
+		m_data.setEnvironment(environment);
 	}
 
 	@Override

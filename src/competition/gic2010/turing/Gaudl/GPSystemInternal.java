@@ -106,8 +106,9 @@ public class GPSystemInternal extends GPProblem implements LearningAgent {
 
 	@Override
 	public void integrateObservation(Environment environment) {
-		MarioData.setEnvironment(environment);
-
+		for(IGPProgram prog : this.Geno.getGPPopulation().getGPPrograms()){
+			((MarioData)prog.getApplicationData()).setEnvironment(environment);
+		}
 	}
 
 	@Override
@@ -118,7 +119,10 @@ public class GPSystemInternal extends GPProblem implements LearningAgent {
 
 	@Override
 	public void reset() {
-		MarioData.setEnvironment(null);
+		for(IGPProgram prog : this.Geno.getGPPopulation().getGPPrograms()){
+			((MarioData)prog.getApplicationData()).setEnvironment(null);
+		}
+		
 	}
 
 	@Override
@@ -152,7 +156,9 @@ public class GPSystemInternal extends GPProblem implements LearningAgent {
 
 	@Override
 	public void newEpisode() {
-		MarioData.setEnvironment(null);
+		for(IGPProgram prog : this.Geno.getGPPopulation().getGPPrograms()){
+			((MarioData)prog.getApplicationData()).setEnvironment(null);
+		}
 	}
 
 	@Override

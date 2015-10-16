@@ -123,18 +123,29 @@ public class TraceFitness extends GameplayMetricFitness {
 			
 		return output;
 	}
+	
+	@Override
+	public void sequentialStep(IGPProgram [] programs){
+		runReplayTask(programs,simulationTime, 0);
+	}
 
 	@Override
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
 		distance = new int[num_lvls];
 		mariologFiles = new String[num_lvls];
-		MarioData data = new MarioData();
 		// Initialize local stores.
 		// ------------------------
 		//prog.getGPConfiguration().clearStack();
 		//prog.getGPConfiguration().clearMemory();
-		prog.setApplicationData(data);
+		MarioData data = null;
+		if (prog.getApplicationData() !=null){
+			data = (MarioData) prog.getApplicationData();
+		} else {
+			data = new MarioData();
+			prog.setApplicationData(data);
+		}
+		
 		simulationTime = 200;
 		int num_lvls = this.num_lvls;
 		try {
@@ -155,13 +166,13 @@ public class TraceFitness extends GameplayMetricFitness {
 				}*/
 			//for (int lvl=0;lvl < num_lvls;lvl++){
 			int lvl = 0;
-				runReplayTask(prog,data,simulationTime,lvl);
-				error += calculateFitness(MarioData.getEnvironment().getEvaluationInfo(),prog);
+		//		runReplayTask(prog,data,simulationTime,lvl);
+				error += calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
 				runMarioTask(prog,data,simulationTime,lvl);
-				distance[lvl]=MarioData.getEnvironment().getEvaluationInfo().distancePassedCells;
-				System.out.print(error+"-"+MarioData.getEnvironment().getEvaluationInfo().distancePassedCells+";");
-				prog.setAdditionalFitnessInfo(String.format("%s:%s",error,MarioData.getEnvironment().getEvaluationInfo().distancePassedCells));
-				error += distance[lvl]/MarioData.getEnvironment().getEvaluationInfo().levelLength;
+				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				//System.out.print(error+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
+				prog.setAdditionalFitnessInfo(String.format("%s:%s",error,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
+				//error += distance[lvl]/MarioData.getEnvironment().getEvaluationInfo().levelLength;
 				
 				
 			//}
@@ -231,11 +242,30 @@ public class TraceFitness extends GameplayMetricFitness {
 	    
 	    return ((GPMirrorTask)replayTask).startReplay(75,false);
 	}
+	
+	protected boolean  runReplayTask(IGPProgram [] progs,int time,int lvl) {
+		Object[] noargs = new Object[0];
+		List<Agent> agentSet = new LinkedList<Agent>();
+		
+		for (IGPProgram prog : progs){
+			MarioData data = new MarioData();
+			Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
+			prog.setApplicationData(data);
+			agentSet.add(mario);
+		}
+		
+		
+		GPMirrorTask replayTask = new GPMirrorTask(agentSet);
+	    replayTask.reset(referenceTraceFiles[lvl]);
+	    //GlobalOptions.FPS = m_options.getFPS();
+	    
+	    return ((GPMirrorTask)replayTask).startReplay(100,false);
+	}
 
 	
 	@Override
 	protected double calculateFitness(EvaluationInfo env,IGPProgram prog){
-		byte[] currentRaw = MarioData.getActionTrace();
+		byte[] currentRaw = ((MarioData)prog.getApplicationData()).getActionTrace();
 		
 		double weight = CompareTrace(currentRaw, 0, simulationTime);
 		//weight =  MarioData.getEnvironment().getEvaluationInfo().distancePassedCells * (1.01d-weight);
