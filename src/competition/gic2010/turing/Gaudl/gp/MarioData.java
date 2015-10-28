@@ -18,8 +18,8 @@ public class MarioData {
 	private int move;
 	private int run;
 	//private int lastAction;
-	private static Environment environment;
-	private static ArrayList<Byte> actionRecord;
+	private Environment environment;
+	private ArrayList<Byte> actionRecord;
 
 	public MarioData(Environment env) {
 		this();
@@ -33,10 +33,10 @@ public class MarioData {
 		
 	}
 
-	public static void setEnvironment(Environment env) {
+	public void setEnvironment(Environment env) {
 		environment = env;
 	}
-	public static Environment getEnvironment() {
+	public Environment getEnvironment() {
 		return environment;
 	}
 
@@ -63,7 +63,7 @@ public class MarioData {
 		this.actions = act;
 	}
 	
-	public static byte[] getActionTrace(){
+	public byte[] getActionTrace(){
 		byte[] out = new byte[actionRecord.size()];
 		
 		for (int i = 0; i < out.length;i++) {

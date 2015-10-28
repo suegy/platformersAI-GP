@@ -2,11 +2,8 @@ package competition.gic2010.turing.Gaudl;
 
 
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.BitSet;
 import java.util.LinkedList;
@@ -15,15 +12,11 @@ import java.util.List;
 import org.jgap.gp.IGPProgram;
 
 import ch.idsia.agents.Agent;
-import ch.idsia.benchmark.mario.engine.GlobalOptions;
-import ch.idsia.benchmark.tasks.BasicTask;
 import ch.idsia.benchmark.tasks.GPMirrorTask;
-import ch.idsia.benchmark.tasks.ReplayTask;
 import ch.idsia.benchmark.tasks.Task;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
-import clojure.lang.IPersistentVector;
-import clojure.lang.LazySeq;
+
 import competition.gic2010.turing.Gaudl.gp.MarioData;
 
 
@@ -40,7 +33,6 @@ public class TraceFitness extends GameplayMetricFitness {
 	private byte [][] referenceTraces;
 	String [] referenceTraceFiles;
 	private int simulationTime;
-	private int gamalyzerFramesPerChunk = 12;
 	private int slidingWindow = 10;
 	//private Trace refTrace;
 
@@ -168,10 +160,13 @@ public class TraceFitness extends GameplayMetricFitness {
 			int lvl = 0;
 		//		runReplayTask(prog,data,simulationTime,lvl);
 				error += calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
-				runMarioTask(prog,data,simulationTime,lvl);
-				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				//runMarioTask(prog,data,simulationTime,lvl);
+				//distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				distance[lvl]=0;
 				//System.out.print(error+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
-				prog.setAdditionalFitnessInfo(String.format("%s:%s",error,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
+				//prog.setAdditionalFitnessInfo(String.format("%s:%s",error,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
+				prog.setAdditionalFitnessInfo(String.format("%s:%s",error,0));
+				
 				//error += distance[lvl]/MarioData.getEnvironment().getEvaluationInfo().levelLength;
 				
 				
@@ -221,6 +216,12 @@ public class TraceFitness extends GameplayMetricFitness {
         // if we are using delta distance we need to use "<" because we care for smaller errors
         if (error > bestFit ){
             System.out.println("reached a good solution");
+            //TODO: fix the lvl assignment here as it is later not just level 0
+            runMarioTask(prog,data,simulationTime,0);
+			distance[0]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+			System.out.println("best: "+error+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
+			prog.setAdditionalFitnessInfo(String.format("%s:%s",error,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
+			
             logBest(error, prog);
 
             bestFit = error;
@@ -259,7 +260,7 @@ public class TraceFitness extends GameplayMetricFitness {
 	    replayTask.reset(referenceTraceFiles[lvl]);
 	    //GlobalOptions.FPS = m_options.getFPS();
 	    
-	    return ((GPMirrorTask)replayTask).startReplay(100,false);
+	    return ((GPMirrorTask)replayTask).startReplay(200,false);
 	}
 
 	
