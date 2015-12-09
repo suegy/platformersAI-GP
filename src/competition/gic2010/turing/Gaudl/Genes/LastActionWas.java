@@ -20,7 +20,7 @@ public class LastActionWas extends MarioCommand {
 	
 	public LastActionWas(GPConfiguration a_conf)
 			throws InvalidConfigurationException {
-		super(a_conf,1,CommandGene.BooleanClass);
+		super(a_conf,2,CommandGene.BooleanClass);
 	}
 
 	
@@ -34,20 +34,26 @@ public class LastActionWas extends MarioCommand {
 		return "lastActionWas";
 	}
 	
+	/*
+	 * checks in the history [y] if action [x] was present
+	 * @see org.jgap.gp.CommandGene#execute_boolean(org.jgap.gp.impl.ProgramChromosome, int, java.lang.Object[])
+	 */
 	public boolean execute_boolean(ProgramChromosome c, int a_n, Object[] a_args){
 		MarioData data = getMarioData(c);
 		int x = c.execute_int(a_n, 0, a_args);
-		switch (x) {
+		int y = c.execute_int(a_n, 1, a_args);
+		y = Math.abs(y) % 5;
+		switch (y) {
 		case Mario.KEY_DOWN:
-			return data.getLastActions()[x];
+			return data.getLastActions(x)[y];
 		case Mario.KEY_LEFT:
-			return data.getLastActions()[x];
+			return data.getLastActions(x)[y];
 		case Mario.KEY_RIGHT:
-			return data.getLastActions()[x];
+			return data.getLastActions(x)[y];
 		case Mario.KEY_JUMP:
-			return data.getLastActions()[x];
+			return data.getLastActions(x)[y];
 		case Mario.KEY_SPEED:
-			return data.getLastActions()[x];
+			return data.getLastActions(x)[y];
 		default:
 			return false;
 		}

@@ -11,7 +11,9 @@ public class MarioData {
 
 
 	private boolean[] actions;
-	private boolean[] last_actions;
+	private boolean[][] last_actions;
+	private int lastActionLength =50;
+	private int lastActionCounter = 0;
 	private int longJump;
 	private boolean longJumpRight;
 	private boolean longJumpLeft;
@@ -28,7 +30,8 @@ public class MarioData {
 	public MarioData() {
 		//TODO: If the number of actions chance this has to change as well
 		actions = new boolean[Environment.numberOfKeys];
-		last_actions = new boolean[Environment.numberOfKeys];
+		//TODO: currently the memory goes only back x timesteps and the position is identified by lastActionCounter
+		last_actions = new boolean[lastActionLength][Environment.numberOfKeys];
 		actionRecord = new ArrayList<Byte>();
 		
 	}
@@ -41,9 +44,11 @@ public class MarioData {
 	}
 
 	public boolean[] getActions() {
-		this.last_actions=this.actions.clone();
+		if (lastActionCounter >= lastActionLength)
+			lastActionCounter = 0;
+		this.last_actions[lastActionCounter]=this.actions.clone();
 		this.actions = new boolean[last_actions.length];
-
+		
 		
 		if (this.longJump > 0){
 			if (longJumpLeft)
@@ -55,8 +60,8 @@ public class MarioData {
 		}
 		if (this.run > 0)
 			run();
-		storeAction(last_actions);
-		return last_actions;
+		storeAction(last_actions[lastActionCounter]);
+		return last_actions[lastActionCounter++];
 	}
 
 	public void setActions(boolean [] act) {
@@ -82,8 +87,9 @@ public class MarioData {
 		actionRecord.add(action);
 	}
 	
-	public boolean[] getLastActions(){
-		return this.last_actions;
+	public boolean[] getLastActions(int time){
+		time = Math.abs(time);
+		return this.last_actions[time%lastActionLength];
 	}
 
 	public void setAction(boolean act,int marioaction) {

@@ -151,8 +151,8 @@ public GPGenotype create() throws InvalidConfigurationException {
 	CommandGene [][] nodes = {
 			{
 				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
-				new Terminal(conf, CommandGene.IntegerClass,-5,5,true),
-				new Terminal(conf, CommandGene.IntegerClass,-5,5,true),
+				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
+				new Terminal(conf, CommandGene.IntegerClass,0,49,true),
 				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
 				//new SubProgram(conf),
@@ -222,7 +222,8 @@ public static void main(String[] args) throws InterruptedException
     final BasicTask basicTask = new BasicTask(marioAIOptions);
     //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
     //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
-    TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
+    //TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
+    CombinedTraceGamalyzer metric = new CombinedTraceGamalyzer(basicTask,marioAIOptions);
     GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
     
     while (marioGP.gpThread.isAlive()) {
