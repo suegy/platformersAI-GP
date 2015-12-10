@@ -27,7 +27,7 @@ public class LastActionWas extends MarioCommand {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "lastActionWas &1";
+		return "lastActionWas &1 &2";
 	}
 	
 	public String getName() {
