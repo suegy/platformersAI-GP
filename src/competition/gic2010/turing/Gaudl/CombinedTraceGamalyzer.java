@@ -41,6 +41,7 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 	private int simulationTime;
 	private int slidingWindow = 10;
 	private int gamalyzerFramesPerChunk = 12;
+	private float distanceScale = 0.05f;
 	//private Trace refTrace;
 
 	public CombinedTraceGamalyzer(Task task,MarioAIOptions options){
@@ -171,14 +172,14 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 			
 				double traceerror = calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
 				error += calculateGamalyzerFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
-				//runMarioTask(prog,data,simulationTime,lvl);
-				//distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
-				distance[lvl]=0;
+				runMarioTask(prog,data,simulationTime,lvl);
+				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				//distance[lvl]=0;
 				//System.out.print(error+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
 				//prog.setAdditionalFitnessInfo(String.format("%s:%s",error,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
-				prog.setAdditionalFitnessInfo(String.format("%s:%s",traceerror,0));
+				prog.setAdditionalFitnessInfo(String.format("%s:%s",traceerror,distance[lvl]));
 				
-				//error += distance[lvl]/MarioData.getEnvironment().getEvaluationInfo().levelLength;
+				error += distanceScale * (distance[lvl]/((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().levelLength);
 				
 				
 			//}
@@ -228,12 +229,12 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
         if (error > bestFit ){
             System.out.println("reached a good solution");
             //TODO: fix the lvl assignment here as it is later not just level 0
-            runMarioTask(prog,data,simulationTime,0);
-			distance[0]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
-			double traceerror = calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
+            //runMarioTask(prog,data,simulationTime,0);
+			//distance[0]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+			//double traceerror = calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
 			
 			System.out.println("best: "+error+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
-			prog.setAdditionalFitnessInfo(String.format("%s:%s",traceerror,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
+			//prog.setAdditionalFitnessInfo(String.format("%s:%s",traceerror,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
 			
             logBest(error, prog);
 
