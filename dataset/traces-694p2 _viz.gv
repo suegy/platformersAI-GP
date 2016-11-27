@@ -1,0 +1,59 @@
+digraph traces.txt { 
+nodenode [label="if",shape="diamond"]
+nodenode1 [label="&&",shape="rectangle"]
+nodenode11 [label="&&",shape="rectangle"]
+nodenode111 [label="isTall",shape="circle"]
+nodenode11 -> nodenode111; 
+nodenode112 [label="isTall",shape="circle"]
+nodenode11 -> nodenode112;
+nodenode1 -> nodenode11; 
+nodenode12 [label="isEnemyAt 1 1",shape="circle"]
+nodenode1 -> nodenode12;
+nodenode -> nodenode1 [label="condition"]
+nodenode2 [label="if",shape="diamond"]
+nodenode21 [label="canShoot",shape="circle"]
+nodenode2 -> nodenode21 [label="condition"]
+nodenode22 [label="if",shape="diamond"]
+nodenode221 [label="canJump",shape="circle"]
+nodenode22 -> nodenode221 [label="condition"]
+nodenode222 [label="right",shape="circle"]
+nodenode22 -> nodenode222 [label="then"]
+nodenode223 [label="wait",shape="circle"]
+nodenode22 -> nodenode223 [label="else"]
+nodenode2 -> nodenode22 [label="then"]
+nodenode23 [label="Sub",shape="rectangle"]
+nodenode231 [label="longJump",shape="circle"]
+nodenode23 -> nodenode231 
+nodenode232 [label="left",shape="circle"]
+nodenode23 -> nodenode232;
+nodenode2 -> nodenode23 [label="else"]
+nodenode -> nodenode2 [label="then"]
+nodenode3 [label="if",shape="diamond"]
+nodenode31 [label="&&",shape="rectangle"]
+nodenode311 [label="canShoot",shape="circle"]
+nodenode31 -> nodenode311; 
+nodenode312 [label="isTall",shape="circle"]
+nodenode31 -> nodenode312;
+nodenode3 -> nodenode31 [label="condition"]
+nodenode32 [label="Sub",shape="rectangle"]
+nodenode321 [label="wait",shape="circle"]
+nodenode32 -> nodenode321 
+nodenode322 [label="Sub",shape="rectangle"]
+nodenode3221 [label="run",shape="circle"]
+nodenode322 -> nodenode3221 
+nodenode3222 [label="Sub",shape="rectangle"]
+nodenode32221 [label="right",shape="circle"]
+nodenode3222 -> nodenode32221 
+nodenode32222 [label="longJump",shape="circle"]
+nodenode3222 -> nodenode32222;
+nodenode322 -> nodenode3222;
+nodenode32 -> nodenode322;
+nodenode3 -> nodenode32 [label="then"]
+nodenode33 [label="Sub",shape="rectangle"]
+nodenode331 [label="longJump",shape="circle"]
+nodenode33 -> nodenode331 
+nodenode332 [label="left",shape="circle"]
+nodenode33 -> nodenode332;
+nodenode3 -> nodenode33 [label="else"]
+nodenode -> nodenode3 [label="else"]
+}

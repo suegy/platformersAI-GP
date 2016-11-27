@@ -1,0 +1,197 @@
+digraph traces.txt { 
+nodenode [label="Sub",shape="rectangle"]
+nodenode1 [label="Sub",shape="rectangle"]
+nodenode11 [label="if",shape="diamond"]
+nodenode111 [label="canJump",shape="circle"]
+nodenode11 -> nodenode111 [label="condition"]
+nodenode112 [label="Sub",shape="rectangle"]
+nodenode1121 [label="run",shape="circle"]
+nodenode112 -> nodenode1121 
+nodenode1122 [label="wait",shape="circle"]
+nodenode112 -> nodenode1122;
+nodenode11 -> nodenode112 [label="then"]
+nodenode113 [label="Sub",shape="rectangle"]
+nodenode1131 [label="longJump",shape="circle"]
+nodenode113 -> nodenode1131 
+nodenode1132 [label="wait",shape="circle"]
+nodenode113 -> nodenode1132;
+nodenode11 -> nodenode113 [label="else"]
+nodenode1 -> nodenode11 
+nodenode12 [label="Sub",shape="rectangle"]
+nodenode121 [label="if",shape="diamond"]
+nodenode1211 [label="lastActionWas 3",shape="circle"]
+nodenode121 -> nodenode1211 [label="condition"]
+nodenode1212 [label="longJump",shape="circle"]
+nodenode121 -> nodenode1212 [label="then"]
+nodenode1213 [label="shoot",shape="circle"]
+nodenode121 -> nodenode1213 [label="else"]
+nodenode12 -> nodenode121 
+nodenode122 [label="Sub",shape="rectangle"]
+nodenode1221 [label="Sub",shape="rectangle"]
+nodenode12211 [label="shoot",shape="circle"]
+nodenode1221 -> nodenode12211 
+nodenode12212 [label="left",shape="circle"]
+nodenode1221 -> nodenode12212;
+nodenode122 -> nodenode1221 
+nodenode1222 [label="Sub",shape="rectangle"]
+nodenode12221 [label="left",shape="circle"]
+nodenode1222 -> nodenode12221 
+nodenode12222 [label="down",shape="circle"]
+nodenode1222 -> nodenode12222;
+nodenode122 -> nodenode1222;
+nodenode12 -> nodenode122;
+nodenode1 -> nodenode12;
+nodenode -> nodenode1 
+nodenode2 [label="Sub",shape="rectangle"]
+nodenode21 [label="if",shape="diamond"]
+nodenode211 [label="isEnemyAt 1 -2",shape="circle"]
+nodenode21 -> nodenode211 [label="condition"]
+nodenode212 [label="Sub",shape="rectangle"]
+nodenode2121 [label="jump",shape="circle"]
+nodenode212 -> nodenode2121 
+nodenode2122 [label="if",shape="diamond"]
+nodenode21221 [label="canJump",shape="circle"]
+nodenode2122 -> nodenode21221 [label="condition"]
+nodenode21222 [label="Sub",shape="rectangle"]
+nodenode212221 [label="run",shape="circle"]
+nodenode21222 -> nodenode212221 
+nodenode212222 [label="Sub",shape="rectangle"]
+nodenode2122221 [label="if",shape="diamond"]
+nodenode21222211 [label="canJump",shape="circle"]
+nodenode2122221 -> nodenode21222211 [label="condition"]
+nodenode21222212 [label="if",shape="diamond"]
+nodenode212222121 [label="isAir -1 -4",shape="circle"]
+nodenode21222212 -> nodenode212222121 [label="condition"]
+nodenode212222122 [label="Sub",shape="rectangle"]
+nodenode2122221221 [label="shoot",shape="circle"]
+nodenode212222122 -> nodenode2122221221 
+nodenode2122221222 [label="down",shape="circle"]
+nodenode212222122 -> nodenode2122221222;
+nodenode21222212 -> nodenode212222122 [label="then"]
+nodenode212222123 [label="Sub",shape="rectangle"]
+nodenode2122221231 [label="left",shape="circle"]
+nodenode212222123 -> nodenode2122221231 
+nodenode2122221232 [label="jump",shape="circle"]
+nodenode212222123 -> nodenode2122221232;
+nodenode21222212 -> nodenode212222123 [label="else"]
+nodenode2122221 -> nodenode21222212 [label="then"]
+nodenode21222213 [label="Sub",shape="rectangle"]
+nodenode212222131 [label="if",shape="diamond"]
+nodenode2122221311 [label="isTall",shape="circle"]
+nodenode212222131 -> nodenode2122221311 [label="condition"]
+nodenode2122221312 [label="right",shape="circle"]
+nodenode212222131 -> nodenode2122221312 [label="then"]
+nodenode2122221313 [label="jump",shape="circle"]
+nodenode212222131 -> nodenode2122221313 [label="else"]
+nodenode21222213 -> nodenode212222131 
+nodenode212222132 [label="Sub",shape="rectangle"]
+nodenode2122221321 [label="shoot",shape="circle"]
+nodenode212222132 -> nodenode2122221321 
+nodenode2122221322 [label="longJump",shape="circle"]
+nodenode212222132 -> nodenode2122221322;
+nodenode21222213 -> nodenode212222132;
+nodenode2122221 -> nodenode21222213 [label="else"]
+nodenode212222 -> nodenode2122221 
+nodenode2122222 [label="Sub",shape="rectangle"]
+nodenode21222221 [label="if",shape="diamond"]
+nodenode212222211 [label="isCoinAt -4 -1",shape="circle"]
+nodenode21222221 -> nodenode212222211 [label="condition"]
+nodenode212222212 [label="Sub",shape="rectangle"]
+nodenode2122222121 [label="wait",shape="circle"]
+nodenode212222212 -> nodenode2122222121 
+nodenode2122222122 [label="right",shape="circle"]
+nodenode212222212 -> nodenode2122222122;
+nodenode21222221 -> nodenode212222212 [label="then"]
+nodenode212222213 [label="Sub",shape="rectangle"]
+nodenode2122222131 [label="down",shape="circle"]
+nodenode212222213 -> nodenode2122222131 
+nodenode2122222132 [label="longJump",shape="circle"]
+nodenode212222213 -> nodenode2122222132;
+nodenode21222221 -> nodenode212222213 [label="else"]
+nodenode2122222 -> nodenode21222221 
+nodenode21222222 [label="if",shape="diamond"]
+nodenode212222221 [label="isCoinAt -1 -1",shape="circle"]
+nodenode21222222 -> nodenode212222221 [label="condition"]
+nodenode212222222 [label="Sub",shape="rectangle"]
+nodenode2122222221 [label="shoot",shape="circle"]
+nodenode212222222 -> nodenode2122222221 
+nodenode2122222222 [label="right",shape="circle"]
+nodenode212222222 -> nodenode2122222222;
+nodenode21222222 -> nodenode212222222 [label="then"]
+nodenode212222223 [label="if",shape="diamond"]
+nodenode2122222231 [label="isTall",shape="circle"]
+nodenode212222223 -> nodenode2122222231 [label="condition"]
+nodenode2122222232 [label="Sub",shape="rectangle"]
+nodenode21222222321 [label="longJump",shape="circle"]
+nodenode2122222232 -> nodenode21222222321 
+nodenode21222222322 [label="Sub",shape="rectangle"]
+nodenode212222223221 [label="wait",shape="circle"]
+nodenode21222222322 -> nodenode212222223221 
+nodenode212222223222 [label="wait",shape="circle"]
+nodenode21222222322 -> nodenode212222223222;
+nodenode2122222232 -> nodenode21222222322;
+nodenode212222223 -> nodenode2122222232 [label="then"]
+nodenode2122222233 [label="right",shape="circle"]
+nodenode212222223 -> nodenode2122222233 [label="else"]
+nodenode21222222 -> nodenode212222223 [label="else"]
+nodenode2122222 -> nodenode21222222;
+nodenode212222 -> nodenode2122222;
+nodenode21222 -> nodenode212222;
+nodenode2122 -> nodenode21222 [label="then"]
+nodenode21223 [label="Sub",shape="rectangle"]
+nodenode212231 [label="longJump",shape="circle"]
+nodenode21223 -> nodenode212231 
+nodenode212232 [label="wait",shape="circle"]
+nodenode21223 -> nodenode212232;
+nodenode2122 -> nodenode21223 [label="else"]
+nodenode212 -> nodenode2122;
+nodenode21 -> nodenode212 [label="then"]
+nodenode213 [label="if",shape="diamond"]
+nodenode2131 [label="canJump",shape="circle"]
+nodenode213 -> nodenode2131 [label="condition"]
+nodenode2132 [label="Sub",shape="rectangle"]
+nodenode21321 [label="left",shape="circle"]
+nodenode2132 -> nodenode21321 
+nodenode21322 [label="wait",shape="circle"]
+nodenode2132 -> nodenode21322;
+nodenode213 -> nodenode2132 [label="then"]
+nodenode2133 [label="wait",shape="circle"]
+nodenode213 -> nodenode2133 [label="else"]
+nodenode21 -> nodenode213 [label="else"]
+nodenode2 -> nodenode21 
+nodenode22 [label="if",shape="diamond"]
+nodenode221 [label="isCoinAt -2 1",shape="circle"]
+nodenode22 -> nodenode221 [label="condition"]
+nodenode222 [label="Sub",shape="rectangle"]
+nodenode2221 [label="longJump",shape="circle"]
+nodenode222 -> nodenode2221 
+nodenode2222 [label="Sub",shape="rectangle"]
+nodenode22221 [label="wait",shape="circle"]
+nodenode2222 -> nodenode22221 
+nodenode22222 [label="wait",shape="circle"]
+nodenode2222 -> nodenode22222;
+nodenode222 -> nodenode2222;
+nodenode22 -> nodenode222 [label="then"]
+nodenode223 [label="Sub",shape="rectangle"]
+nodenode2231 [label="run",shape="circle"]
+nodenode223 -> nodenode2231 
+nodenode2232 [label="if",shape="diamond"]
+nodenode22321 [label="canShoot",shape="circle"]
+nodenode2232 -> nodenode22321 [label="condition"]
+nodenode22322 [label="longJump",shape="circle"]
+nodenode2232 -> nodenode22322 [label="then"]
+nodenode22323 [label="Sub",shape="rectangle"]
+nodenode223231 [label="wait",shape="circle"]
+nodenode22323 -> nodenode223231 
+nodenode223232 [label="Sub",shape="rectangle"]
+nodenode2232321 [label="longJump",shape="circle"]
+nodenode223232 -> nodenode2232321 
+nodenode2232322 [label="right",shape="circle"]
+nodenode223232 -> nodenode2232322;
+nodenode22323 -> nodenode223232;
+nodenode2232 -> nodenode22323 [label="else"]
+nodenode223 -> nodenode2232;
+nodenode22 -> nodenode223 [label="else"]
+nodenode2 -> nodenode22;
+nodenode -> nodenode2;
+}

@@ -1,0 +1,11 @@
+gen: 14 fit:0.9580273926258087 dist: 21  Prog: sub[right --> longJump]
+gen: 24 fit:1.4229796528816223 dist: 131  Prog: if(canJump) then (jump) else(right)
+gen: 92 fit:1.5931952744722366 dist: 201  Prog: sub[(if(canJump) then (jump) else(right)) --> shoot]
+gen: 210 fit:1.593253806233406 dist: 201  Prog: sub[(if(canJump) then (jump) else(right)) --> run]
+gen: 295 fit:1.5989367365837097 dist: 201  Prog: sub[(if(canJump) then (jump) else(right)) --> (if(canJump) then (run) else(shoot))]
+gen: 472 fit:1.598997712135315 dist: 201  Prog: sub[(sub[jump --> wait]) --> (sub[(if(canJump) then (jump) else(right)) --> (if(canJump) then (run) else(shoot))])]
+gen: 480 fit:1.5991196632385254 dist: 201  Prog: sub[(sub[jump --> wait]) --> (sub[(if(canJump) then (jump) else(right)) --> (if(canJump) then ((if(canJump) then (longJump) else(right))) else(shoot))])]
+gen: 710 fit:1.7314648926258087 dist: 219  Prog: sub[(if((isBreakableAt 3 3)) then (shoot) else((sub[(sub[right --> (if((isAir 0 4)) then (wait) else(left))]) --> right]))) --> longJump]
+gen: 1109 fit:1.8263560980558395 dist: 256  Prog: sub[wait --> (if((lastActionWas 4)) then ((sub[jump --> right])) else((sub[longJump --> run])))]
+gen: 1422 fit:1.8265628814697266 dist: 256  Prog: sub[wait --> (if((lastActionWas 4)) then ((sub[(if(canShoot) then (right) else(longJump)) --> right])) else((sub[longJump --> run])))]
+gen: 1455 fit:1.8268878012895584 dist: 256  Prog: sub[wait --> (if((lastActionWas 4)) then ((sub[(if(canShoot) then (right) else(longJump)) --> right])) else((sub[longJump --> (sub[longJump --> run])])))]
