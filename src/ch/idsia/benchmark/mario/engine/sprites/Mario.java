@@ -53,8 +53,8 @@ public static final int STATUS_DEAD = 0;
 
 private static float marioGravity;
 
-public static boolean large = false;
-public static boolean fire = false;
+public boolean large = false;
+public boolean fire = false;
 public static int coins = 0;
 public static int hiddenBlocksFound = 0;
 public static int collisionsWithCreatures = 0;
@@ -83,7 +83,7 @@ private boolean inLadderZone;
 private boolean onLadder;
 private boolean onTopOfLadder = false;
 
-public static void resetStatic(MarioAIOptions marioAIOptions)
+public void resetStatic(MarioAIOptions marioAIOptions)
 {
     large = marioAIOptions.getMarioMode() > 0;
     fire = marioAIOptions.getMarioMode() == 2;
@@ -102,6 +102,7 @@ public static void resetStatic(MarioAIOptions marioAIOptions)
 
     iceCoeff = marioAIOptions.getIce();
     windCoeff = marioAIOptions.getWind();
+    blink(false,new boolean[2]);
 }
 
 public int getMode()
@@ -152,21 +153,19 @@ public Mario(LevelScene levelScene)
     mapY = (int) (y / 16);
 
     facing = 1;
-    setMode(Mario.large, Mario.fire);
+    //setMode(this.large, this.fire);
     yaa = marioGravity * 3;
     jT = jumpPower / (marioGravity);
 }
 
 private float jT;
-private boolean lastLarge;
-private boolean lastFire;
-private boolean newLarge;
-private boolean newFire;
 
-private void blink(boolean on)
+private void blink(boolean on,boolean [] newValues)
 {
-    Mario.large = on ? newLarge : lastLarge;
-    Mario.fire = on ? newFire : lastFire;
+    if ( on ) {
+        large = newValues[0];
+        fire = newValues[1];
+    }
 
 //        System.out.println("on = " + on);
     if (large)
@@ -192,20 +191,7 @@ private void blink(boolean on)
 
 void setMode(boolean large, boolean fire)
 {
-//        System.out.println("large = " + large);
-    if (fire) large = true;
-    if (!large) fire = false;
-
-    lastLarge = Mario.large;
-    lastFire = Mario.fire;
-
-    Mario.large = large;
-    Mario.fire = fire;
-
-    newLarge = Mario.large;
-    newFire = Mario.fire;
-
-    blink(true);
+    blink(true,new boolean[]{large,fire});
 }
 
 public void setRacoon(boolean isRacoon)
@@ -395,12 +381,12 @@ public void move()
         sliding = false;
     }
 
-    if (keys[KEY_SPEED] && ableToShoot && Mario.fire && levelScene.fireballsOnScreen < 2)
+    if (keys[KEY_SPEED] && ableToShoot && this.fire && levelScene.fireballsOnScreen < 2)
     {
         levelScene.addSprite(new Fireball(levelScene, x + facing * 6, y - 20, facing));
     }
     // Cheats:
-    if (GlobalOptions.isPowerRestoration && keys[KEY_SPEED] && (!Mario.large || !Mario.fire))
+    if (GlobalOptions.isPowerRestoration && keys[KEY_SPEED] && (!this.large || !this.fire))
         setMode(true, true);
 //        if (cheatKeys[KEY_LIFE_UP])
 //            this.lives++;

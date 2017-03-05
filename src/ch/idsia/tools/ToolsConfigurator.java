@@ -442,7 +442,7 @@ public class ToolsConfiguratorActions implements ActionListener, ItemListener, C
         } else if (ob == CheckboxMaximizeFPS)
         {
             prevFPS = (GlobalOptions.FPS == GlobalOptions.MaxFPS) ? prevFPS : GlobalOptions.FPS;
-            GlobalOptions.FPS = CheckboxMaximizeFPS.getState() ? 100 : prevFPS;
+            GlobalOptions.FPS = CheckboxMaximizeFPS.getState() ? GlobalOptions.MaxFPS : prevFPS;
 //                marioComponent.adjustFPS();
 //                LOGGER.println("FPS set to " + (CheckboxMaximizeFPS.getState() ? "infinity" : GlobalOptions.FPS),
 //                        LOGGER.VERBOSE_MODE.INFO );

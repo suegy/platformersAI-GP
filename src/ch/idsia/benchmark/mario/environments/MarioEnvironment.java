@@ -50,7 +50,7 @@ import java.util.List;
  * Package: ch.idsia.benchmark.mario.environments
  */
 
-public final class MarioEnvironment implements Environment
+public class MarioEnvironment implements Environment
 {
 private int[] marioEgoPos = new int[2];
 private int receptiveFieldHeight = -1; // to be setup via MarioAIOptions
@@ -73,8 +73,7 @@ private final LevelScene levelScene;
 private MarioVisualComponent marioVisualComponent;
 private Agent agent;
 
-private static final MarioEnvironment ourInstance = new MarioEnvironment();
-private static final EvaluationInfo evaluationInfo = new EvaluationInfo();
+private EvaluationInfo evaluationInfo;
 
 private static String marioTraceFile;
 
@@ -84,19 +83,16 @@ public static SystemOfValues IntermediateRewardsSystemOfValues = new SystemOfVal
 
 DecimalFormat df = new DecimalFormat("######.#");
 
-public static MarioEnvironment getInstance()
-{
-    return ourInstance;
-}
-
-private MarioEnvironment()
+public MarioEnvironment()
 {
 //        System.out.println("System.getProperty(\"java.awt.headless\") = " + System.getProperty("java.awt.headless"));
 //        System.out.println("System.getProperty(\"verbose\") = " + System.getProperty("-verbose"));
 //        System.out.println("Java: JA ZDES'!!");
 //        System.out.flush();
     System.out.println(GlobalOptions.getBenchmarkName());
+    evaluationInfo = new EvaluationInfo();
     levelScene = new LevelScene();
+    //levelScene.mario = new Mario(levelScene);
 }
 
 public void resetDefault()
@@ -154,8 +150,10 @@ public void reset(MarioAIOptions setUpOptions)
 
     if (setUpOptions.isVisualization())
     {
-        if (marioVisualComponent == null)
-            marioVisualComponent = MarioVisualComponent.getInstance(setUpOptions, this);
+        if (marioVisualComponent == null) {
+            marioVisualComponent = new MarioVisualComponent(setUpOptions, this);
+            marioVisualComponent.CreateMarioComponentFrame(marioVisualComponent);
+        }
         levelScene.reset(setUpOptions);
         marioVisualComponent.reset();
         marioVisualComponent.postInitGraphicsAndLevel();
@@ -646,32 +644,32 @@ private void computeEvaluationInfo()
 //        evaluationInfo.agentType = agent.getClass().getSimpleName();
 //        evaluationInfo.agentName = agent.getName();
     evaluationInfo.marioStatus = levelScene.getMarioStatus();
-    evaluationInfo.flowersDevoured = Mario.flowersDevoured;
+    evaluationInfo.flowersDevoured = levelScene.mario.flowersDevoured;
     evaluationInfo.distancePassedPhys = (int) levelScene.mario.x;
     evaluationInfo.distancePassedCells = levelScene.mario.mapX;
 //     evaluationInfo.totalLengthOfLevelCells = levelScene.level.getWidthCells();
 //     evaluationInfo.totalLengthOfLevelPhys = levelScene.level.getWidthPhys();
     evaluationInfo.timeSpent = levelScene.getTimeSpent();
     evaluationInfo.timeLeft = levelScene.getTimeLeft();
-    evaluationInfo.coinsGained = Mario.coins;
+    evaluationInfo.coinsGained = levelScene.mario.coins;
     evaluationInfo.totalNumberOfCoins = levelScene.level.counters.coinsCount;
     evaluationInfo.totalNumberOfHiddenBlocks = levelScene.level.counters.hiddenBlocksCount;
     evaluationInfo.totalNumberOfFlowers = levelScene.level.counters.flowers;
     evaluationInfo.totalNumberOfMushrooms = levelScene.level.counters.mushrooms;
     evaluationInfo.totalNumberOfCreatures = levelScene.level.counters.creatures;
     evaluationInfo.marioMode = levelScene.getMarioMode();
-    evaluationInfo.mushroomsDevoured = Mario.mushroomsDevoured;
+    evaluationInfo.mushroomsDevoured = levelScene.mario.mushroomsDevoured;
     evaluationInfo.killsTotal = levelScene.getKillsTotal();
     evaluationInfo.killsByStomp = levelScene.getKillsByStomp();
     evaluationInfo.killsByFire = levelScene.getKillsByFire();
     evaluationInfo.killsByShell = levelScene.getKillsByShell();
-    evaluationInfo.hiddenBlocksFound = Mario.hiddenBlocksFound;
-    evaluationInfo.collisionsWithCreatures = Mario.collisionsWithCreatures;
+    evaluationInfo.hiddenBlocksFound = levelScene.mario.hiddenBlocksFound;
+    evaluationInfo.collisionsWithCreatures = levelScene.mario.collisionsWithCreatures;
     evaluationInfo.Memo = levelScene.memo;
     evaluationInfo.levelLength = levelScene.level.length;
     evaluationInfo.marioTraceFileName = marioTraceFile;
     evaluationInfo.marioTrace = levelScene.level.marioTrace;
-    evaluationInfo.greenMushroomsDevoured = Mario.greenMushroomsDevoured;
+    evaluationInfo.greenMushroomsDevoured = levelScene.mario.greenMushroomsDevoured;
     evaluationInfo.bytecodeInstructions = PunctualJudge.getCounter();
 }
 

@@ -18,14 +18,15 @@ import java.util.List;
  */
 public class GPMirrorTask implements Task
 {
-protected final static Environment environment = MarioEnvironment.getInstance();
+protected Environment environment;
 private ReplayAgent agent;
 private List<Agent> testAgents;
 private String name = getClass().getSimpleName();
 private Replayer replayer;
 
 public GPMirrorTask(List<Agent> ag){
-	testAgents = ag;
+	environment = new MarioEnvironment();
+    testAgents = ag;
 }
 
 public void playOneFile(final MarioAIOptions options)
@@ -55,7 +56,11 @@ public void playOneFile(final MarioAIOptions options)
         	}
         	
         	boolean[] action = agent.getAction();
-            environment.performAction(action);
+        	if (action != null) {
+                environment.performAction(action);
+            } else {
+                environment.performAction(new boolean[Environment.numberOfKeys]);
+        	}
         }
 
         if (interval == null)

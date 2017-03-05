@@ -47,7 +47,7 @@ import java.util.Vector;
 
 public class BasicTask implements Task
 {
-protected final static Environment environment = MarioEnvironment.getInstance();
+protected Environment environment;
 private Agent agent;
 protected MarioAIOptions options;
 private long COMPUTATION_TIME_BOUND = 42; // stands for prescribed  FPS 24.
@@ -58,6 +58,7 @@ private Vector<StatisticalSummary> statistics = new Vector<StatisticalSummary>()
 
 public BasicTask(MarioAIOptions marioAIOptions)
 {
+    environment = new MarioEnvironment();
     this.setOptionsAndReset(marioAIOptions);
 }
 
@@ -71,6 +72,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode)
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
         this.reset();
+        long start = System.currentTimeMillis();
         while (!environment.isLevelFinished())
         {
             environment.tick();
@@ -88,6 +90,8 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode)
                 environment.performAction(action);
             }
         }
+        long end = System.currentTimeMillis();
+        System.out.println("time taken:" + (end-start));
         environment.closeRecorder(); //recorder initialized in environment.reset
         environment.getEvaluationInfo().setTaskName(name);
         this.evaluationInfo = environment.getEvaluationInfo().clone();

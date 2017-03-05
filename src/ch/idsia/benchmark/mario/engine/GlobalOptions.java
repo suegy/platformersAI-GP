@@ -43,7 +43,7 @@ public static final int minorSubVersionID = 0;
 public static boolean areLabels = false;
 public static boolean isCameraCenteredOnMario = true;
 public static Integer FPS = 24;
-public static int MaxFPS = 200;
+public static int MaxFPS = 240;
 public static boolean areFrozenCreatures = false;
 
 public static boolean isVisualization = true;

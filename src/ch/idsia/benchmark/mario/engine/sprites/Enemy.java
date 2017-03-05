@@ -158,8 +158,8 @@ public void collideCheck()
                     {
                         spriteContext.addSprite(new Shell(levelScene, x, y, 1));
                     }
-                    ++LevelScene.killedCreaturesTotal;
-                    ++LevelScene.killedCreaturesByStomp;
+                    ++levelScene.killedCreaturesTotal;
+                    ++levelScene.killedCreaturesByStomp;
                 }
             } else
             {
@@ -377,8 +377,8 @@ public boolean shellCollideCheck(Shell shell)
             hPic = -hPic;
             yPicO = -yPicO + 16;
 //                System.out.println("shellCollideCheck");
-            ++LevelScene.killedCreaturesTotal;
-            ++LevelScene.killedCreaturesByShell;
+            ++levelScene.killedCreaturesTotal;
+            ++levelScene.killedCreaturesByShell;
             return true;
         }
     }
@@ -407,8 +407,8 @@ public boolean fireballCollideCheck(Fireball fireball)
             hPic = -hPic;
             yPicO = -yPicO + 16;
 //                System.out.println("fireballCollideCheck");
-            ++LevelScene.killedCreaturesTotal;
-            ++LevelScene.killedCreaturesByFireBall;
+            ++levelScene.killedCreaturesTotal;
+            ++levelScene.killedCreaturesByFireBall;
             return true;
         }
     }

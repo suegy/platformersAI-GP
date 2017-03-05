@@ -274,7 +274,7 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 	    replayTask.reset(referenceTraceFiles[lvl]);
 	    //GlobalOptions.FPS = m_options.getFPS();
 	    
-	    return ((GPMirrorTask)replayTask).startReplay(200,false);
+	    return ((GPMirrorTask)replayTask).startReplay(24,false);
 	}
 
 	

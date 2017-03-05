@@ -41,14 +41,6 @@ public class Replay
 public static void main(String[] args)
 {
 
-    //TODO : FIX IT!
-    /* TODO : FIX IT!
-[~ Mario AI Benchmark ~ 0.1.9]
-Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 0
-	at ch.idsia.scenarios.Replay.main(Replay.java:18)
-    
-     */
-//    final MarioAIOptions cmdLineOptions = new MarioAIOptions(args);
     final ReplayTask replayTask = new ReplayTask();
     replayTask.reset(args[0]);
     replayTask.startReplay(25);

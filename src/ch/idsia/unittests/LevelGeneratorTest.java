@@ -214,7 +214,7 @@ public void testRandomCreatureGenerator_10Goombas()
             }
         }
 
-    System.out.println("level.counters.creatures = " + Level.counters.creatures);
+    System.out.println("level.counters.creatures = " + level.counters.creatures);
 
     assertEquals(10, counter);
 }
@@ -241,7 +241,7 @@ public void testRandomCreatureGenerator_20RedWingedKoopas()
             }
         }
 
-    System.out.println("level.counters.creatures = " + Level.counters.creatures);
+    System.out.println("level.counters.creatures = " + level.counters.creatures);
 
     assertEquals(20, counter);
 }

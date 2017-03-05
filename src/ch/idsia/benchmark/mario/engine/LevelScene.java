@@ -92,10 +92,10 @@ private int levelType;
 private int levelDifficulty;
 private int levelLength;
 private int levelHeight;
-public static int killedCreaturesTotal;
-public static int killedCreaturesByFireBall;
-public static int killedCreaturesByStomp;
-public static int killedCreaturesByShell;
+public int killedCreaturesTotal;
+public int killedCreaturesByFireBall;
+public int killedCreaturesByStomp;
+public int killedCreaturesByShell;
 
 private Replayer replayer;
 
@@ -343,7 +343,7 @@ public void bump(int x, int y, boolean canBreakBricks)
     if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BUMPABLE) > 0)
     {
         if (block == 1)
-            Mario.gainHiddenBlock();
+            this.mario.gainHiddenBlock();
         bumpInto(x, y - 1);
         byte blockData = level.getBlockData(x, y);
         if (blockData < 0)
@@ -363,7 +363,7 @@ public void bump(int x, int y, boolean canBreakBricks)
                 ++level.counters.greenMushrooms;
             } else
             {
-                if (!Mario.large)
+                if (!this.mario.large)
                 {
                     addSprite(new Mushroom(this, x * cellSize + 8, y * cellSize + 8));
                     ++level.counters.mushrooms;
@@ -375,7 +375,7 @@ public void bump(int x, int y, boolean canBreakBricks)
             }
         } else
         {
-            Mario.gainCoin();
+            this.mario.gainCoin();
             addSprite(new CoinAnim(x, y));
         }
     }
@@ -401,7 +401,7 @@ public void bumpInto(int x, int y)
     byte block = level.getBlock(x, y);
     if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0)
     {
-        Mario.gainCoin();
+        this.mario.gainCoin();
         level.setBlock(x, y, (byte) 0);
         addSprite(new CoinAnim(x, y + 1));
     }
@@ -585,15 +585,14 @@ public void reset(MarioAIOptions marioAIOptions)
     Sprite.setCreaturesGravity(marioAIOptions.getCreaturesGravity());
     Sprite.setCreaturesWind(marioAIOptions.getWind());
     Sprite.setCreaturesIce(marioAIOptions.getIce());
-    Mario.resetStatic(marioAIOptions);
 
     bonusPoints = -1;
 
-    mario = new Mario(this);
+    this.mario = new Mario(this);
     //System.out.println("mario = " + mario);
     memo = "";
-
-    sprites.add(mario);
+    this.mario.resetStatic(marioAIOptions);
+    sprites.add(this.mario);
     startTime = 1;
     timeLeft = timeLimit * GlobalOptions.mariosecondMultiplier;
 

@@ -82,11 +82,10 @@ int delay;
 private KeyAdapter prevHumanKeyBoardAgent;
 private String agentNameStr;
 private GameViewer gameViewer = null;
-private static MarioVisualComponent marioVisualComponent = null;
 
 private Scale2x scale2x = new Scale2x(320, 240);
 
-private MarioVisualComponent(MarioAIOptions marioAIOptions, MarioEnvironment marioEnvironment)
+public MarioVisualComponent(MarioAIOptions marioAIOptions, MarioEnvironment marioEnvironment)
 {
     this.marioEnvironment = marioEnvironment;
     adjustFPS();
@@ -126,17 +125,7 @@ private MarioVisualComponent(MarioAIOptions marioAIOptions, MarioEnvironment mar
     }
 }
 
-public static MarioVisualComponent getInstance(MarioAIOptions marioAIOptions, MarioEnvironment marioEnvironment)
-{
-    if (marioVisualComponent == null)
-    {
-        marioVisualComponent = new MarioVisualComponent(marioAIOptions, marioEnvironment);
-        marioVisualComponent.CreateMarioComponentFrame(marioVisualComponent);
-    }
-    return marioVisualComponent;
-}
-
-private static JFrame marioComponentFrame = null;
+private JFrame marioComponentFrame = null;
 
 public void CreateMarioComponentFrame(MarioVisualComponent m)
 {
@@ -203,7 +192,7 @@ public void tick()
     }
 //        thisVolatileImageGraphics.setColor(Color.DARK_GRAY);
     drawStringDropShadow(thisVolatileImageGraphics, "FPS: ", 33, 2, 7);
-    drawStringDropShadow(thisVolatileImageGraphics, ((GlobalOptions.FPS > 99) ? "\\infty" : "  " + GlobalOptions.FPS.toString()), 33, 3, 7);
+    drawStringDropShadow(thisVolatileImageGraphics, ((GlobalOptions.FPS > 240) ? "\\infty" : "  " + GlobalOptions.FPS.toString()), 33, 3, 7);
 
 //        msg = totalNumberOfTrials == -2 ? "" : currentTrial + "(" + ((totalNumberOfTrials == -1) ? "\\infty" : totalNumberOfTrials) + ")";
 
@@ -225,11 +214,14 @@ public void tick()
     // Delay depending on how far we are behind.
     if (delay > 0)
     {
-//            System.out.println("delay = " + delay);
+
         try
         {
-            tm += delay;
-            Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
+            long diff = System.currentTimeMillis() - tm;
+            long sleep = delay-diff;
+        //    System.out.println("delay = " + delay + " " + sleep);
+            Thread.sleep((sleep > 0) ? sleep : 0);
+            tm = System.currentTimeMillis();
         } catch (InterruptedException ignored) {}
     }
 }
@@ -293,11 +285,11 @@ public void render(Graphics g)
     drawStringDropShadow(g, "by Shell : " + marioEnvironment.getKilledCreaturesByShell(), 19, 2, 1);
     // COINS:
     g.drawImage(Art.level[0][2], 2, 43, 10, 10, null);
-    drawStringDropShadow(g, "x" + df.format(Mario.coins), 1, 5, 4);
+    drawStringDropShadow(g, "x" + df.format(this.mario.coins), 1, 5, 4);
     g.drawImage(Art.items[0][0], 47, 43, 11, 11, null);
-    drawStringDropShadow(g, "x" + df.format(Mario.mushroomsDevoured), 7, 5, 4);
+    drawStringDropShadow(g, "x" + df.format(this.mario.mushroomsDevoured), 7, 5, 4);
     g.drawImage(Art.items[1][0], 89, 43, 11, 11, null);
-    drawStringDropShadow(g, "x" + df.format(Mario.flowersDevoured), 12, 5, 4);
+    drawStringDropShadow(g, "x" + df.format(this.mario.flowersDevoured), 12, 5, 4);
 //    drawStringDropShadow(g, "MUSHROOMS: " + df.format(Mario.mushroomsDevoured), 0, 5, 4);
     drawStringDropShadow(g, "by Stomp : " + marioEnvironment.getKilledCreaturesByStomp(), 19, 3, 1);
 //    drawStringDropShadow(g, "FLOWERS  : " + df.format(Mario.flowersDevoured), 0, 6, 4);
@@ -421,8 +413,8 @@ public void postInitGraphicsAndLevel()
 public void adjustFPS()
 {
     int fps = GlobalOptions.FPS;
-    delay = (fps > 0) ? (fps >= GlobalOptions.MaxFPS) ? 0 : (1000 / fps) : 100;
-//        System.out.println("Delay: " + delay);
+    delay = (fps > 0) ? (fps >= GlobalOptions.MaxFPS) ? 0 : (1000 / fps) : GlobalOptions.MaxFPS;
+    //    System.out.println("Delay: " + delay + " " + fps);
 }
 
 // THis method here solely for the displaying information in order to reduce
@@ -453,7 +445,7 @@ public List<String> getTextObservation(boolean showEnemies, boolean showLevelSce
 
 public void changeScale2x()
 {
-    marioVisualComponent.setPreferredSize(new Dimension(width, height));
+    this.setPreferredSize(new Dimension(width, height));
     marioComponentFrame.pack();
     this.thisGraphics = getGraphics();
 }

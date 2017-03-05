@@ -59,14 +59,10 @@ public void setUp()
 @AfterTest
 public void tearDown()
 {
-    MarioEnvironment.getInstance().setReplayer(null);
+    MarioEnvironment env = new MarioEnvironment();
+    env.setReplayer(null);
 }
 
-@Test
-public void testGetInstance() throws Exception
-{
-    assertNotNull(MarioEnvironment.getInstance());
-}
 
 @Test
 public void testResetDefault() throws Exception
@@ -172,7 +168,7 @@ public void testGetMarioStatus() throws Exception
 public void testGetSerializedFullObservationZZ() throws Exception
 {
     MarioAIOptions marioAIOptions = new MarioAIOptions("-vis off -rfw 5 -rfh 7");
-    MarioEnvironment env = MarioEnvironment.getInstance();
+    MarioEnvironment env = new MarioEnvironment();
 
     assertNotNull(env);
 
@@ -266,7 +262,7 @@ public void testGetIntermediateReward() throws Exception
 public void testMarioCenterPos() throws Exception
 {
     MarioAIOptions marioAIOptions = new MarioAIOptions("-vis off -rfw 5 -rfh 7");
-    MarioEnvironment env = MarioEnvironment.getInstance();
+    MarioEnvironment env = new MarioEnvironment();
 
     assertNotNull(env);
 
