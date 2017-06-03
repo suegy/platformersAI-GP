@@ -195,6 +195,9 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 			prog.setAdditionalFitnessInfo(String.format("%s:%s", gamalyzerError, distance[lvl]));
 
 			double distanceWeight = (distance[lvl] / data.getEnvironment().getEvaluationInfo().levelLength);
+			if (distanceWeight > 1-distanceScale)
+				distanceScale *= .1;
+
 			if (distanceWeight > distanceScale)
 				distanceWeight *= distanceScale;
 

@@ -96,7 +96,7 @@ public final class GPSystemStandAlone extends GPProblem
 protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
-public static final int popSize = 100;
+public static final int popSize = 200;
 private transient Logger LOGGER;
 
 public GPSystemStandAlone(GPFitnessFunction metric) {
