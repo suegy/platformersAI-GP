@@ -27,19 +27,14 @@
 
 package competition.gic2010.turing.Gaudl;
 
-import ch.idsia.agents.Agent;
-import ch.idsia.agents.LearningAgent;
-import ch.idsia.agents.controllers.BasicMarioAIAgent;
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
-import ch.idsia.benchmark.mario.environments.Environment;
-import ch.idsia.benchmark.tasks.LearningTask;
-
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.impl.DeltaGPFitnessEvaluator;
 import org.jgap.gp.impl.GPConfiguration;
 
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.platformer.agents.Agent;
+import org.platformer.benchmark.platform.environments.Environment;
 
 /**
  * Created by IntelliJ IDEA.

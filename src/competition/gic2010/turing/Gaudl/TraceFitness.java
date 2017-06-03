@@ -8,16 +8,14 @@ import java.nio.file.Files;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.jgap.gp.IGPProgram;
 
-import ch.idsia.agents.Agent;
-import ch.idsia.benchmark.tasks.GPMirrorTask;
-import ch.idsia.benchmark.tasks.Task;
-import ch.idsia.tools.EvaluationInfo;
-import ch.idsia.tools.MarioAIOptions;
-
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.platformer.agents.Agent;
+import org.platformer.benchmark.tasks.MirrorTask;
+import org.platformer.benchmark.tasks.Task;
+import org.platformer.tools.EvaluationInfo;
+import org.platformer.tools.PlatformerAIOptions;
 
 
 /*
@@ -36,7 +34,7 @@ public class TraceFitness extends GameplayMetricFitness {
 	private int slidingWindow = 10;
 	//private Trace refTrace;
 
-	public TraceFitness(Task task,MarioAIOptions options){
+	public TraceFitness(Task task, PlatformerAIOptions options){
 		super(task, options);
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
@@ -47,7 +45,7 @@ public class TraceFitness extends GameplayMetricFitness {
 		referenceTraces = new byte[2][];		
 		// reading the tracing at 15chunks per second
 		try {
-			referenceTraces[0] =  Files.readAllBytes(new File(referenceTraceFiles[0]+".act").toPath());
+			referenceTraces[0] = Files.readAllBytes(new File(referenceTraceFiles[0]+".act").toPath());
 			referenceTraces[1] =  Files.readAllBytes(new File(referenceTraceFiles[1]+".act").toPath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -93,10 +91,19 @@ public class TraceFitness extends GameplayMetricFitness {
 		
 		return weight;
 	}
-
+	public static BitSet toBitSet(byte b) {
+		int n = 8;
+		final BitSet set = new BitSet(n);
+		while (n-- > 0) {
+			boolean isSet = (b & 0x80) != 0;
+			set.set(n, isSet);
+			b <<= 1;
+		}
+		return set;
+	}
 	private double compareAction(byte curr, byte ref) {
-		BitSet reference = BitSet.valueOf(new byte[] {ref});
-		BitSet current = BitSet.valueOf(new byte[] {curr});
+		BitSet reference = toBitSet(ref);
+		BitSet current = toBitSet(curr);
 		
 		reference.xor(current);
 		
@@ -237,11 +244,11 @@ public class TraceFitness extends GameplayMetricFitness {
 		List<Agent> agentSet = new LinkedList<Agent>();
 		
 		agentSet.add(mario);
-		GPMirrorTask replayTask = new GPMirrorTask(agentSet);
+		MirrorTask replayTask = new MirrorTask(agentSet);
 	    replayTask.reset(referenceTraceFiles[lvl]);
 	    //GlobalOptions.FPS = m_options.getFPS();
 	    
-	    return ((GPMirrorTask)replayTask).startReplay(75,false);
+	    return replayTask.startReplay(75,false);
 	}
 	
 	protected boolean  runReplayTask(IGPProgram [] progs,int time,int lvl) {
@@ -256,16 +263,16 @@ public class TraceFitness extends GameplayMetricFitness {
 		}
 		
 		
-		GPMirrorTask replayTask = new GPMirrorTask(agentSet);
+		MirrorTask replayTask = new MirrorTask(agentSet);
 	    replayTask.reset(referenceTraceFiles[lvl]);
 	    //GlobalOptions.FPS = m_options.getFPS();
 	    
-	    return ((GPMirrorTask)replayTask).startReplay(200,false);
+	    return replayTask.startReplay(200,false);
 	}
 
 	
 	@Override
-	protected double calculateFitness(EvaluationInfo env,IGPProgram prog){
+	protected double calculateFitness(EvaluationInfo env, IGPProgram prog){
 		byte[] currentRaw = ((MarioData)prog.getApplicationData()).getActionTrace();
 		
 		double weight = CompareTrace(currentRaw, 0, simulationTime);

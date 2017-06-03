@@ -7,14 +7,13 @@ import gamalyzer.data.input.Traces;
 import java.io.File;
 
 import org.jgap.gp.IGPProgram;
-
-import ch.idsia.benchmark.tasks.BasicTask;
-import ch.idsia.tools.EvaluationInfo;
-import ch.idsia.tools.MarioAIOptions;
 import clojure.lang.IPersistentVector;
 import clojure.lang.LazySeq;
 
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.platformer.benchmark.tasks.BasicTask;
+import org.platformer.tools.EvaluationInfo;
+import org.platformer.tools.PlatformerAIOptions;
 
 
 /*
@@ -33,7 +32,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 	private int slidingWindow = 10;
 	//private Trace refTrace;
 
-	public GamalyzerFitness(BasicTask task,MarioAIOptions options){
+	public GamalyzerFitness(BasicTask task, PlatformerAIOptions options){
 		super(task, options);
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
@@ -180,7 +179,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 
 	
 	@Override
-	protected double calculateFitness(EvaluationInfo env,IGPProgram prog){
+	protected double calculateFitness(EvaluationInfo env, IGPProgram prog){
 		Traces currentRaw = gamalyzer.read.Mario.readActions(referenceTraces, ((MarioData)prog.getApplicationData()).getActionTrace(),gamalyzerFramesPerChunk,1);
 		IPersistentVector t = (IPersistentVector)currentRaw.traces;
 		Trace current = (Trace) t.entryAt(0).getValue();

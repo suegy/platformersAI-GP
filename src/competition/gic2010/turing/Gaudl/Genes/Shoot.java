@@ -7,7 +7,6 @@ import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
 import competition.gic2010.turing.Gaudl.gp.MarioData;
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
 
 public class Shoot extends MarioCommand {
 

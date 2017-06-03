@@ -54,8 +54,6 @@ import org.jgap.gp.terminal.Terminal;
 import org.jgap.gp.terminal.True;
 import org.jgap.gp.terminal.Variable;
 
-import ch.idsia.benchmark.tasks.BasicTask;
-import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.Genes.And;
 import competition.gic2010.turing.Gaudl.Genes.CanJump;
 import competition.gic2010.turing.Gaudl.Genes.CanShoot;
@@ -86,6 +84,8 @@ import competition.gic2010.turing.Gaudl.Genes.Shoot;
 import competition.gic2010.turing.Gaudl.Genes.SubProgram;
 import competition.gic2010.turing.Gaudl.Genes.Wait;
 import competition.gic2010.turing.Gaudl.gp.WeightedGPRouletteSelector;
+import org.platformer.benchmark.tasks.BasicTask;
+import org.platformer.tools.PlatformerAIOptions;
 
 /**
  * Created by IntelliJ IDEA. User: Sergey Karakovskiy, sergey at idsia dot ch Date: Mar 17, 2010 Time: 8:28:00 AM
@@ -218,7 +218,7 @@ public static void main(String[] args) throws InterruptedException
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	final MarioAIOptions marioAIOptions = new MarioAIOptions(args);
+	final PlatformerAIOptions marioAIOptions = new PlatformerAIOptions(args);
     final BasicTask basicTask = new BasicTask(marioAIOptions);
     //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
     //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);

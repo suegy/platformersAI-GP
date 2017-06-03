@@ -41,13 +41,13 @@ import competition.gic2010.turing.Gaudl.Genes.Left;
 import competition.gic2010.turing.Gaudl.Genes.Right;
 import competition.gic2010.turing.Gaudl.Genes.Shoot;
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.platformer.agents.Agent;
+import org.platformer.agents.LearningAgent;
+import org.platformer.benchmark.platform.environments.Environment;
+import org.platformer.benchmark.tasks.BasicTask;
+import org.platformer.benchmark.tasks.LearningTask;
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-import ch.idsia.agents.Agent;
-import ch.idsia.agents.LearningAgent;
-import ch.idsia.benchmark.mario.environments.Environment;
-import ch.idsia.benchmark.tasks.BasicTask;
-import ch.idsia.benchmark.tasks.GamePlayTask;
-import ch.idsia.benchmark.tasks.LearningTask;
+
 
 public class GPSystemInternal extends GPProblem implements LearningAgent {
 

@@ -56,7 +56,8 @@ public class Down extends MarioCommand implements IMutateable{
 //		    return new LongJumpLeft(getGPConfiguration());
 //		if (a_percentage < 0.20d)
 //		    return new JumpLeft(getGPConfiguration());
-		
+
+		//getGPConfiguration().getPrototypeProgram().getNodeSets()[0].
 		if (a_percentage < 0.14d)
 		    return new LongJump(getGPConfiguration());
 		if (a_percentage < 0.28d)

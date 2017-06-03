@@ -1,11 +1,10 @@
 package competition.gic2010.turing.Gaudl.gp;
 
+import org.platformer.benchmark.platform.engine.sprites.Sprite;
+import org.platformer.benchmark.platform.environments.Environment;
+
 import java.io.IOException;
 import java.util.ArrayList;
-
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
-import ch.idsia.benchmark.mario.engine.sprites.Sprite;
-import ch.idsia.benchmark.mario.environments.Environment;
 
 public class MarioData {
 

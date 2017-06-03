@@ -4,9 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.StandardCopyOption;
 
 import org.jgap.IChromosome;
@@ -17,12 +15,12 @@ import org.jgap.gp.IGPProgram;
 import org.jgap.gp.impl.GPProgram;
 import org.jgap.gp.impl.ProgramChromosome;
 
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
-import ch.idsia.benchmark.tasks.BasicTask;
-import ch.idsia.benchmark.tasks.Task;
-import ch.idsia.tools.EvaluationInfo;
-import ch.idsia.tools.MarioAIOptions;
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.platformer.benchmark.platform.engine.sprites.Plumber;
+import org.platformer.benchmark.tasks.BasicTask;
+import org.platformer.benchmark.tasks.Task;
+import org.platformer.tools.EvaluationInfo;
+import org.platformer.tools.PlatformerAIOptions;
 
 public class GameplayMetricFitness extends GPFitnessFunction {
 
@@ -31,7 +29,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	 */
 	private static final long serialVersionUID = -8750632855093986122L;
 	Task m_task;
-	MarioAIOptions m_options;
+	PlatformerAIOptions m_options;
 	private int gen;
 	protected double bestFit;
 	protected BufferedWriter writer;
@@ -42,7 +40,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected int[] distance;
 	
 
-	public GameplayMetricFitness(Task task,MarioAIOptions options){
+	public GameplayMetricFitness(Task task,PlatformerAIOptions options){
 		m_task = task;
 		m_options = options;
 		gen = 0;
@@ -212,9 +210,9 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		else {
 			wfit = wfit+additional*importance;
 		}
-		if (env.distancePassedCells > env.levelLength*importance && env.marioStatus == Mario.STATUS_DEAD)
+		if (env.distancePassedCells > env.levelLength*importance && env.marioStatus == Plumber.STATUS_DEAD)
 			wfit = wfit*0.75f;
-		if (env.distancePassedCells == env.levelLength && env.marioStatus == Mario.STATUS_WIN){
+		if (env.distancePassedCells == env.levelLength && env.marioStatus == Plumber.STATUS_WIN){
 			System.out.print("Solved Level");
 			wfit = wfit*1.1f;
 		}

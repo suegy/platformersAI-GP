@@ -9,7 +9,7 @@ import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
 import competition.gic2010.turing.Gaudl.gp.MarioData;
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
+import org.platformer.benchmark.platform.engine.sprites.Plumber;
 
 public class LastActionWas extends MarioCommand {
 
@@ -44,15 +44,15 @@ public class LastActionWas extends MarioCommand {
 		int y = c.execute_int(a_n, 1, a_args);
 		y = Math.abs(y) % 5;
 		switch (y) {
-		case Mario.KEY_DOWN:
+		case Plumber.KEY_DOWN:
 			return data.getLastActions(x)[y];
-		case Mario.KEY_LEFT:
+		case Plumber.KEY_LEFT:
 			return data.getLastActions(x)[y];
-		case Mario.KEY_RIGHT:
+		case Plumber.KEY_RIGHT:
 			return data.getLastActions(x)[y];
-		case Mario.KEY_JUMP:
+		case Plumber.KEY_JUMP:
 			return data.getLastActions(x)[y];
-		case Mario.KEY_SPEED:
+		case Plumber.KEY_SPEED:
 			return data.getLastActions(x)[y];
 		default:
 			return false;

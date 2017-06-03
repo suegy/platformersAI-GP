@@ -1,0 +1,3 @@
+[submodule "platformerAI"]
+	path = platformerAI
+	url = ../platformerAI.git
