@@ -5,6 +5,7 @@ import org.jgap.gp.CommandGene;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
@@ -22,6 +23,9 @@ public class IsWalkableAt extends MarioCommand implements IMutateable{
 		super(a_conf,2,CommandGene.BooleanClass);
 	}
 
+	public IsWalkableAt() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration());
+	}
 	
 	@Override
 	public String toString() {

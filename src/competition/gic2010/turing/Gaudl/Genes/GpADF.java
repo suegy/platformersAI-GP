@@ -3,6 +3,7 @@ package competition.gic2010.turing.Gaudl.Genes;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.function.ADF;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 
 public class GpADF extends ADF {
@@ -11,6 +12,10 @@ public class GpADF extends ADF {
 			throws InvalidConfigurationException {
 		super(a_conf, a_chromosomeNum, a_arity);
 		// TODO Auto-generated constructor stub
+	}
+
+	public GpADF() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration(),1,1);
 	}
 
 	/**

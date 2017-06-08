@@ -4,18 +4,21 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import org.jgap.IChromosome;
-import org.jgap.InvalidConfigurationException;
-import org.jgap.UnsupportedRepresentationException;
+import clojure.core.typed.test.person.Person;
+
+import com.owlike.genson.Genson;
+import com.owlike.genson.GensonBuilder;
+import com.owlike.genson.reflect.VisibilityFilter;
+import org.jgap.Genotype;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
-import org.jgap.gp.impl.GPProgram;
-import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.jgap.gp.impl.GPGenotype;
 import org.platformer.benchmark.platform.engine.sprites.Plumber;
 import org.platformer.benchmark.tasks.BasicTask;
 import org.platformer.benchmark.tasks.Task;
@@ -38,7 +41,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	protected int num_lvls;
 	protected int levelDifficulty;
 	protected int[] distance;
-	
+	protected Genson jsonSerialiser;
 
 	public GameplayMetricFitness(Task task,PlatformerAIOptions options){
 		m_task = task;
@@ -48,6 +51,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		num_lvls = 10; //should be the number of different levels we have data on
 		levelDifficulty = 0;
 		mariologFiles = new String[0];
+
 		try {
 			int counter = 0;
 			File output = new File(String.format("solution"+File.separator+"solutions-%s.txt", counter));
@@ -55,6 +59,13 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 				output = new File(String.format("solution"+File.separator+"solutions-%s.txt", counter++));
 			}
 			writer = new BufferedWriter(new FileWriter(output));
+			jsonSerialiser = new GensonBuilder()
+					.useClassMetadata(true)
+					.useMethods(false)
+					.setSkipNull(true)
+					.useFields(true, new VisibilityFilter(Modifier.TRANSIENT,Modifier.STATIC))
+					.useClassMetadataWithStaticType(false)
+					.create();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,8 +73,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 	}
 
 	@Override
-	protected double evaluate(IGPProgram arg0) {
-		return runFitness(arg0);
+	protected double evaluate(Object arg0) {
+		return runFitness((IGPProgram) arg0);
 	}
 
 	protected double runFitness(IGPProgram prog) {
@@ -164,9 +175,12 @@ public class GameplayMetricFitness extends GPFitnessFunction {
             String distArray = "";
             for (int len : distance) distArray += len + " ";
 
+			String jsonRepresentation = jsonSerialiser.serialize(prog);
 
-            writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
-            //writer.append("pers:"+prog.getPersistentRepresentation());
+            //writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
+			writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+jsonRepresentation+"\n");
+
+			//writer.append("pers:"+prog.getPersistentRepresentation());
             for (int i = 0;i< mariologFiles.length;i++){
             	File mariolog = new File(mariologFiles[i]+".zip");
             	if (mariolog.exists())
@@ -219,5 +233,4 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		System.out.print(wfit+";");
 		return wfit;
 	}
-
 }

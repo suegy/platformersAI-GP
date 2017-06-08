@@ -31,6 +31,10 @@ public class And
     this(a_conf, CommandGene.BooleanClass);
   }
 
+  public And() throws InvalidConfigurationException{
+    this(GPGenotype.getStaticGPConfiguration());
+  }
+
   public And(final GPConfiguration a_conf, Class a_returnType)
       throws InvalidConfigurationException {
     super(a_conf, 2, a_returnType);

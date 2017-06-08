@@ -4,6 +4,7 @@ import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
@@ -31,6 +32,10 @@ public class ElementAtXY extends MarioCommand {
 	public ElementAtXY(GPConfiguration a_conf)
 			throws InvalidConfigurationException {
 		super(a_conf,2,CommandGene.IntegerClass);
+	}
+
+	public ElementAtXY() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration());
 	}
 	
 	@Override

@@ -30,6 +30,10 @@ public class Not
     super(a_conf, 1, CommandGene.BooleanClass);
   }
 
+  public Not() throws InvalidConfigurationException{
+    this(GPGenotype.getStaticGPConfiguration());
+  }
+
   public String toString() {
     return "!&1";
   }

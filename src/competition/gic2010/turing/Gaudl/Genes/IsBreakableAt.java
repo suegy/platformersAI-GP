@@ -5,6 +5,7 @@ import org.jgap.gp.CommandGene;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
@@ -21,6 +22,10 @@ public class IsBreakableAt extends MarioCommand implements IMutateable{
 	public IsBreakableAt(GPConfiguration a_conf)
 			throws InvalidConfigurationException {
 		super(a_conf,2,CommandGene.BooleanClass);
+	}
+
+	public IsBreakableAt() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration());
 	}
 
 	

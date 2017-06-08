@@ -200,6 +200,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 	};
 	GPGenotype geno = GPGenotype.randomInitialGenotype(conf, types, argTypes, nodes,
 			250, true);
+
 	geno.switchParsimonyPressure(false);
 	return geno;
 }
@@ -224,8 +225,9 @@ public static void main(String[] args) throws InterruptedException
     //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
     //TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
     CombinedTraceGamalyzer metric = new CombinedTraceGamalyzer(basicTask,marioAIOptions);
+
     GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
-    
+
     while (marioGP.gpThread.isAlive()) {
     	Thread.sleep(10);
     }

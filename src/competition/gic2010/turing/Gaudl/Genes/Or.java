@@ -30,6 +30,10 @@ public class Or
     super(a_conf, 2, CommandGene.BooleanClass);
   }
 
+  public Or() throws InvalidConfigurationException{
+    this(GPGenotype.getStaticGPConfiguration());
+  }
+
   public CommandGene applyMutation(int index, double a_percentage)
       throws InvalidConfigurationException {
     CommandGene mutant;

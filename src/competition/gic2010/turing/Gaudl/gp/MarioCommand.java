@@ -19,20 +19,21 @@ public class MarioCommand extends CommandGene {
 	public static final int FloatClass = 3;
 	
 	private static final long serialVersionUID = 652817845838641019L;
-	protected Class m_type;
+	protected String m_type;
 	
 
 	public MarioCommand(GPConfiguration a_conf, int a_arity, Class a_returnType)
 			throws InvalidConfigurationException {
 		super(a_conf, a_arity, a_returnType);
-		m_type = a_returnType;		
+		m_type = a_returnType.toString();
 		
 	}
 	
 	public MarioCommand(final GPConfiguration a_conf)
 		      throws InvalidConfigurationException {
 		    this(a_conf, 0, CommandGene.VoidClass);
-		    m_type = CommandGene.VoidClass;
+		    m_type = CommandGene.VoidClass.getName();
+
 		  }
 	
 	  
@@ -42,7 +43,7 @@ public class MarioCommand extends CommandGene {
 	                int[] a_subChildTypes)
 	      throws InvalidConfigurationException {
 	    super(a_conf, arity, a_type, a_subReturnType, a_subChildTypes);
-	    m_type = a_type;
+	    m_type = a_type.getName();
 	  }
 	
 	
@@ -59,7 +60,7 @@ public class MarioCommand extends CommandGene {
 	public void execute_void(ProgramChromosome c, int a_n, Object[] a_args){}
 	
 	public int execute_int(ProgramChromosome c, int a_n, Object[] a_args){
-		if (m_type == CommandGene.BooleanClass){
+		if (m_type == CommandGene.BooleanClass.getName()){
 			return (execute_boolean(c, a_n, a_args)) ? 1 : 0;
 		}
 		return 0;

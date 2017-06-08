@@ -26,7 +26,7 @@ public class IfElse
   /** String containing the CVS revision. Read out via reflection!*/
   private final static String CVS_REVISION = "$Revision: 1.14 $";
 
-  private Class m_type;
+  private String m_type;
 
   public IfElse(final GPConfiguration a_conf, Class a_type)
       throws InvalidConfigurationException {
@@ -37,7 +37,11 @@ public class IfElse
                 int[] a_subChildTypes)
       throws InvalidConfigurationException {
     super(a_conf, 3, CommandGene.VoidClass, a_subReturnType, a_subChildTypes);
-    m_type = a_type;
+    m_type = a_type.getName();
+  }
+
+  public IfElse() throws InvalidConfigurationException{
+    this(GPGenotype.getStaticGPConfiguration(),CommandGene.VoidClass);
   }
 
   public String toString() {
@@ -57,19 +61,19 @@ public class IfElse
   public boolean execute_boolean(ProgramChromosome c, int n, Object[] args) {
     check(c);
     boolean condition;
-    if (m_type == CommandGene.IntegerClass) {
+    if (m_type == CommandGene.IntegerClass.getName()) {
       condition = c.execute_int(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.BooleanClass) {
+    else if (m_type == CommandGene.BooleanClass.getName()) {
       condition = c.execute_boolean(n, 0, args);
     }
-    else if (m_type == CommandGene.LongClass) {
+    else if (m_type == CommandGene.LongClass.getName()) {
       condition = c.execute_long(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.DoubleClass) {
+    else if (m_type == CommandGene.DoubleClass.getName()) {
       condition = c.execute_double(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.FloatClass) {
+    else if (m_type == CommandGene.FloatClass.getName()) {
       condition = c.execute_float(n, 0, args) > 0;
     }
     else {
@@ -86,19 +90,19 @@ public class IfElse
   public int execute_int(ProgramChromosome c, int n, Object[] args) {
     check(c);
     boolean condition;
-    if (m_type == CommandGene.IntegerClass) {
+    if (m_type == CommandGene.IntegerClass.getName()) {
       condition = c.execute_int(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.BooleanClass) {
+    else if (m_type == CommandGene.BooleanClass.getName()) {
       condition = c.execute_boolean(n, 0, args);
     }
-    else if (m_type == CommandGene.LongClass) {
+    else if (m_type == CommandGene.LongClass.getName()) {
       condition = c.execute_long(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.DoubleClass) {
+    else if (m_type == CommandGene.DoubleClass.getName()) {
       condition = c.execute_double(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.FloatClass) {
+    else if (m_type == CommandGene.FloatClass.getName()) {
       condition = c.execute_float(n, 0, args) > 0;
     }
     else {
@@ -115,19 +119,19 @@ public class IfElse
    public void execute_void(ProgramChromosome c, int n, Object[] args) {
     check(c);
     boolean condition;
-    if (m_type == CommandGene.IntegerClass) {
+    if (m_type == CommandGene.IntegerClass.getName()) {
       condition = c.execute_int(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.BooleanClass) {
+    else if (m_type == CommandGene.BooleanClass.getName()) {
       condition = c.execute_boolean(n, 0, args);
     }
-    else if (m_type == CommandGene.LongClass) {
+    else if (m_type == CommandGene.LongClass.getName()) {
       condition = c.execute_long(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.DoubleClass) {
+    else if (m_type == CommandGene.DoubleClass.getName()) {
       condition = c.execute_double(n, 0, args) > 0;
     }
-    else if (m_type == CommandGene.FloatClass) {
+    else if (m_type == CommandGene.FloatClass.getName()) {
       condition = c.execute_float(n, 0, args) > 0;
     }
     else {
@@ -153,7 +157,11 @@ public class IfElse
    */
   public Class getChildType(IGPProgram a_ind, int a_chromNum) {
     if (a_chromNum == 0) {
-      return m_type;
+      try {
+        return Class.forName(m_type);
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      }
     }
     return CommandGene.VoidClass;
   }
@@ -168,7 +176,7 @@ public class IfElse
    */
   public Object clone() {
     try {
-      IfElse result = new IfElse(getGPConfiguration(), m_type,
+      IfElse result = new IfElse(getGPConfiguration(), Class.forName(m_type),
                                  getSubReturnType(), getSubChildTypes());
       return result;
     } catch (Exception ex) {

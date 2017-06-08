@@ -6,6 +6,7 @@ import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 import org.jgap.util.CloneException;
 
@@ -37,7 +38,7 @@ public class SubProgram extends MarioCommand{
 	/**
 	 * Return types of the subprograms to excecute.
 	 */
-	private Class[] m_types;
+	private String[] m_types;
 
 	private boolean m_mutateable;
 
@@ -101,9 +102,9 @@ public class SubProgram extends MarioCommand{
 					+ " max. arity");
 		}
 		m_mode = 2;
-		m_types = new Class[a_arity];
+		m_types = new String[a_arity];
 		for (int i = 0; i < a_arity; i++) {
-			m_types[i] = a_types;
+			m_types[i] = a_types.getName();
 		}
 		m_subtrees = a_arity;
 		m_mutateable = a_mutateable;
@@ -115,6 +116,10 @@ public class SubProgram extends MarioCommand{
 			boolean a_mutateable)
 					throws InvalidConfigurationException {
 		this(a_conf, a_types, 0, null, a_mutateable);
+	}
+
+	public SubProgram() throws InvalidConfigurationException {
+		this(GPGenotype.getStaticGPConfiguration(),2,CommandGene.VoidClass,true);
 	}
 
 	public SubProgram(final GPConfiguration a_conf, Class[] a_types,
@@ -135,7 +140,7 @@ public class SubProgram extends MarioCommand{
 		m_mode = 1;
 		m_minArity = a_types.length;
 		m_maxArity = m_minArity + 5;
-		m_types = a_types;
+		setTypes(a_types);
 		m_subtrees = a_types.length;
 		m_mutateable = a_mutateable;
 	}
@@ -225,10 +230,37 @@ public class SubProgram extends MarioCommand{
 		return true;
 	}
 
+	public void setTypes(Class[] a_Types) {
+		String[] types = new String[a_Types.length];
+
+		for (int i = 0; i< a_Types.length;i++)
+			types[i] = a_Types[i].getName();
+
+
+		m_types = types;
+	}
+
+	public Class[] getTypes() {
+		Class[] types = new Class[m_types.length];
+
+		for (int i = 0; i<m_types.length;i++)
+			try {
+				types[i] = Class.forName(m_types[i]);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+
+
+		return types;
+	}
+
 	public Class getChildType(IGPProgram a_ind, int a_chromNum) {
 		try {
-			return m_types[a_chromNum];
+			return Class.forName(m_types[a_chromNum]);
 		} catch (ArrayIndexOutOfBoundsException aex) {
+			return null;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -296,7 +328,7 @@ public class SubProgram extends MarioCommand{
 				// --------------------------
 				Class[] types = new Class[m_subtrees];
 				for (int i = 0; i < m_subtrees; i++) {
-					types[i] = m_types[m_types.length - 1];
+					types[i] = Class.forName(m_types[m_types.length - 1]);
 				}
 				int[] subChildTypes = getSubChildTypes();
 				if (subChildTypes != null) {
@@ -308,7 +340,7 @@ public class SubProgram extends MarioCommand{
 			else {
 				// Second way of construction.
 				// ---------------------------
-				result = new SubProgram(getGPConfiguration(), m_subtrees, m_types[0],
+				result = new SubProgram(getGPConfiguration(), m_subtrees, Class.forName(m_types[0]),
 						m_minArity, m_maxArity, m_mutateable);
 			}
 			return result;
@@ -344,13 +376,17 @@ public class SubProgram extends MarioCommand{
 		if (m_types.length == size) {
 			return this;
 		}
-		SubProgram result;
+		SubProgram result = null;
 		if (m_mode == 1) {
 			// First way of construction.
 			// --------------------------
 			Class[] types = new Class[size];
 			for (int i = 0; i < size; i++) {
-				types[i] = m_types[m_types.length - 1];
+				try {
+					types[i] = Class.forName(m_types[m_types.length - 1]);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 			int[] subChildTypes = getSubChildTypes();
 			if (subChildTypes != null) {
@@ -362,8 +398,12 @@ public class SubProgram extends MarioCommand{
 		else {
 			// Second way of construction.
 			// ---------------------------
-			result = new SubProgram(getGPConfiguration(), size, m_types[0],
-					m_minArity, m_maxArity, m_mutateable);
+			try {
+				result = new SubProgram(getGPConfiguration(), size, Class.forName(m_types[0]),
+                        m_minArity, m_maxArity, m_mutateable);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 		return result;
 	}

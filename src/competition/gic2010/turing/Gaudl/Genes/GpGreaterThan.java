@@ -1,8 +1,10 @@
 package competition.gic2010.turing.Gaudl.Genes;
 
 import org.jgap.InvalidConfigurationException;
+import org.jgap.gp.CommandGene;
 import org.jgap.gp.function.GreaterThan;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 import org.jgap.gp.terminal.True;
 
@@ -14,6 +16,10 @@ public class GpGreaterThan extends GreaterThan {
 			throws InvalidConfigurationException {
 		super(a_conf, a_type);
 		// TODO Auto-generated constructor stub
+	}
+
+	public GpGreaterThan() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration(), CommandGene.IntegerClass);
 	}
 
 	/**

@@ -4,6 +4,7 @@ import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
@@ -23,6 +24,9 @@ public class IsTall extends MarioCommand implements IMutateable{
 		
 	}
 
+	public IsTall() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration());
+	}
 	
 	@Override
 	public String toString() {

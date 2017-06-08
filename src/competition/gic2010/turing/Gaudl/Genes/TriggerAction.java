@@ -7,6 +7,7 @@ import org.jgap.gp.IMutateable;
 import org.jgap.gp.impl.GPConfiguration;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
+import org.jgap.gp.impl.GPGenotype;
 
 public class TriggerAction extends MarioCommand implements IMutateable{
 
@@ -14,6 +15,10 @@ public class TriggerAction extends MarioCommand implements IMutateable{
 			throws InvalidConfigurationException {
 		super(a_conf,1,CommandGene.BooleanClass);
 		// TODO Auto-generated constructor stub
+	}
+
+	public TriggerAction() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration());
 	}
 
 	/**

@@ -20,6 +20,8 @@ import clojure.lang.IPersistentVector;
 import clojure.lang.LazySeq;
 
 import competition.gic2010.turing.Gaudl.gp.MarioData;
+import org.jgap.gp.impl.GPGenotype;
+import org.jgap.gp.impl.GPProgram;
 import org.platformer.agents.Agent;
 import org.platformer.benchmark.tasks.Task;
 import org.platformer.benchmark.tasks.MirrorTask;
@@ -151,6 +153,13 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 		// ------------------------
 		//prog.getGPConfiguration().clearStack();
 		//prog.getGPConfiguration().clearMemory();
+
+		//@FIXME: dummy test
+
+		String json = jsonSerialiser.serialize(prog);
+		GPGenotype.setStaticGPConfiguration(prog.getGPConfiguration());
+		IGPProgram test2 = jsonSerialiser.deserializeInto(json,prog);
+		IGPProgram test = jsonSerialiser.deserialize(json,GPProgram.class);
 		MarioData data = null;
 		if (prog.getApplicationData() != null){
 			data = (MarioData) prog.getApplicationData();

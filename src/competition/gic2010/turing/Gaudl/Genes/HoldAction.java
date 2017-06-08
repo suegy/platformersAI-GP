@@ -4,6 +4,7 @@ import org.jgap.InvalidConfigurationException;
 import org.jgap.gp.CommandGene;
 import org.jgap.gp.IGPProgram;
 import org.jgap.gp.impl.GPConfiguration;
+import org.jgap.gp.impl.GPGenotype;
 import org.jgap.gp.impl.ProgramChromosome;
 
 import competition.gic2010.turing.Gaudl.Genes.ControllerButton.Ebutton;
@@ -16,6 +17,10 @@ public class HoldAction extends MarioCommand {
 			throws InvalidConfigurationException {
 		super(a_conf,1,CommandGene.VoidClass);
 		// TODO Auto-generated constructor stub
+	}
+
+	public HoldAction() throws InvalidConfigurationException{
+		this(GPGenotype.getStaticGPConfiguration());
 	}
 
 	/**

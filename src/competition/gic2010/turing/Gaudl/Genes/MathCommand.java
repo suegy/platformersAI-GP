@@ -10,10 +10,11 @@
 package competition.gic2010.turing.Gaudl.Genes;
 
 import org.jgap.InvalidConfigurationException;
+import org.jgap.gp.CommandGene;
 import org.jgap.gp.impl.GPConfiguration;
 
 import competition.gic2010.turing.Gaudl.gp.MarioCommand;
-
+import org.jgap.gp.impl.GPGenotype;
 
 
 /**
@@ -37,6 +38,10 @@ public abstract class MathCommand
                      Class a_returnType, int a_subReturnType)
       throws InvalidConfigurationException {
     this(a_conf, a_arity, a_returnType, a_subReturnType, null);
+  }
+
+  public MathCommand() throws InvalidConfigurationException{
+    this(GPGenotype.getStaticGPConfiguration(),1, CommandGene.BooleanClass,1);
   }
 
   /**
