@@ -28,8 +28,12 @@
 package competition.gic2010.turing.Gaudl;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 
+import com.owlike.genson.Genson;
+import com.owlike.genson.GensonBuilder;
+import com.owlike.genson.reflect.VisibilityFilter;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -98,10 +102,17 @@ private GPGenotype Geno;
 public Thread gpThread;
 public static final int popSize = 200;
 private transient Logger LOGGER;
+private transient Genson jsonSerialiser;
 
 public GPSystemStandAlone(GPFitnessFunction metric) {
 	GPConfiguration config;
-	
+	jsonSerialiser = new GensonBuilder()
+			.useClassMetadata(true)
+			.useMethods(false)
+			.setSkipNull(true)
+			.useFields(true, new VisibilityFilter(Modifier.TRANSIENT,Modifier.STATIC))
+			.useClassMetadataWithStaticType(false)
+			.create();
 	// configuring the Logger for JGAP
 	LOGGER = Logger.getLogger(this.getClass());
 	//Thread gpThread = null;

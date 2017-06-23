@@ -156,10 +156,6 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 
 		//@FIXME: dummy test
 
-		String json = jsonSerialiser.serialize(prog);
-		GPGenotype.setStaticGPConfiguration(prog.getGPConfiguration());
-		IGPProgram test2 = jsonSerialiser.deserializeInto(json,prog);
-		IGPProgram test = jsonSerialiser.deserialize(json,GPProgram.class);
 		MarioData data = null;
 		if (prog.getApplicationData() != null){
 			data = (MarioData) prog.getApplicationData();

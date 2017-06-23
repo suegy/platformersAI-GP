@@ -19,6 +19,7 @@ import org.jgap.gp.IGPProgram;
 
 import competition.gic2010.turing.Gaudl.gp.MarioData;
 import org.jgap.gp.impl.GPGenotype;
+import org.jgap.gp.impl.GPProgram;
 import org.platformer.benchmark.platform.engine.sprites.Plumber;
 import org.platformer.benchmark.tasks.BasicTask;
 import org.platformer.benchmark.tasks.Task;
@@ -179,6 +180,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 
             //writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+prog.toStringNorm(0)+"\n");
 			writer.append("gen: "+ prog.getGPConfiguration().getGenerationNr()  +" fit:"+error+" dist: "+distArray+" Prog: "+jsonRepresentation+"\n");
+			String json = jsonSerialiser.serialize(prog);
 
 			//writer.append("pers:"+prog.getPersistentRepresentation());
             for (int i = 0;i< mariologFiles.length;i++){
