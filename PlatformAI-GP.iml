@@ -26,5 +26,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="genson-1.4" level="project" />
+    <orderEntry type="library" name="encog-core-3.4" level="project" />
   </component>
 </module>
