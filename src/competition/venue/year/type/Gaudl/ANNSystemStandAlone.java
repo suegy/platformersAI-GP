@@ -27,8 +27,7 @@
 
 package competition.venue.year.type.Gaudl;
 
-import competition.gic2010.turing.Gaudl.Genes.*;
-import competition.venue.year.type.Gaudl.gp.MarioDataGenerator;
+import competition.venue.year.type.Gaudl.nn.MarioDataGenerator;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.CalculateScore;
@@ -101,7 +100,7 @@ public ANNSystemStandAlone() {
 	public static void main(final String args[]) {
 
 		final MarioDataGenerator temp = new MarioDataGenerator();
-		final MLDataSet trainingSet = temp.generate(120);
+		final MLDataSet trainingSet = temp.generate(200);
 
 		final BasicNetwork elmanNetwork = ANNSystemStandAlone.createElmanNetwork();
 		final BasicNetwork feedforwardNetwork = ANNSystemStandAlone

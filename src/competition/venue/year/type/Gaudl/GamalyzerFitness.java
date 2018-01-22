@@ -118,7 +118,7 @@ public class GamalyzerFitness extends GameplayMetricFitness {
 					simulationTime = 200;
 				}*/
 			//for (int lvl=0;lvl < num_lvls;lvl++){
-			int lvl = 0;
+			int lvl = 1;
 				runMarioTask(prog,data,simulationTime,lvl);
 				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
 				error += calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);

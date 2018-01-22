@@ -52,8 +52,8 @@ public class CombinedTraceGamalyzer extends GameplayMetricFitness {
 		//File f = new File("human-ld1-lvl1.act");
 		referenceTraceFiles = new String [2];
 		//referenceVectorTraces = new Trace();
-		referenceTraceFiles[0] = "players-19022014s1-p-test2-lvl-0-time-200-difficulty-0-trial-1";
-		referenceTraceFiles[1] = "players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1";
+		referenceTraceFiles[0] = "run1";
+		referenceTraceFiles[1] = "run2";
 		bestFit = 0.01;
 		referenceTraces = new byte[2][];		
 		// reading the tracing at 15chunks per second

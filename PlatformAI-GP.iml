@@ -8,24 +8,21 @@
       <sourceFolder url="file://$MODULE_DIR$/platformerAI/rsrc" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/platformerAI/out" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="TestNG" level="project" />
     <orderEntry type="library" name="jgap" level="project" />
-    <orderEntry type="library" name="gamalyzer-metric-0.2.0-SNAPSHOT-standalone" level="project" />
-    <orderEntry type="library" name="lib" level="project" />
-    <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="module-library">
-      <library>
+      <library name="lib">
         <CLASSES>
           <root url="file://$MODULE_DIR$/platformerAI/lib" />
+          <root url="file://$MODULE_DIR$/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/platformerAI/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="genson-1.4" level="project" />
-    <orderEntry type="library" name="encog-core-3.4" level="project" />
   </component>
 </module>
