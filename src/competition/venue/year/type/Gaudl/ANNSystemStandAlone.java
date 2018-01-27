@@ -57,9 +57,9 @@ public ANNSystemStandAlone() {
 		// construct an Elman type network
 		ElmanPattern pattern = new ElmanPattern();
 		pattern.setActivationFunction(new ActivationSigmoid());
-		pattern.setInputNeurons(1);
+		pattern.setInputNeurons(361); // input is based on a 19x19 input vision array
 		pattern.addHiddenLayer(6);
-		pattern.setOutputNeurons(1);
+		pattern.setOutputNeurons(6); // output is in the form of 6 buttons on the controller
 		return (BasicNetwork)pattern.generate();
 	}
 
@@ -67,9 +67,9 @@ public ANNSystemStandAlone() {
 		// construct a feedforward type network
 		FeedForwardPattern pattern = new FeedForwardPattern();
 		pattern.setActivationFunction(new ActivationSigmoid());
-		pattern.setInputNeurons(1);
+		pattern.setInputNeurons(361); // input is based on a 19x19 input vision array
 		pattern.addHiddenLayer(6);
-		pattern.setOutputNeurons(1);
+		pattern.setOutputNeurons(6); // output is in the form of 6 buttons on the controller
 		return (BasicNetwork)pattern.generate();
 	}
 
