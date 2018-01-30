@@ -8,15 +8,12 @@ import java.util.*;
 
 public class MarioDataGenerator {
 
-    /**
-     * 1 xor 0 = 1, 0 xor 0 = 0, 0 xor 1 = 1, 1 xor 1 = 0
-     */
-    public static final double[] SEQUENCE = { 1.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 1.0, 1.0, 1.0, 0.0 };
-    public static String[] recordedGames = {"run0","run1"};
+    public static String[] recordedGames = {"run0","run1","run2","run3","run4","run5"};
 
     private double[][] input; // [frame:row]
     private double[][] ideal;//  [frame:buttons]
+    private Random rand = new Random();
+
 
     public MLDataSet generate(final int count) {
         GeneratorTask replayTask = null;
@@ -32,7 +29,6 @@ public class MarioDataGenerator {
             output[i] = replayTask.getOutputData();
             replayTask.delete();
         }
-
         Map<List<Integer>,Integer> idealDistribution = calculateDistribution(output);
         ArrayList<Double[]> unfilteredInput = new ArrayList<>();
         ArrayList<Integer[]> unfilderedIdeal = new ArrayList<>();
@@ -55,6 +51,11 @@ public class MarioDataGenerator {
             }
         this.input = new double[count][unfilteredInput.get(0).length];
         this.ideal = new double[count][unfilderedIdeal.get(0).length];
+
+        /**
+         * shuffle unfiltered dataset to reduce impact of sorting
+         */
+        shuffle(unfilteredInput,unfilderedIdeal);
 
         /**
          * balancing the data distribution to enhance dataset
@@ -94,7 +95,7 @@ public class MarioDataGenerator {
             ArrayList<Double[]>  _unfilteredInput = (ArrayList<Double[]>)  unfilteredInput.clone();
             ArrayList<Integer[]> _unfilderedIdeal = (ArrayList<Integer[]>) unfilderedIdeal.clone();
             int inSize = 0;
-            Random rand = new Random();
+
             while (inSize < count) {
                 int max = 0;
                 while (max < min) {
@@ -125,7 +126,54 @@ public class MarioDataGenerator {
             }
         }
 
+        /**
+         * shuffle dataset
+         */
+        shuffle(this.ideal,this.input);
+
+
         return new BasicMLDataSet(this.input, this.ideal);
+    }
+    public void shuffle(ArrayList<Double []> setA, ArrayList<Integer[]> setB) {
+        if (setA.size() != setB.size())
+            return;
+        for (int i=0;i<setA.size();i++) {
+            int posA = this.rand.nextInt(setA.size());
+            int posB = this.rand.nextInt(setA.size());
+
+            Object[] valA = setA.get(posA);
+            Object [] valB = setA.get(posB);
+            setA.remove(posA);
+            setA.add(posA, (Double[])valB);
+            setA.remove(posB);
+            setA.add(posB, (Double[])valA);
+
+            valA = setB.get(posA);
+            valB = setB.get(posB);
+            setB.remove(posA);
+            setB.add(posA, (Integer[]) valB);
+            setB.remove(posB);
+            setB.add(posB, (Integer[]) valA);
+        }
+    }
+
+    public void shuffle(double [][] setA, double [][] setB) {
+        if (setA.length != setB.length)
+            return;
+        for (int i=0;i<setA.length;i++) {
+            int posA = this.rand.nextInt(setA.length);
+            int posB = this.rand.nextInt(setA.length);
+
+            double[] valA = setA[posA];
+            double [] valB = setA[posB];
+            setA[posA] = valB;
+            setA[posB] = valA;
+
+            valA = setB[posA];
+            valB = setB[posB];
+            setB[posA]=valB;
+            setB[posB]=valA;
+        }
     }
 
     private double [] getDataPoint(List<Integer> idealPoint,ArrayList<Double[]>unfilteredInput, ArrayList<Integer[]> unfilderedIdeal,boolean pop){
