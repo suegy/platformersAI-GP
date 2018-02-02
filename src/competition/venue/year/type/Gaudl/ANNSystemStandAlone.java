@@ -29,9 +29,13 @@ package competition.venue.year.type.Gaudl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.owlike.genson.Genson;
+import com.owlike.genson.GensonBuilder;
+import com.owlike.genson.reflect.VisibilityFilter;
 import competition.venue.year.type.Gaudl.nn.MarioDataGenerator;
 import competition.venue.year.type.Gaudl.nn.NetworkConfiguration;
 import competition.venue.year.type.Gaudl.nn.Platformer_NNAgent;
+import org.apache.log4j.Logger;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.CalculateScore;
@@ -44,8 +48,10 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.training.TrainingSetScore;
 import org.encog.neural.networks.training.anneal.NeuralSimulatedAnnealing;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
+import org.encog.neural.pattern.BoltzmannPattern;
 import org.encog.neural.pattern.ElmanPattern;
 import org.encog.neural.pattern.FeedForwardPattern;
+import org.encog.neural.pattern.SVMPattern;
 import org.platformer.agents.Agent;
 import org.platformer.benchmark.platform.engine.Replayer;
 import org.platformer.benchmark.tasks.BasicTask;
@@ -55,6 +61,7 @@ import org.platformer.utils.Configuration;
 import org.platformer.utils.ParameterContainer;
 
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public final class ANNSystemStandAlone
@@ -62,7 +69,8 @@ public final class ANNSystemStandAlone
     MarioDataGenerator temp ;
     MLDataSet trainingSet;
     Gson gson;
-
+    private transient Logger LOGGER;
+    private transient Genson jsonSerialiser;
     Map<BasicNetwork,Double []> networks;
 
 
@@ -79,21 +87,31 @@ public ANNSystemStandAlone() {
 }
  public void train() {
      temp = new MarioDataGenerator();
-     trainingSet = temp.generate(1000);
+     trainingSet = temp.generate(800);
 
     Iterator<BasicNetwork> networkIterator = networks.keySet().iterator();
-    double elmanError = trainNetwork("Elman", networkIterator.next(),
+     BasicNetwork elman = networkIterator.next();
+     BasicNetwork feedforward = networkIterator.next();
+
+     double elmanError = trainNetwork("Elman", elman,
             trainingSet);
+     NetworkConfiguration config = exportNetwork(elman,networks.get(elman)[0],
+             networks.get(elman)[1].intValue(),"Elman");
+     write("Elman.txt",config);
     double feedforwardError = trainNetwork("Feedforward",
-            networkIterator.next(), trainingSet);
-}
+            feedforward, trainingSet);
+     config = exportNetwork(feedforward,networks.get(feedforward)[0],
+             networks.get(feedforward)[1].intValue(),"Feedforward");
+     write("FeedForward.txt",config);
+
+ }
 
     private BasicNetwork createElmanNetwork() {
 		// construct an Elman type network
 		ElmanPattern pattern = new ElmanPattern();
 		pattern.setActivationFunction(new ActivationSigmoid());
 		pattern.setInputNeurons(361); // input is based on a 19x19 input vision array
-		pattern.addHiddenLayer(6);
+		pattern.addHiddenLayer(60);
 		pattern.setOutputNeurons(6); // output is in the form of 6 buttons on the controller
         return (BasicNetwork)pattern.generate();
 	}
@@ -103,7 +121,7 @@ public ANNSystemStandAlone() {
 		FeedForwardPattern pattern = new FeedForwardPattern();
 		pattern.setActivationFunction(new ActivationSigmoid());
 		pattern.setInputNeurons(361); // input is based on a 19x19 input vision array
-		pattern.addHiddenLayer(6);
+		pattern.addHiddenLayer(60);
 		pattern.setOutputNeurons(6); // output is in the form of 6 buttons on the controller
 		return (BasicNetwork)pattern.generate();
 	}
@@ -285,7 +303,7 @@ public ANNSystemStandAlone() {
     }
 
     public void play(){
-        NetworkConfiguration nwConfig = readNetworkFromFile("FeedForward.txt");
+        NetworkConfiguration nwConfig = readNetworkFromFile("Elman.txt");
         BasicNetwork nw = loadNetwork(nwConfig);
         Platformer_NNAgent agent = new Platformer_NNAgent(nw);
         playLevel(agent,MarioDataGenerator.recordedGames[0],0,0);
@@ -293,25 +311,46 @@ public ANNSystemStandAlone() {
 
     }
 
+    public void readAgents(){
+        try {
+            int counter = 0;
+            File folder = new File("solution");
+            if (!folder.exists() || !folder.isDirectory()){
+                System.err.println("JGAP folder for loading chromosomes not found");
+                return;
+            }
+            String [] solutionFiles = folder.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    if (name.startsWith("solutions") && name.endsWith(".txt"))
+                        return true;
+                    return false;
+                }
+            });
+            File last = new File(solutionFiles[solutionFiles.length-1]);
+
+            BufferedReader reader = new BufferedReader(new FileReader(last));
+            jsonSerialiser = new GensonBuilder()
+                    .useClassMetadata(true)
+                    .useMethods(false)
+                    .setSkipNull(true)
+                    .useFields(true, new VisibilityFilter(Modifier.TRANSIENT,Modifier.STATIC))
+                    .useClassMetadataWithStaticType(false)
+                    .create();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 
 	public static void main(final String args[]) {
 
 		ANNSystemStandAlone system = new ANNSystemStandAlone();
 
-        //system.play();
+      //  system.play();
 
         system.train();
-
-        Iterator<BasicNetwork> networkIterator = system.networks.keySet().iterator();
-
-        BasicNetwork elman = networkIterator.next();
-        BasicNetwork feedforward = networkIterator.next();
-        NetworkConfiguration config = system.exportNetwork(elman,system.networks.get(elman)[0],
-                system.networks.get(elman)[1].intValue(),"Elman");
-        system.write("Elman.txt",config);
-        config = system.exportNetwork(feedforward,system.networks.get(feedforward)[0],
-                system.networks.get(feedforward)[1].intValue(),"Feedforward");
-        system.write("FeedForward.txt",config);
 
 
 

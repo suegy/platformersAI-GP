@@ -27,8 +27,23 @@ public class Platformer_NNAgent implements Agent {
         boolean [] actions = new boolean[6];//NOTE: This is the standard length for the platformerAI control array
         network.compute(this.input,result);
 
-        for (int i=0;i<actions.length;i++)
-            actions[i] = (result[i] < 0.5) ? false : true;
+        int top1 =  0;
+        int top2 = 1;
+        for (int i= 1;i<result.length;i++)
+            if (result[i] > result[top1]) {
+                top2 = top1;
+                top1 = i;
+            }
+        for (int i = 2;i<result.length;i++)
+            if (result[i] > result[top2])
+                top2 = i;
+
+        if (result[top1] > 0.5)
+            actions[top1] = true;
+        if (result[top2] > 0.5)
+            actions[top2] = true;
+       // for (int i=0;i<actions.length;i++)
+       //     actions[i] = (result[i] < 0.5) ? false : true;
 
         return actions;
     }

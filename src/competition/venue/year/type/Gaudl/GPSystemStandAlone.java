@@ -87,17 +87,21 @@ public static final int popSize = 200;
 private transient Logger LOGGER;
 private transient Genson jsonSerialiser;
 
-public GPSystemStandAlone(GPFitnessFunction metric) {
+public GPSystemStandAlone(){
+    jsonSerialiser = new GensonBuilder()
+            .useClassMetadata(true)
+            .useMethods(false)
+            .setSkipNull(true)
+            .useFields(true, new VisibilityFilter(Modifier.TRANSIENT,Modifier.STATIC))
+            .useClassMetadataWithStaticType(false)
+            .create();
+    // configuring the Logger for JGAP
+    LOGGER = Logger.getLogger(this.getClass());
+
+}
+    public void setup (GPFitnessFunction metric) {
 	GPConfiguration config;
-	jsonSerialiser = new GensonBuilder()
-			.useClassMetadata(true)
-			.useMethods(false)
-			.setSkipNull(true)
-			.useFields(true, new VisibilityFilter(Modifier.TRANSIENT,Modifier.STATIC))
-			.useClassMetadataWithStaticType(false)
-			.create();
-	// configuring the Logger for JGAP
-	LOGGER = Logger.getLogger(this.getClass());
+
 	//Thread gpThread = null;
 	try {
         config = new GPConfiguration();
@@ -128,8 +132,6 @@ public GPSystemStandAlone(GPFitnessFunction metric) {
     catch (InvalidConfigurationException e){
         System.err.println("wrong config: \n"+e);
     }
-	if (gpThread instanceof Thread)
-		gpThread.start();
 }
 
 @SuppressWarnings("rawtypes")
@@ -199,8 +201,34 @@ public GPGenotype create() throws InvalidConfigurationException {
 	return geno;
 }
 
+public GPFitnessFunction setMetric(String [] args) {
+    final PlatformerAIOptions marioAIOptions = new PlatformerAIOptions(args);
+    final BasicTask basicTask = new BasicTask(marioAIOptions);
+    //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
+    //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
+    //TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
+    CombinedTraceGamalyzer metric = new CombinedTraceGamalyzer(basicTask,marioAIOptions);
+
+    return metric;
+}
+
+public void train(){
+
+    if (gpThread instanceof Thread)
+        gpThread.start();
+
+    while (gpThread.isAlive()) {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
 public static void main(String[] args) throws InterruptedException
 {
+    boolean training = true;
 //        final String argsString = "-vis on";
 	try {
 		Logger.getRoot().setLevel(Level.INFO);
@@ -213,17 +241,14 @@ public static void main(String[] args) throws InterruptedException
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	final PlatformerAIOptions marioAIOptions = new PlatformerAIOptions(args);
-    final BasicTask basicTask = new BasicTask(marioAIOptions);
-    //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
-    //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
-    //TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
-    CombinedTraceGamalyzer metric = new CombinedTraceGamalyzer(basicTask,marioAIOptions);
+    GPSystemStandAlone marioGP = new GPSystemStandAlone();
 
-    GPSystemStandAlone marioGP = new GPSystemStandAlone(metric);
+    if (training) {
+        GPFitnessFunction metric = marioGP.setMetric(args);
+        marioGP.setup(metric);
+        marioGP.train();
+    } else { // loading and playing with an agent
 
-    while (marioGP.gpThread.isAlive()) {
-    	Thread.sleep(10);
     }
     System.exit(0);
 }
