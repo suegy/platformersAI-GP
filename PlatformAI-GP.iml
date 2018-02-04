@@ -24,5 +24,8 @@
         <jarDirectory url="file://$MODULE_DIR$/platformerAI/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="org.deeplearning4j:deeplearning4j-core:0.9.1" level="project" />
+    <orderEntry type="library" name="org.nd4j:nd4j-native:0.9.1" level="project" />
+    <orderEntry type="library" name="org.datavec:datavec-api:0.9.1" level="project" />
   </component>
 </module>
