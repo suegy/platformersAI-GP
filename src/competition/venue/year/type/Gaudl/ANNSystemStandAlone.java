@@ -30,6 +30,7 @@ package competition.venue.year.type.Gaudl;
 import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
 import com.owlike.genson.reflect.VisibilityFilter;
+import competition.venue.year.type.Gaudl.dnn.MarioDLDataGenerator;
 import competition.venue.year.type.Gaudl.nn.MarioDataGenerator;
 import competition.venue.year.type.Gaudl.nn.NetworkConfiguration;
 import competition.venue.year.type.Gaudl.nn.Platformer_NNAgent;
@@ -67,7 +68,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 public final class ANNSystemStandAlone {
-    MarioDataGenerator temp;
+    MarioDLDataGenerator temp;
     DataSet trainingSet;
 
     private transient Logger LOGGER;
@@ -143,8 +144,8 @@ public final class ANNSystemStandAlone {
 
 
     public void train() {
-        temp = new MarioDataGenerator();
-        trainingSet = temp.generate(8000);
+        temp = new MarioDLDataGenerator();
+        //trainingSet = temp.generate(8000);
 
         Iterator<BasicNetwork> networkIterator = networks.keySet().iterator();
         BasicNetwork elman = networkIterator.next();
