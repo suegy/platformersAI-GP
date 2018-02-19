@@ -33,6 +33,7 @@ import java.lang.reflect.Modifier;
 import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
 import com.owlike.genson.reflect.VisibilityFilter;
+import competition.venue.year.type.Gaudl.gp.WeightedGPRouletteSelector;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
@@ -83,7 +84,7 @@ public final class GPSystemStandAlone extends GPProblem
 protected static Variable vx;
 private GPGenotype Geno;
 public Thread gpThread;
-public static final int popSize = 200;
+public static final int popSize = 50;
 private transient Logger LOGGER;
 private transient Genson jsonSerialiser;
 
@@ -116,8 +117,8 @@ public GPSystemStandAlone(){
         config.setCrossoverProb(0.6f);//orig: 0.9f
         config.setReproductionProb(0.4f); //orig: 0.1f
         config.setNewChromsPercent(0.2f); //orig: 0.3f
-        config.setMutationProb(0.01f);
-        config.setFunctionProb(0.6f);
+        config.setMutationProb(0.015f);
+        config.setFunctionProb(0.8f);
         //config.setUseProgramCache(true);
         config.setCrossoverMethod(new BranchTypingCross(config,false));
         config.setSelectionMethod(new TournamentSelector(3));
@@ -148,7 +149,7 @@ public GPGenotype create() throws InvalidConfigurationException {
 			{
 				//vx = Variable.create(conf,"X", CommandGene.IntegerClass),
 				new Terminal(conf, CommandGene.IntegerClass,-6,6,true),
-				new Terminal(conf, CommandGene.IntegerClass,0,49,true),
+				new Terminal(conf, CommandGene.IntegerClass,-15,15,true),
 				//new Terminal(conf, CommandGene.IntegerClass,-4,4,true),
 				new SubProgram(conf,new Class[] {CommandGene.VoidClass,CommandGene.VoidClass}),
 				//new SubProgram(conf),
@@ -204,10 +205,10 @@ public GPGenotype create() throws InvalidConfigurationException {
 public GPFitnessFunction setMetric(String [] args) {
     final PlatformerAIOptions marioAIOptions = new PlatformerAIOptions(args);
     final BasicTask basicTask = new BasicTask(marioAIOptions);
-    //GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
+    GameplayMetricFitness metric = new GameplayMetricFitness(basicTask,marioAIOptions);
     //GamalyzerFitness metric = new GamalyzerFitness(basicTask,marioAIOptions);
     //TraceFitness metric = new TraceFitness(basicTask,marioAIOptions);
-    CombinedTraceGamalyzer metric = new CombinedTraceGamalyzer(basicTask,marioAIOptions);
+    //CombinedTraceGamalyzer metric = new CombinedTraceGamalyzer(basicTask,marioAIOptions);
 
     return metric;
 }

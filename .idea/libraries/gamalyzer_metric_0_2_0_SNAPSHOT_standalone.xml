@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gamalyzer-metric-0.2.0-SNAPSHOT-standalone">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/gamalyzer-metric-0.2.0-SNAPSHOT-standalone.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

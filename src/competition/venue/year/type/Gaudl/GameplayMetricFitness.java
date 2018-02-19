@@ -44,8 +44,8 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		m_options = options;
 		gen = 0;
 		bestFit = 40d;
-		num_lvls = 10; //should be the number of different levels we have data on
-		levelDifficulty = 0;
+		num_lvls = 1; //should be the number of different levels we have data on
+		levelDifficulty = 1;
 		mariologFiles = new String[0];
 
 		try {
@@ -75,16 +75,16 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 
 	protected double runFitness(IGPProgram prog) {
 		double error = 0.0f;
-		distance = new int[num_lvls];
+		distance = new int[num_lvls*3];
 		MarioData data = new MarioData();
 		// Initialize local stores.
 		// ------------------------
 		//prog.getGPConfiguration().clearStack();
 		//prog.getGPConfiguration().clearMemory();
 		prog.setApplicationData(data);
-		int time = 0;
-		int num_lvls = this.num_lvls;
-		mariologFiles = new String[num_lvls];
+		int time = 200;
+		boolean solvedAll = true;
+		mariologFiles = new String[num_lvls*3];
 		try {
 			// Execute the program.
 			// --------------------
@@ -92,27 +92,30 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 //				num_lvls = 10;
 //				distance = new int[num_lvls];
 //			} 
-			 
-			if (bestFit*num_lvls < 50d){
-				time = 50;	
-			} else if (bestFit*num_lvls < 100){
-				time = 100;
-			} else {
-				time = 200;
-			}
+
 			String fitnessOutput = "";
-			for (int lvl=0;lvl < num_lvls;lvl++){
-				runMarioTask(prog,data,time,lvl);
-				distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+
+            int offset = (num_lvls-1)*3;
+
+            for (int lvl=0;lvl < 3;lvl++){
+			    runMarioTask(prog,data,time,lvl+offset);
+				distance[lvl+offset]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
+				if (solvedAll && ((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().marioStatus != Plumber.STATUS_WIN)
+					solvedAll = false;
 				double fit = calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(), prog);
-				fitnessOutput += fit+":"+distance[lvl]+" ";
+				fitnessOutput += fit+":"+distance[lvl+offset]+" ";
 				error +=fit;
 			}
+			if (solvedAll) {
+                this.num_lvls++;
+                bestFit = 0;
+
+            }
 			prog.setAdditionalFitnessInfo(String.format(fitnessOutput.trim()));
 			
 			// Determine success of individual in #lvls by averaging over all played levels
 			// --------------------------------
-			error = error/num_lvls;
+			error = error/3;
 			//System.out.print(error+": "+distance[0]+"; ");
 			// Check if the action the agent chose is close to the trace action.
 			// -------------------------------------------
@@ -153,7 +156,7 @@ public class GameplayMetricFitness extends GPFitnessFunction {
 		}
 
 		// if we are using delta distance we need to use "<" because we care for smaller errors
-		if (error > bestFit ){
+		if (error > bestFit){
 			System.out.println("reached a good solution");
             logBest(error, prog);
 
@@ -192,17 +195,23 @@ public class GameplayMetricFitness extends GPFitnessFunction {
         }
     }
 
-	protected boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int lvl) {
+	protected boolean  runMarioTask(IGPProgram prog,MarioData data,int time,int level) {
 		Object[] noargs = new Object[0];
 		Mario_GPAgent mario = new Mario_GPAgent(prog, noargs, data);
-        mariologFiles[lvl] = String.format("gp-lvl%d-diff%d",lvl,levelDifficulty);
+
+        /**
+         * changing what lvl to play to increase difficulty as well
+         */
+		int lvl = level % 30;
+		int diff = levelDifficulty + level / 30;
+        mariologFiles[lvl] = String.format("gp-lvl%d-diff%d",lvl,diff);
 		mario.setName(mariologFiles[lvl]);
 		m_options.setRecordFile(mariologFiles[lvl]);
 		m_options.setTimeLimit(time);
 		m_options.setLevelRandSeed(lvl);
 		
 		//m_options.setLevelRandSeed(151079);
-		m_options.setLevelDifficulty(levelDifficulty);
+		m_options.setLevelDifficulty(diff);
 		m_options.setAgent(mario);
 		m_task.setOptionsAndReset(m_options);
 		
