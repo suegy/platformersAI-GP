@@ -101,7 +101,7 @@ public class MarioData {
 	    byte[][] levelScene = environment.getLevelSceneObservationZ(1);
 	    byte[][]enemies = environment.getEnemiesObservationZ(0);
 	    byte[][] mergedObservation = environment.getMergedObservationZZ(1, 0);
-		sensoryField= (environment != null) ? environment.getMergedObservationZZ(1, 0) : null;
+		sensoryField= (environment != null) ? mergedObservation : null;
 		
 		return sensoryField;
 	}
@@ -216,19 +216,15 @@ public class MarioData {
 	public boolean isWalkable(int elem){
 		//TODO: This is not an optimal solution but a quick one.
 		switch (elem) {
-		case Sprite.KIND_NONE:
-			return false;
-		case Sprite.KIND_SPIKY:
-		case Sprite.KIND_SPIKY_WINGED:
-			return false;
-		case Sprite.KIND_COIN_ANIM:
-			return false;
-		case Sprite.KIND_FIREBALL:
-			return false;
-		case Sprite.KIND_MUSHROOM:
-			return false;
-		case -60:
-			return true;
+			case -60:
+				return true;
+            case 96: //TODO: check if that works walking on enemies
+            case 97:
+            case 80:
+                return true;
+			case 24:
+				return true;
+			case -85:
 		default:
 			return true;
 		}
@@ -236,22 +232,15 @@ public class MarioData {
 	
 	public boolean isEnemy(int elem){
 		switch (elem) {
-		case Sprite.KIND_BULLET_BILL:
-			return true;
-		case Sprite.KIND_SPIKY:
-		case Sprite.KIND_SPIKY_WINGED:
-			return true;
-		case Sprite.KIND_GOOMBA:
-		case Sprite.KIND_GOOMBA_WINGED:
-			return true;
-		case Sprite.KIND_GREEN_KOOPA:
-		case Sprite.KIND_GREEN_KOOPA_WINGED:
-			return true;
-		case Sprite.KIND_RED_KOOPA:
-		case Sprite.KIND_RED_KOOPA_WINGED:
+			case 13:
 				return true;
-		default:
-			return false;
+			case 80://Goomba
+				return true;
+			case 96://Sprite.KIND_GREEN_KOOPA:
+				 case 97://Sprite.KIND_RED_KOOPA:
+			return true;
+			default:
+				return false;
 		}
 	}
 	
@@ -262,25 +251,24 @@ public class MarioData {
 	}
 	
 	public boolean isCoin(int elem){
-		return (elem == Sprite.KIND_COIN_ANIM) ? true : false;
+		return (elem == 2) ? true : false;
 	}
 	public boolean isAir(int elem){
-		return (elem == Sprite.KIND_NONE) ? true : false;
+		return (elem == 0 || elem == 2 || elem == 3 || elem == 5) ? true : false;
 	}
 	public boolean isFlower(int elem){
-		return (elem == Sprite.KIND_FIRE_FLOWER) ? true : false;
+		return (elem == 3) ? true : false;
 	}
 	public boolean isMushroom(int elem){
-		return (elem == Sprite.KIND_MUSHROOM) ? true : false;
+		return (elem == 2) ? true : false;
 	}
 	public boolean isPrincess(int elem){
-		return (elem == Sprite.KIND_PRINCESS) ? true : false;
+		return (elem == 5) ? true : false;
 	}
 	
 	public boolean canBreak(int elem){
 		switch (elem) {
-		case -20:
-		case -22:
+		case -24:
 			return true;
 		default:
 			return false;

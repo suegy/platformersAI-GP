@@ -68,7 +68,6 @@ public final class ANNSystemStandAlone
 {
     MarioDataGenerator temp ;
     MLDataSet trainingSet;
-    Gson gson;
     private transient Logger LOGGER;
     private transient Genson jsonSerialiser;
     Map<BasicNetwork,Double []> networks;
@@ -76,8 +75,13 @@ public final class ANNSystemStandAlone
 
 public ANNSystemStandAlone() {
     networks = new HashMap<>();
-    gson = new GsonBuilder().setPrettyPrinting().create();
-
+    jsonSerialiser = new GensonBuilder()
+            .useClassMetadata(true)
+            .useMethods(false)
+            .setSkipNull(true)
+            .useFields(true, new VisibilityFilter(Modifier.TRANSIENT,Modifier.STATIC))
+            .useClassMetadataWithStaticType(false)
+            .create();
     BasicNetwork network = createElmanNetwork();
     network.setProperty("Networktype","Elman");
     networks.put(network,new Double[]{1.0,0.0}); // network:error:generations
@@ -255,7 +259,8 @@ public ANNSystemStandAlone() {
             String json = "";
             while (reader.ready())
                 json += reader.readLine()+"\n";
-            network = gson.fromJson(json, NetworkConfiguration.class);
+            network = jsonSerialiser.deserialize(json,NetworkConfiguration.class);
+
 
         } catch (IOException e) {
             System.err.println("Error: unable to read "+loc);
@@ -267,7 +272,7 @@ public ANNSystemStandAlone() {
     public void write(String fileName,NetworkConfiguration networkDescr){
         try {
             Writer writer = new BufferedWriter(new FileWriter(System.getProperty("user.dir")+File.separator+fileName));
-            String configuration = gson.toJson(networkDescr);
+            String configuration = jsonSerialiser.serialize(networkDescr);
             writer.write(configuration);
             writer.flush();
             writer.close();
