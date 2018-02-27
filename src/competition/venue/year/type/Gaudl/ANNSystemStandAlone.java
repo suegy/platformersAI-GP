@@ -31,10 +31,9 @@ import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
 import com.owlike.genson.reflect.VisibilityFilter;
 import competition.venue.year.type.Gaudl.dnn.MarioDLDataGenerator;
+import competition.venue.year.type.Gaudl.dnn.Platformer_DL4JAgent;
 import competition.venue.year.type.Gaudl.nn.MarioDataGenerator;
-import competition.venue.year.type.Gaudl.nn.NetworkConfiguration;
-import competition.venue.year.type.Gaudl.nn.Platformer_NNAgent;
-import org.apache.log4j.Logger;
+import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -44,36 +43,26 @@ import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
-import org.encog.Encog;
-import org.encog.ml.CalculateScore;
-import org.encog.ml.data.MLDataSet;
-import org.encog.ml.train.MLTrain;
-import org.encog.ml.train.strategy.Greedy;
-import org.encog.ml.train.strategy.HybridStrategy;
-import org.encog.ml.train.strategy.StopTrainingStrategy;
-import org.encog.neural.networks.BasicNetwork;
-import org.encog.neural.networks.training.TrainingSetScore;
-import org.encog.neural.networks.training.anneal.NeuralSimulatedAnnealing;
-import org.encog.neural.networks.training.propagation.back.Backpropagation;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.platformer.agents.Agent;
 import org.platformer.benchmark.platform.engine.Replayer;
 import org.platformer.benchmark.tasks.BasicTask;
 import org.platformer.tools.PlatformerAIOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
 public final class ANNSystemStandAlone {
-    MarioDLDataGenerator temp;
-    DataSet trainingSet;
 
     private transient Logger LOGGER;
     private transient Genson jsonSerialiser;
-    Map<BasicNetwork, Double[]> networks;
+    Map<MultiLayerNetwork, Double[]> networks;
     // RNN dimensions
     private static final int HIDDEN_LAYER_WIDTH = 50;
     private static final int HIDDEN_LAYER_CONT = 2;
@@ -84,7 +73,7 @@ public final class ANNSystemStandAlone {
 
     public ANNSystemStandAlone() {
         networks = new HashMap<>();
-
+        LOGGER = LoggerFactory.getLogger(ANNSystemStandAlone.class);
         jsonSerialiser = new GensonBuilder()
                 .useClassMetadata(true)
                 .useMethods(false)
@@ -144,125 +133,34 @@ public final class ANNSystemStandAlone {
 
 
     public void train() {
-        temp = new MarioDLDataGenerator();
-        //trainingSet = temp.generate(8000);
+        DataSetIterator train = new MarioDLDataGenerator(1,4000,0,4);
+        DataSetIterator test = new MarioDLDataGenerator(1,4000,5,9);
 
-        Iterator<BasicNetwork> networkIterator = networks.keySet().iterator();
-        BasicNetwork elman = networkIterator.next();
-        BasicNetwork feedforward = networkIterator.next();
+        MultiLayerNetwork net  = createDeepNetwork();
+        networks.put(net,new Double[]{1d,0d});
 
-        double elmanError = trainNetwork("Elman", elman,
-                trainingSet);
-        NetworkConfiguration config = exportNetwork(elman, networks.get(elman)[0],
-                networks.get(elman)[1].intValue(), "Elman");
-        write("Elman.txt", config);
-        double feedforwardError = trainNetwork("Feedforward",
-                feedforward, trainingSet);
-        config = exportNetwork(feedforward, networks.get(feedforward)[0],
-                networks.get(feedforward)[1].intValue(), "Feedforward");
-        write("FeedForward.txt", config);
+        double error = trainNetwork("Convolutional", net,
+                train, test, 100);
+        write("Convolutional", net);
 
     }
 
     public double trainNetwork(final String what,
-                               final BasicNetwork network, final MLDataSet trainingSet) {
-        // train the neural network
-        CalculateScore score = new TrainingSetScore(trainingSet);
-        final MLTrain trainAlt = new NeuralSimulatedAnnealing(
-                network, score, 10, 2, 100);
+                               final MultiLayerNetwork network, final DataSetIterator train,
+                               final DataSetIterator test, int nEpochs) {
 
-        final MLTrain trainMain = new Backpropagation(network, trainingSet, 0.000001, 0.0);
-
-        final StopTrainingStrategy stop = new StopTrainingStrategy();
-        trainMain.addStrategy(new Greedy());
-        trainMain.addStrategy(new HybridStrategy(trainAlt));
-        trainMain.addStrategy(stop);
-
-        int epoch = 0;
-        while (!stop.shouldStop()) {
-            trainMain.iteration();
-            System.out.println("Training " + what + ", Epoch #" + epoch
-                    + " Error:" + trainMain.getError());
-            epoch++;
+        double error = 1d;
+        for (int i = 0; i < nEpochs; i++) {
+            network.fit(train);
+            LOGGER.info("Completed epoch {}", i);
+            Evaluation eval = network.evaluate(test);
+            LOGGER.info(eval.stats());
+            error = eval.accuracy();
+            train.reset();
+            test.reset();
         }
-        networks.put(network, new Double[]{trainMain.getError(), new Double(epoch)});
-        return trainMain.getError();
-    }
-
-
-    public NetworkConfiguration exportNetwork(MultiLayerNetwork network, double error, int epochCount, String name) {
-        NetworkConfiguration config = new NetworkConfiguration();
-
-        int layerCount = network.getLayerCount();
-        ArrayList<Map<List<Integer>, Double>> weights = new ArrayList<>();
-        double[] biasedActivation = new double[layerCount];
-        boolean[] biasedLayers = new boolean[layerCount];
-
-        for (int i = 0; i < layerCount - 1; i++) {
-            Map<List<Integer>, Double> layer = new HashMap<>();
-            weights.add(i, layer);
-            int bias = 0;
-            if (network.isLayerBiased(i)) {
-                bias = 1;
-                biasedActivation[i] = network.getLayerBiasActivation(i);
-                biasedLayers[i] = network.isLayerBiased(i);
-            }
-
-            for (int x = 0; x < network.getLayerNeuronCount(i) + bias; x++) {
-                for (int y = 0; y < network.getLayerNeuronCount(i + 1); y++) {
-                    List<Integer> key = new ArrayList<>();
-                    key.add(0, x);
-                    key.add(1, y);
-                    String keyString = key.toString();
-                    if (network.isConnected(i, x, y) && !layer.containsKey(key)) {
-                        layer.put(key, network.getWeight(i, x, y));
-                    }
-                }
-
-            }
-        }
-        config.setWeights(weights);
-        config.finalErrorRate = error;
-        config.trainingEpochs = epochCount;
-        config.layers = network.getLayerCount();
-        config.networkType = network.getFactoryArchitecture();
-        config.networkName = name;
-        config.biasedLayers = biasedLayers;
-        config.biasedActivation = biasedActivation;
-        return config;
-    }
-
-    public BasicNetwork loadNetwork(NetworkConfiguration config) {
-        MultiLayerNetwork network = null;
-
-        switch (config.networkName) {
-            case "Elman":
-                network = createDeepNetwork();
-                break;
-            default:
-                break;
-        }
-
-        int layerCount = network.getLayerCount();
-        if (layerCount != config.layers)
-            return network;
-
-        List<Map<List<Integer>, Double>> weights = config.getWeights();
-        for (int i = 0; i < layerCount - 1; i++) {
-
-            int bias = 0;
-            if (config.biasedLayers[i]) {
-                bias = 1;
-                network.setLayerBiasActivation(i, config.biasedActivation[i]);
-            }
-
-            for (List<Integer> neuronpairs : weights.get(i).keySet()) {
-                network.enableConnection(i, neuronpairs.get(0), neuronpairs.get(1), true);
-                network.setWeight(i, neuronpairs.get(0), neuronpairs.get(1), weights.get(i).get(neuronpairs));
-            }
-        }
-
-        return network;
+        networks.put(network, new Double[]{error, new Double(nEpochs)});
+        return error;
     }
 
     public boolean playLevel(Agent agent, String baseLevel, int levelDelta, int difficultyDelta) {
@@ -308,16 +206,14 @@ public final class ANNSystemStandAlone {
             return false;
     }
 
-    private NetworkConfiguration readNetworkFromFile(String fileName) {
+    private MultiLayerNetwork readNetworkFromFile(String fileName) {
         String loc = "";
-        NetworkConfiguration network = new NetworkConfiguration();
+        MultiLayerNetwork network = null;
         try {
-            loc = System.getProperty("user.dir") + File.separator + fileName;
-            BufferedReader reader = new BufferedReader(new FileReader(loc));
-            String json = "";
-            while (reader.ready())
-                json += reader.readLine() + "\n";
-            network = jsonSerialiser.deserialize(json, NetworkConfiguration.class);
+            String locationToSave = System.getProperty("user.dir") + File.separator + fileName+".zip";
+
+            //Load the model
+            network = ModelSerializer.restoreMultiLayerNetwork(locationToSave);
 
         } catch (IOException e) {
             System.err.println("Error: unable to read " + loc);
@@ -326,14 +222,12 @@ public final class ANNSystemStandAlone {
         return network;
     }
 
-    public void write(String fileName, NetworkConfiguration networkDescr) {
+    public void write(String fileName, MultiLayerNetwork net) {
         try {
-            Writer writer = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + File.separator + fileName));
-            String configuration = jsonSerialiser.serialize(networkDescr);
-            writer.write(configuration);
-            writer.flush();
-            writer.close();
+            String locationToSave = System.getProperty("user.dir") + File.separator + fileName+".zip";
 
+            boolean saveUpdater = true; //Updater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this if you want to train your network more in the future
+            ModelSerializer.writeModel(net, locationToSave, saveUpdater);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
@@ -342,9 +236,13 @@ public final class ANNSystemStandAlone {
 
 
     public void play() {
-        NetworkConfiguration nwConfig = readNetworkFromFile("FeedForward.txt");
-        BasicNetwork nw = loadNetwork(nwConfig);
-        Platformer_NNAgent agent = new Platformer_NNAgent(nw);
+        MultiLayerNetwork playNet;
+        if (networks.size() < 1)
+            playNet = readNetworkFromFile("FeedForward.txt");
+        else
+            playNet = networks.keySet().iterator().next();
+
+        Platformer_DL4JAgent agent = new Platformer_DL4JAgent(playNet);
         playLevel(agent, MarioDataGenerator.recordedGames[0], 0, 0);
         playLevel(agent, MarioDataGenerator.recordedGames[0], 1, 0);
 
@@ -358,13 +256,10 @@ public final class ANNSystemStandAlone {
                 System.err.println("JGAP folder for loading chromosomes not found");
                 return;
             }
-            String[] solutionFiles = folder.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    if (name.startsWith("solutions") && name.endsWith(".txt"))
-                        return true;
-                    return false;
-                }
+            String[] solutionFiles = folder.list((dir, name) -> {
+                if (name.startsWith("solutions") && name.endsWith(".txt"))
+                    return true;
+                return false;
             });
             File last = new File(solutionFiles[solutionFiles.length - 1]);
 
@@ -381,12 +276,12 @@ public final class ANNSystemStandAlone {
 
         ANNSystemStandAlone system = new ANNSystemStandAlone();
 
-        system.play();
+        //system.play();
 
         system.train();
 
 
-        Encog.getInstance().shutdown();
+
         System.exit(0);
     }
 }
