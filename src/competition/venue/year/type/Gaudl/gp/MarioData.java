@@ -216,15 +216,15 @@ public class MarioData {
 	public boolean isWalkable(int elem){
 		//TODO: This is not an optimal solution but a quick one.
 		switch (elem) {
-			case -60:
+			case -60: // ground block
 				return true;
             case 96: //TODO: check if that works walking on enemies
             case 97:
             case 80:
                 return true;
-			case 24:
+			case 24: //breakable
 				return true;
-			case -85:
+			case -85: // pipe
 		default:
 			return true;
 		}

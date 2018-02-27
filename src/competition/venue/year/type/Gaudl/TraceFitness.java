@@ -40,8 +40,8 @@ public class TraceFitness extends GameplayMetricFitness {
 		num_lvls = 1;
 		//File f = new File("human-ld1-lvl1.act");
 		referenceTraceFiles = new String [2];
-		referenceTraceFiles[0] = "players-19022014s1-p-test2-lvl-0-time-200-difficulty-0-trial-1";
-		referenceTraceFiles[1] = "players-19022014s1-p-test2-lvl-1-time-200-difficulty-0-trial-1";
+		referenceTraceFiles[0] = "run0";
+		referenceTraceFiles[1] = "run1";
 		bestFit = 0.01;
 		referenceTraces = new byte[2][];		
 		// reading the tracing at 15chunks per second
@@ -107,8 +107,9 @@ public class TraceFitness extends GameplayMetricFitness {
 		BitSet current = toBitSet(curr);
 		
 		reference.xor(current);
-		
-		return (reference.length() - reference.cardinality())/8d;
+
+		int card = reference.cardinality();
+		return (6 - card)/6d; //BitSet max length is 6
 	}
 
 	private byte[] trimTrace(byte[] trace, int newLength) {
@@ -149,60 +150,12 @@ public class TraceFitness extends GameplayMetricFitness {
 		simulationTime = 200;
 		int num_lvls = this.num_lvls;
 		try {
-			// Execute the program.
-			// --------------------
-			/*	if (prog.getGPConfiguration().getGenerationNr() < 30){
-				
-				distance = new int[num_lvls];
-				simulationTime = 100;
-			}
-		
-			else if (bestFit < .50d){
-					simulationTime = 50;	
-				} else if (bestFit < .100){
-					simulationTime = 100;
-				} else {
-					simulationTime = 200;
-				}*/
-			//for (int lvl=0;lvl < num_lvls;lvl++){
 			int lvl = 0;
 		//		runReplayTask(prog,data,simulationTime,lvl);
 				error += calculateFitness(((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo(),prog);
-				//runMarioTask(prog,data,simulationTime,lvl);
-				//distance[lvl]=((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells;
 				distance[lvl]=0;
-				//System.out.print(error+"-"+((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells+";");
-				//prog.setAdditionalFitnessInfo(String.format("%s:%s",error,((MarioData)prog.getApplicationData()).getEnvironment().getEvaluationInfo().distancePassedCells));
 				prog.setAdditionalFitnessInfo(String.format("%s:%s",error,0));
 				
-				//error += distance[lvl]/MarioData.getEnvironment().getEvaluationInfo().levelLength;
-				
-				
-			//}
-			// Determine success of individual in #lvls by averaging over all played levels
-			// --------------------------------
-			//error = error/num_lvls;
-			//System.out.print(error+": "+distance[0]+"; ");
-			// Check if the action the agent chose is close to the trace action.
-			// -------------------------------------------
-
-			//boolean[] actions = data.getActions(); // agent actions;
-
-			//use dissimilarity here to calculate the deviation from right path
-
-			//error = "Joes Metric".length();
-			/*try {
-				ProgramChromosome chrom= new ProgramChromosome(prog.getGPConfiguration());
-				String chromRepresentation = prog.getChromosome(0).getPersistentRepresentation();
-				chrom.setValueFromPersistentRepresentation(chromRepresentation);
-				//prog.getGPConfiguration().getChromosomePool().releaseChromosome((IChromosome)chrom);
-			} catch (InvalidConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnsupportedRepresentationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 			if (prog.getGPConfiguration().stackSize() > 0) {
 				error = 0.0d;
 			}
