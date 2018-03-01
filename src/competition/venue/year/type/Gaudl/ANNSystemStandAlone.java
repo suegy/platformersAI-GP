@@ -33,6 +33,7 @@ import com.owlike.genson.reflect.VisibilityFilter;
 import competition.venue.year.type.Gaudl.dnn.MarioDLDataGenerator;
 import competition.venue.year.type.Gaudl.dnn.Platformer_DL4JAgent;
 import competition.venue.year.type.Gaudl.nn.MarioDataGenerator;
+import org.apache.log4j.*;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -51,8 +52,7 @@ import org.platformer.agents.Agent;
 import org.platformer.benchmark.platform.engine.Replayer;
 import org.platformer.benchmark.tasks.BasicTask;
 import org.platformer.tools.PlatformerAIOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.*;
 import java.lang.reflect.Modifier;
@@ -73,7 +73,21 @@ public final class ANNSystemStandAlone {
 
     public ANNSystemStandAlone() {
         networks = new HashMap<>();
-        LOGGER = LoggerFactory.getLogger(ANNSystemStandAlone.class);
+        LOGGER = Logger.getRootLogger();
+        try {
+            LOGGER.setLevel(Level.INFO);
+            PatternLayout layout = new PatternLayout();
+            layout.setConversionPattern("%d %p - %m%n");
+            RollingFileAppender logger = new RollingFileAppender(layout, "mario-dnn.log");
+            logger.setMaxBackupIndex(10);
+            logger.setMaxFileSize("100MB");
+            LOGGER.addAppender(logger);
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         jsonSerialiser = new GensonBuilder()
                 .useClassMetadata(true)
                 .useMethods(false)
@@ -127,21 +141,21 @@ public final class ANNSystemStandAlone {
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
         net.init();
         net.setListeners(new ScoreIterationListener(1));
-
+        LOGGER.info("finished building network: "+net.conf().toJson());
         return net;
     }
 
 
     public void train() {
-        DataSetIterator train = new MarioDLDataGenerator(1,4000,0,4);
-        DataSetIterator test = new MarioDLDataGenerator(1,4000,5,9);
+        DataSetIterator train = new MarioDLDataGenerator(1000,15000,0,10);
+        DataSetIterator test = new MarioDLDataGenerator(1000,15000,10,19);
 
         MultiLayerNetwork net  = createDeepNetwork();
         networks.put(net,new Double[]{1d,0d});
 
-        double error = trainNetwork("Convolutional", net,
+        double error = trainNetwork("Convolutional2", net,
                 train, test, 100);
-        write("Convolutional", net);
+        write("Convolutional2", net);
 
     }
 
@@ -151,11 +165,15 @@ public final class ANNSystemStandAlone {
 
         double error = 1d;
         for (int i = 0; i < nEpochs; i++) {
+            LOGGER.info("====================");
+            LOGGER.info("Start training Epoch "+ i);
             network.fit(train);
-            LOGGER.info("Completed epoch {}", i);
+            LOGGER.info("Completed training Epoch "+ i);
             Evaluation eval = network.evaluate(test);
             LOGGER.info(eval.stats());
             error = eval.accuracy();
+            LOGGER.info("Network Evaluation accuracy: "+error);
+            LOGGER.info("====================");
             train.reset();
             test.reset();
         }
@@ -189,8 +207,6 @@ public final class ANNSystemStandAlone {
 
             task = new BasicTask(options);
             task.runSingleEpisode(1);
-            while (!task.isFinished())
-                Thread.sleep(50);
             replayer.closeReplayFile();
         } catch (IOException e) {
             e.printStackTrace();
@@ -238,7 +254,7 @@ public final class ANNSystemStandAlone {
     public void play() {
         MultiLayerNetwork playNet;
         if (networks.size() < 1)
-            playNet = readNetworkFromFile("FeedForward.txt");
+            playNet = readNetworkFromFile("Convolutional2");
         else
             playNet = networks.keySet().iterator().next();
 

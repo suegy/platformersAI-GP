@@ -5,6 +5,7 @@ import org.encog.neural.networks.BasicNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.platformer.agents.Agent;
+import org.platformer.benchmark.platform.engine.sprites.Plumber;
 import org.platformer.benchmark.platform.environments.Environment;
 
 public class Platformer_DL4JAgent implements Agent {
@@ -18,10 +19,11 @@ public class Platformer_DL4JAgent implements Agent {
 
     public Platformer_DL4JAgent(MultiLayerNetwork network) {
         this.network = network;
-        perceptSize = (int)Math.sqrt(network.input().length());
+        perceptSize = 19;
         input = Nd4j.zeros(361);
     }
 
+    int jumping =5;
     @Override
     public boolean[] getAction() {
         INDArray result = null;
@@ -42,13 +44,23 @@ public class Platformer_DL4JAgent implements Agent {
             if (result.getFloat(i) > result.getFloat(top2))
                 top2 = i;
 
-        if (result.getFloat(top1) > 0.5)
-            actions[top1] = true;
-        if (result.getFloat(top2) > 0.5)
-            actions[top2] = true;
-       // for (int i=0;i<actions.length;i++)
-       //     actions[i] = (result[i] < 0.5) ? false : true;
+       // if (result.getFloat(top1) > 0.5)
+        //    actions[top1] = true;
+       // if (result.getFloat(top2) > 0.5)
+         //   actions[top2] = true;
+        for (int i=0;i<actions.length;i++)
+            actions[i] = (result.getFloat(i) > 0.2) ? true: false;
 
+        if ((result.getFloat(Plumber.KEY_JUMP) > 0.2  && jumping > 0) || result.getFloat(Plumber.KEY_JUMP) > 0.5) {
+            actions[Plumber.KEY_JUMP] = true;
+            jumping--;
+        } else {
+            actions[Plumber.KEY_JUMP] = false;
+            if (jumping < 0)
+                jumping = 5;
+            else
+                jumping--;
+        }
         return actions;
     }
 

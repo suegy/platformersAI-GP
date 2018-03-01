@@ -2,6 +2,7 @@ package competition.venue.year.type.Gaudl.dnn;
 
 
 import competition.venue.year.type.Gaudl.nn.UniquePairs;
+import org.apache.log4j.Logger;
 import org.deeplearning4j.datasets.fetchers.BaseDataFetcher;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -21,31 +22,37 @@ public class MarioANNDataFetcher extends BaseDataFetcher {
      */
     private static final long serialVersionUID = 4566329799221375262L;
 
-    public static String[] recordedGames = {"run0", "run1", "run2", "run3", "run4", "run5", "run6", "run7", "run8", "run9"};
+    public static String[] recordedGames = {"run0", "run1", "run2", "run3", "run4", "run5", "run6", "run7", "run8", "run9",
+                                            "run10", "run11", "run12", "run13", "run14", "run15", "run16", "run17", "run18", "run19"};
 
     private Random rand = new Random();
+    private transient Logger LOGGER;
 
     private GeneratorTask replayTask = null;
     private List<List<Double>> unfilteredInput = new ArrayList<>();
     private List<List<Integer>> unfilderedIdeal = new ArrayList<>();
     private int playedLevelsFrom = 0;
     private int playedLevelsTo = 1;
+    private int gameCounter = 0;
 
     public MarioANNDataFetcher(int subSetStart, int subSetEnd) {
         numOutcomes = 6;
         inputColumns = 361;
         playedLevelsTo = subSetEnd;
         playedLevelsFrom = subSetStart;
+        LOGGER = Logger.getRootLogger();
         playLevels(playedLevelsFrom, playedLevelsFrom+1);
-        totalExamples = unfilderedIdeal.size() * recordedGames.length;
+        gameCounter = playedLevelsFrom+1;
+
+        totalExamples = unfilderedIdeal.size() * (playedLevelsTo-playedLevelsFrom+1);
     }
 
     private void playLevels(int from, int to) {
-
+        LOGGER.info("training data generation for levels "+from+" -- "+to);
         int[][][] output = new int[to-from][][];
         int[][][][] input = new int[to-from][][][];
 
-        for (int i = from; i < Math.min(recordedGames.length, to); i++) {
+        for (int i = from; i < Math.min(recordedGames.length-1, to); i++) {
             replayTask = new GeneratorTask();
             replayTask.reset(recordedGames[i]);
             replayTask.startReplay(200);
@@ -79,7 +86,7 @@ public class MarioANNDataFetcher extends BaseDataFetcher {
         int to = cursor + numExamples;
         if (to > totalExamples)
             to = totalExamples;
-
+        LOGGER.info("fetching data  cursor"+cursor+" -- "+to);
         initializeCurrFromList(generate(from, to));
         cursor += numExamples;
     }
@@ -96,11 +103,11 @@ public class MarioANNDataFetcher extends BaseDataFetcher {
 
         //generate game data if required if more data is required than available loop data
         int counter = to;
-        int games = playedLevelsFrom+1;
         while (counter > unfilteredInput.size()) {
-            playLevels(games, ++games);
-            if (games >= to-from)
-                games = playedLevelsFrom;
+            playLevels(gameCounter, gameCounter+1);
+            gameCounter += 1;
+            if (gameCounter >= playedLevelsTo)
+                gameCounter = playedLevelsFrom;
         }
 
         /**
