@@ -57,7 +57,7 @@ public class Platformer_DL4JAgent implements Agent {
         } else {
             actions[Plumber.KEY_JUMP] = false;
             if (jumping < 0)
-                jumping = 5;
+                jumping = 10;
             else
                 jumping--;
         }

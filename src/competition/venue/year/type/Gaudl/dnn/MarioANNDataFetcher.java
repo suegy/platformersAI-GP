@@ -10,6 +10,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.platformer.benchmark.tasks.GeneratorTask;
 
 import javax.xml.crypto.Data;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,9 @@ public class MarioANNDataFetcher extends BaseDataFetcher {
      */
     private static final long serialVersionUID = 4566329799221375262L;
 
-    public static String[] recordedGames = {"run0", "run1", "run2", "run3", "run4", "run5", "run6", "run7", "run8", "run9",
-                                            "run10", "run11", "run12", "run13", "run14", "run15", "run16", "run17", "run18", "run19"};
-
+    public static final String[] recordedGames = {"run0", "run1", "run2", "run3", "run4", "run5", "run6", "run7", "run8", "run9",
+            "run10", "run11", "run12", "run13", "run14", "run15", "run16", "run17", "run18", "run19"};
+    public static final String recordedPath = "rand-lvl-progression-ld0";
     private Random rand = new Random();
     private transient Logger LOGGER;
 
@@ -54,7 +55,7 @@ public class MarioANNDataFetcher extends BaseDataFetcher {
 
         for (int i = from; i < Math.min(recordedGames.length-1, to); i++) {
             replayTask = new GeneratorTask();
-            replayTask.reset(recordedGames[i]);
+            replayTask.reset(recordedPath+ File.separator+recordedGames[i]);
             replayTask.startReplay(200);
             input[i-from] = replayTask.getInputData();
             output[i-from] = replayTask.getOutputData();

@@ -147,14 +147,14 @@ public final class ANNSystemStandAlone {
 
 
     public void train() {
-        DataSetIterator train = new MarioDLDataGenerator(1000,15000,0,10);
-        DataSetIterator test = new MarioDLDataGenerator(1000,15000,10,19);
+        DataSetIterator train = new MarioDLDataGenerator(12,15000,0,10);
+        DataSetIterator test = new MarioDLDataGenerator(12,15000,10,19);
 
         MultiLayerNetwork net  = createDeepNetwork();
         networks.put(net,new Double[]{1d,0d});
 
         double error = trainNetwork("Convolutional2", net,
-                train, test, 100);
+                train, test, 2);
         write("Convolutional2", net);
 
     }
@@ -181,7 +181,7 @@ public final class ANNSystemStandAlone {
         return error;
     }
 
-    public boolean playLevel(Agent agent, String baseLevel, int levelDelta, int difficultyDelta) {
+    public boolean playLevel(Agent agent, String baseLevel, int levelDelta, int difficultyDelta,int repetition) {
         PlatformerAIOptions options = new PlatformerAIOptions();
         BasicTask task = null;
         int fps = 25;
@@ -206,7 +206,7 @@ public final class ANNSystemStandAlone {
             agent.reset();
 
             task = new BasicTask(options);
-            task.runSingleEpisode(1);
+            task.runSingleEpisode(repetition);
             replayer.closeReplayFile();
         } catch (IOException e) {
             e.printStackTrace();
@@ -259,8 +259,8 @@ public final class ANNSystemStandAlone {
             playNet = networks.keySet().iterator().next();
 
         Platformer_DL4JAgent agent = new Platformer_DL4JAgent(playNet);
-        playLevel(agent, MarioDataGenerator.recordedGames[0], 0, 0);
-        playLevel(agent, MarioDataGenerator.recordedGames[0], 1, 0);
+        playLevel(agent, MarioDataGenerator.recordedGames[0], 1, 0,5);
+        playLevel(agent, MarioDataGenerator.recordedGames[0], 1, 1,5);
 
     }
 
