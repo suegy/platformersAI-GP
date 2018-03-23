@@ -40,6 +40,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.layers.GravesLSTM;
+import org.deeplearning4j.nn.conf.layers.LSTM;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
@@ -114,7 +115,7 @@ public final class ANNSystemStandAlone {
     private MultiLayerNetwork createDeepNetwork() {
 
         for (int i = 0; i < HIDDEN_LAYER_CONT; i++) {
-            GravesLSTM.Builder hiddenLayerBuilder = new GravesLSTM.Builder();
+            LSTM.Builder hiddenLayerBuilder = new org.deeplearning4j.nn.conf.layers.LSTM.Builder();
             hiddenLayerBuilder.nIn(i == 0 ? 361 : HIDDEN_LAYER_WIDTH); //361 is the size of the 19x19 input array from the platformersAI
             hiddenLayerBuilder.nOut(HIDDEN_LAYER_WIDTH);
             // adopted activation function from GravesLSTMCharModellingExample
@@ -147,29 +148,49 @@ public final class ANNSystemStandAlone {
 
 
     public void train() {
-        DataSetIterator train = new MarioDLDataGenerator(12,15000,0,10);
-        DataSetIterator test = new MarioDLDataGenerator(12,15000,10,19);
+        DataSetIterator train = new MarioDLDataGenerator(8000,220000,0,45);
+        DataSetIterator test = new MarioDLDataGenerator(4000,60000,45,60);
 
         MultiLayerNetwork net  = createDeepNetwork();
         networks.put(net,new Double[]{1d,0d});
 
-        double error = trainNetwork("Convolutional2", net,
-                train, test, 2);
-        write("Convolutional2", net);
+        double error = continueTrainNetwork("Convolutional-min2-gen3", train, test,50);
+//      double error = trainNetwork("Convolutional2", net, train, test, 50);
 
+        write("Convolutional", net);
+
+    }
+
+    public double continueTrainNetwork(final String what, final DataSetIterator train,
+                               final DataSetIterator test, int nEpochsEnd) {
+        int nEpochsStart=0;
+        if (what.split("-").length == 3) {
+            nEpochsStart = Integer.parseInt(what.split("-")[2].substring(3))+1;
+        }
+        MultiLayerNetwork network = readNetworkFromFile(what);
+        if (network == null)
+            return -1;
+
+        return trainNetwork(what.split("-")[0],network,train,test,nEpochsStart,nEpochsEnd);
     }
 
     public double trainNetwork(final String what,
                                final MultiLayerNetwork network, final DataSetIterator train,
-                               final DataSetIterator test, int nEpochs) {
+                               final DataSetIterator test, int epochStart,int epochEnd) {
 
         double error = 1d;
-        for (int i = 0; i < nEpochs; i++) {
+        int min = 4;
+        int gen = 5;
+        for (int i = epochStart; i < epochEnd; i++) {
             LOGGER.info("====================");
             LOGGER.info("Start training Epoch "+ i);
             network.fit(train);
             LOGGER.info("Completed training Epoch "+ i);
             Evaluation eval = network.evaluate(test);
+            if (eval.averagePrecisionNumClassesExcluded() < min || i % gen == 0) {
+                min = eval.averagePrecisionNumClassesExcluded();
+                write(what+"-min"+min+"-gen"+i, network);
+            }
             LOGGER.info(eval.stats());
             error = eval.accuracy();
             LOGGER.info("Network Evaluation accuracy: "+error);
@@ -177,7 +198,7 @@ public final class ANNSystemStandAlone {
             train.reset();
             test.reset();
         }
-        networks.put(network, new Double[]{error, new Double(nEpochs)});
+        networks.put(network, new Double[]{error, new Double(epochEnd)});
         return error;
     }
 
@@ -254,7 +275,7 @@ public final class ANNSystemStandAlone {
     public void play() {
         MultiLayerNetwork playNet;
         if (networks.size() < 1)
-            playNet = readNetworkFromFile("Convolutional2");
+            playNet = readNetworkFromFile("Convolutional-min2-gen8");
         else
             playNet = networks.keySet().iterator().next();
 
@@ -292,9 +313,9 @@ public final class ANNSystemStandAlone {
 
         ANNSystemStandAlone system = new ANNSystemStandAlone();
 
-        //system.play();
+        system.play();
 
-        system.train();
+        //system.train();
 
 
 

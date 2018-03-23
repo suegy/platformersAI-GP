@@ -24,6 +24,7 @@ public class Platformer_DL4JAgent implements Agent {
     }
 
     int jumping =5;
+    double lastJumpAct = 1;
     @Override
     public boolean[] getAction() {
         INDArray result = null;
@@ -51,8 +52,9 @@ public class Platformer_DL4JAgent implements Agent {
         for (int i=0;i<actions.length;i++)
             actions[i] = (result.getFloat(i) > 0.2) ? true: false;
 
-        if ((result.getFloat(Plumber.KEY_JUMP) > 0.2  && jumping > 0) || result.getFloat(Plumber.KEY_JUMP) > 0.5) {
+        if ((result.getFloat(Plumber.KEY_JUMP) > 0.2  && jumping > 0) || result.getFloat(Plumber.KEY_JUMP) > lastJumpAct) {
             actions[Plumber.KEY_JUMP] = true;
+            lastJumpAct = result.getFloat(Plumber.KEY_JUMP);
             jumping--;
         } else {
             actions[Plumber.KEY_JUMP] = false;
